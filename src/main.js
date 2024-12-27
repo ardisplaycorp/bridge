@@ -62,6 +62,42 @@ class ARDisplayViewer extends HTMLElement {
     _setupEventListeners() {
         // Add event listeners here
     }
+
+    calculateModelScale(url, desiredSize) {
+        return new Promise((resolve, reject) => {
+            const loader = new GLTFLoader();
+
+            loader.load(
+                url,
+                (gltf) => {
+                    const scene = gltf.scene;
+                    const box = new THREE.Box3().setFromObject(scene);
+                    const size = new THREE.Vector3();
+                    box.getSize(size);
+
+                    const originalWidth = size.x;
+                    const originalHeight = size.y;
+                    const originalDepth = size.z;
+
+                    // Convert cm strings to meters
+                    const desiredWidth = this.cmToMeters(desiredSize.width);
+                    const desiredHeight = this.cmToMeters(desiredSize.height);
+                    const desiredDepth = this.cmToMeters(desiredSize.depth);
+
+                    const scaleX = desiredWidth / originalWidth;
+                    const scaleY = desiredHeight / originalHeight;
+                    const scaleZ = desiredDepth / originalDepth;
+
+                    resolve({ scaleX, scaleY, scaleZ });
+                },
+                undefined,
+                (error) => {
+                    console.error('An error occurred while loading the model for scaling:', error);
+                    reject(error);
+                }
+            );
+        });
+    }
 }
 
 customElements.define('ardisplay-viewer', ARDisplayViewer);
