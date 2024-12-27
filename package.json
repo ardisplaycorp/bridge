@@ -1,0 +1,26 @@
+{
+  "name": "ardisplay",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/ardisplay.umd.js",
+  "module": "dist/ardisplay.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ardisplay.es.js",
+      "require": "./dist/ardisplay.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:cdn": "vite build --config vite.cdn.config.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.5"
+  }
+}
