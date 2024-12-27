@@ -4,6 +4,7 @@ import { ModelViewerElement } from '@google/model-viewer';
 import { QRCode } from 'qr-code-styling';
 import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
+import hotspotsTemplate from './templates/hotspots.js';
 import './style.css';
 
 // Utility function for Base64 decoding
@@ -29,6 +30,7 @@ class ARDisplayViewer extends HTMLElement{
         this._createStyles();
         this._loadTemplate(attributes.viewMode);
         this._moveSlottedContent();
+        this._updateHotspots(this.shadowRoot.querySelector('model-viewer'));
         this._setupEventListeners();
     }
 
@@ -53,6 +55,17 @@ class ARDisplayViewer extends HTMLElement{
             model-viewer {
                 width: 100%;
                 height: 100%;
+            }
+
+            .dimensionLineContainer {
+                pointer-events: none;
+                display: block;
+            }
+
+            .dimensionLine {
+                stroke: #16a5e6;
+                stroke-width: 2;
+                stroke-dasharray: 2;
             }
         `;
         this.shadowRoot.appendChild(styles);
@@ -118,6 +131,32 @@ class ARDisplayViewer extends HTMLElement{
 
     _setupNormalEventListeners() {
         // Add event listeners here
+    }
+
+    _updateHotspots(modelViewer) {
+        modelViewer.addEventListener('load', () => {
+            this._setupDimensions(modelViewer);
+        });
+    }
+
+    _setupDimensions(modelViewer) {
+        if(!this.hasAttribute('show-hotspots')) {
+            return;
+        }
+
+        const templateString = hotspotsTemplate();
+        modelViewer.shadowRoot.innerHTML += templateString;
+        
+        const dimElements = [...modelViewer.querySelectorAll('button'), modelViewer.querySelector('#dimLines')];
+        function setVisibility(visible) {
+            dimElements.forEach((element) => {
+                if (visible) {
+                    element.classList.remove('hide');
+                } else {
+                    element.classList.add('hide');
+                }
+            });
+        }
     }
 
     calculateModelScale(url, desiredSize) {
