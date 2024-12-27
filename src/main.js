@@ -1,4 +1,7 @@
-
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { ModelViewerElement } from '@google/model-viewer';
+import { QRCode } from 'qr-code-styling';
 import './style.css';
 
 // Utility function for Base64 decoding
