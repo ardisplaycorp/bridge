@@ -17,21 +17,47 @@ class ARDisplayViewer extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                }
-            </style>
-            <div id="ar-display-viewer">Hello World</div>
-        `;
     }
 
     connectedCallback() {
-        const arDisplayViewer = document.createElement('ar-display-viewer');
-        this.shadowRoot.appendChild(arDisplayViewer);
+        const attributes = this._getAttributes();
+        this._createStyles();
+        this._buildComponentStructure();
+        this._moveSlottedContent();
+        this._setupEventListeners();
+    }
+
+    _getAttributes() {
+        const attributes = {};
+        return attributes;
+    }
+
+    _createStyles() {
+        const styles = document.createElement('style');
+        styles.textContent = `
+            /* Add your styles here */
+        `;
+        this.shadowRoot.appendChild(styles);
+    }
+
+    _buildComponentStructure() {
+        const template = `
+            <!-- Add your template here -->
+        `
+        this.shadowRoot.innerHTML += template;
+    }
+
+    _moveSlottedContent() {
+        const customPanel = this.shadow?.querySelector('ar-display-custom-panel');
+        if (customPanel) {
+            while (this.firstChild) {
+                customPanel.appendChild(this.firstChild);
+            }
+        }
+    }
+
+    _setupEventListeners() {
+        // Add event listeners here
     }
 }
 
