@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ModelViewerElement } from '@google/model-viewer';
-import { QRCode } from 'qr-code-styling';
+import QRCodeStyling, { QRCode } from 'qr-code-styling';
 import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
 import './style.css';
@@ -32,6 +32,9 @@ class ARDisplayViewer extends HTMLElement{
             m: { width: '94cm', height: '100cm', depth: '139cm' },
             l: { width: '141cm', height: '150cm', depth: '208.5cm' }
         };
+
+        // Initialize custom 'scale' event
+        this.scaleEvent = new Event('scale', { bubbles: true, composed: true });
     }
 
     connectedCallback() {
@@ -52,6 +55,7 @@ class ARDisplayViewer extends HTMLElement{
             TouchAction: this.getAttribute('touch-action') || 'none',
             alt: this.getAttribute('alt') || '',
             viewMode: this.getAttribute('view-mode') || 'normal',
+            arPlacement: this.getAttribute('ar-placement') || 'floor',
         };
         return attributes;
     }
@@ -84,6 +88,64 @@ class ARDisplayViewer extends HTMLElement{
             .dot {
                 display: none;
             }
+
+            .qr-modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 100vw;
+                height: 100vh;
+                overflow:hidden;
+                background-color: rgba(0,0,0,0.4);
+                backdrop-filter: blur(5px);
+                justify-content: center;
+                align-items: center;
+                font-family: sans-serif;
+            }
+    
+            .qr-modal-content {
+                background-color: #fefefe;
+                border: 1px solid #888;
+                width: 820px;
+                height: 418px;
+                position: relative;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .qr-modal-content h2 {
+                margin-top: 0;
+                color: #333;
+                text-align: center;
+            }
+    
+            .qr-code-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 20px 0;
+            }
+
+            .qr-close-button {
+                position: absolute;
+                top: 10px;
+                right: -30px;
+                width: 30px;
+                height: 30px;
+                background-color: rgba(0, 0, 0, 0.5);
+                color: white;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+                border: none;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         `;
         this.shadowRoot.appendChild(styles);
     }
@@ -95,7 +157,7 @@ class ARDisplayViewer extends HTMLElement{
         } else {
              template = normalTemplate;
         }
-        const templateString = template(this.getAttribute('src'), this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '');
+        const templateString = template(this.getAttribute('src'), this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '',this.getAttribute('ar-placement') || 'floor');
         this.shadowRoot.innerHTML += templateString;
     }
 
@@ -121,6 +183,59 @@ class ARDisplayViewer extends HTMLElement{
         } else {
             this._setupNormalEventListeners();
         }
+
+        const sizeControls = this._createSizeControls(this.shadowRoot.querySelector('model-viewer'));
+
+        // Event listener for size buttons
+        sizeControls.addEventListener('click', (event) => this._handleSizeChange(event, this.getAttribute('src')));
+        // Event listener for the custom 'scale' event
+        document.addEventListener('scale', () => this._setupDimensions(this.shadowRoot.querySelector('model-viewer')));
+
+        const qrCodeButton = this.shadowRoot.querySelector('.qr-code-button');
+        const qrModal = this.shadowRoot.getElementById('qrModal');
+        const qrCloseButton = this.shadowRoot.querySelector('.qr-close-button');
+        const qrCodeContainer = this.shadowRoot.getElementById('qr-code');
+
+
+        let qrCode = null;
+        // Function to initialize and update QR code
+        const updateQrCode = (url) => {
+        if (qrCodeContainer.firstChild) {
+            qrCodeContainer.removeChild(qrCodeContainer.firstChild);
+        }
+            qrCode = new QRCodeStyling({
+            width: 240,
+            height: 240,
+            data: url,
+            dotsOptions: {
+                color: "#555555",
+                type: "rounded"
+            },
+            cornersSquareOptions: {
+                type: 'extra-rounded',
+                },
+                cornersDotOptions: {
+                    type: 'dot',
+                },
+            });
+            qrCode.append(qrCodeContainer);
+        };
+    
+        qrCodeButton.addEventListener('click', () => {
+            const currentUrl = window.location.href;
+            updateQrCode(currentUrl);
+            qrModal.style.display = 'flex';
+        });
+
+        qrCloseButton.addEventListener('click', () => {
+            qrModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === qrModal) {
+                qrModal.style.display = 'none';
+            }
+        });
     }
 
     _setupModalEventListeners() {
@@ -387,8 +502,55 @@ class ARDisplayViewer extends HTMLElement{
         });
     }
 
+    _createSizeControls(modelViewer) {
+        // Add size buttons
+        const sizeControls = document.createElement('div');
+        sizeControls.innerHTML = `
+            <button class="size-button" data-size="s">S</button>
+            <button class="size-button" data-size="m">M</button>
+            <button class="size-button" data-size="l">L</button>
+        `;
+        sizeControls.classList.add('size-controls');
+        modelViewer.shadowRoot.appendChild(sizeControls);
+
+        const modelViewerStyles = document.createElement('style');
+        modelViewerStyles.textContent = `  
+          /* Style for size controls */
+          .size-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+          }
+
+          .size-button {
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+        `;
+        modelViewer.shadowRoot.appendChild(modelViewerStyles);
+
+        return sizeControls;
+    }
+
+    _handleSizeChange(event, modelSrc) {
+        if (event.target.classList.contains('size-button')) {
+          this.currentSize = event.target.getAttribute('data-size');
+          this.calculateAndApplyScale(modelSrc);
+        }
+    }
+
+    _setupVariantsSizes() {
+
+    }
+
     applyScale() {
-        if (this.calculatedScale && this.shadow) {
+        if (this.calculatedScale && this.shadowRoot) {
             const modelViewer = this.shadowRoot.querySelector('model-viewer');
             if (modelViewer) {
                 modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
@@ -399,8 +561,6 @@ class ARDisplayViewer extends HTMLElement{
                         document.dispatchEvent(this.scaleEvent);
                     });
                 }
-
-                this.updateHotspots(modelViewer);
             }
         }
     }
