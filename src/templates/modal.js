@@ -1,3 +1,5 @@
+import hotspotsTemplate from './hotspots.js';
+
 const modalStyles = {
     '.custom-model-viewer-container': {
         position: 'relative',
@@ -105,6 +107,7 @@ function styleObjectToString(styles) {
 
 export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, modelPoster) => {
     const styles = styleObjectToString(modalStyles)
+    const template = hotspotsTemplate();
     return `
         <!-- Template for modal view -->
         <style>${styles}</style>
@@ -123,6 +126,7 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
                     touch-action="${touchAction}"
                     shadow-intensity="${shadowIntensity}"
                 >
+                    ${template}
                 </model-viewer>
                 <button class="close-button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

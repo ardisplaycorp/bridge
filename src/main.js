@@ -4,7 +4,6 @@ import { ModelViewerElement } from '@google/model-viewer';
 import { QRCode } from 'qr-code-styling';
 import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
-import hotspotsTemplate from './templates/hotspots.js';
 import './style.css';
 
 // Utility function for Base64 decoding
@@ -23,6 +22,16 @@ class ARDisplayViewer extends HTMLElement{
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+
+        this.currentSize = 'm';
+
+        this.calculatedScale = null;
+
+        this.sizes = {
+            s: { width: '47.5cm', height: '50cm', depth: '69.5cm' },
+            m: { width: '94cm', height: '100cm', depth: '139cm' },
+            l: { width: '141cm', height: '150cm', depth: '208.5cm' }
+        };
     }
 
     connectedCallback() {
@@ -30,7 +39,6 @@ class ARDisplayViewer extends HTMLElement{
         this._createStyles();
         this._loadTemplate(attributes.viewMode);
         this._moveSlottedContent();
-        this._updateHotspots(this.shadowRoot.querySelector('model-viewer'));
         this._setupEventListeners();
     }
 
@@ -55,6 +63,7 @@ class ARDisplayViewer extends HTMLElement{
             model-viewer {
                 width: 100%;
                 height: 100%;
+                --min-hotspot-opacity: 0;
             }
 
             .dimensionLineContainer {
@@ -66,6 +75,14 @@ class ARDisplayViewer extends HTMLElement{
                 stroke: #16a5e6;
                 stroke-width: 2;
                 stroke-dasharray: 2;
+            }
+
+            .hide {
+                display: none;
+            }
+
+            .dot {
+                display: none;
             }
         `;
         this.shadowRoot.appendChild(styles);
@@ -113,12 +130,14 @@ class ARDisplayViewer extends HTMLElement{
         const modelViewerContainer = this.shadowRoot.querySelector('.model-viewer-container');
         const closeButton = this.shadowRoot.querySelector('.close-button');
         const overlay = this.shadowRoot.querySelector('.overlay');
+        const modelViewer = this.shadowRoot.querySelector('model-viewer');
 
         view3DButton.addEventListener('click', () => {
             previewImage.style.display = 'none';
             view3DButton.style.display = 'none';
             modelViewerContainer.style.display = 'flex';
             overlay.style.display = 'block';
+            this._setupDimensions(modelViewer);
         });
 
         closeButton.addEventListener('click', () => {
@@ -131,32 +150,275 @@ class ARDisplayViewer extends HTMLElement{
 
     _setupNormalEventListeners() {
         // Add event listeners here
+        this.shadowRoot.querySelector('model-viewer').addEventListener('model-visibility', () => {
+            this._setupDimensions(this.shadowRoot.querySelector('model-viewer'));
+        });
     }
 
     _updateHotspots(modelViewer) {
-        modelViewer.addEventListener('load', () => {
+        modelViewer.addEventListener('scene-graph-ready', () => {
             this._setupDimensions(modelViewer);
         });
     }
 
     _setupDimensions(modelViewer) {
-        if(!this.hasAttribute('show-hotspots')) {
+        if (!this.hasAttribute('show-hotspots')) {
             return;
         }
-
-        const templateString = hotspotsTemplate();
-        modelViewer.shadowRoot.innerHTML += templateString;
-        
-        const dimElements = [...modelViewer.querySelectorAll('button'), modelViewer.querySelector('#dimLines')];
-        function setVisibility(visible) {
+    
+        const dimElements = [
+            ...modelViewer.querySelectorAll('[data-hotspot]'),
+            modelViewer.querySelector('#dimLines')
+        ].filter(Boolean);
+    
+        const setVisibility = (visible) => {
             dimElements.forEach((element) => {
-                if (visible) {
-                    element.classList.remove('hide');
-                } else {
-                    element.classList.add('hide');
+                element.classList.toggle('hide', !visible);
+            });
+        };
+    
+        // Toggle visibility of dimension elements during AR sessions
+        modelViewer.addEventListener('ar-status', (event) => {
+            const isSessionStarted = event.detail.status === 'session-started';
+            setVisibility(!isSessionStarted);
+        });
+    
+        const drawLine = (svgLine, startHotspot, endHotspot, dimensionHotspot) => {
+            if (!svgLine || !startHotspot || !endHotspot) return;
+    
+            svgLine.setAttribute('x1', startHotspot.canvasPosition.x);
+            svgLine.setAttribute('y1', startHotspot.canvasPosition.y);
+            svgLine.setAttribute('x2', endHotspot.canvasPosition.x);
+            svgLine.setAttribute('y2', endHotspot.canvasPosition.y);
+    
+            if (dimensionHotspot) {
+                svgLine.classList.toggle('hide', !dimensionHotspot.facingCamera);
+            }
+        };
+    
+        const dimLines = modelViewer.querySelectorAll('line');
+    
+        const renderSVG = () => {
+            if (dimLines.length === 0) return;
+    
+            const lineMappings = [
+                {
+                    line: dimLines[0],
+                    start: 'hotspot-dot+X-Y+Z',
+                    end: 'hotspot-dot+X-Y-Z',
+                    dimension: 'hotspot-dim+X-Y'
+                },
+                {
+                    line: dimLines[1],
+                    start: 'hotspot-dot+X-Y-Z',
+                    end: 'hotspot-dot+X+Y-Z',
+                    dimension: 'hotspot-dim+X-Z'
+                },
+                {
+                    line: dimLines[2],
+                    start: 'hotspot-dot+X+Y-Z',
+                    end: 'hotspot-dot-X+Y-Z'
+                    // Line always visible; no dimension hotspot needed
+                },
+                {
+                    line: dimLines[3],
+                    start: 'hotspot-dot-X+Y-Z',
+                    end: 'hotspot-dot-X-Y-Z',
+                    dimension: 'hotspot-dim-X-Z'
+                },
+                {
+                    line: dimLines[4],
+                    start: 'hotspot-dot-X-Y-Z',
+                    end: 'hotspot-dot-X-Y+Z',
+                    dimension: 'hotspot-dim-X-Y'
+                }
+            ];
+    
+            lineMappings.forEach(({ line, start, end, dimension }) => {
+                drawLine(
+                    line,
+                    modelViewer.queryHotspot(start),
+                    modelViewer.queryHotspot(end),
+                    dimension ? modelViewer.queryHotspot(dimension) : null
+                );
+            });
+        };
+    
+        const updateDimensionHotspots = () => {
+            const center = modelViewer.getBoundingBoxCenter();
+            const size = modelViewer.getDimensions();
+            const halfSize = {
+                x: size.x / 2,
+                y: size.y / 2,
+                z: size.z / 2
+            };
+    
+            const hotspotsData = [
+                {
+                    name: 'hotspot-dot+X-Y+Z',
+                    position: [
+                        center.x + halfSize.x,
+                        center.y - halfSize.y,
+                        center.z + halfSize.z
+                    ]
+                },
+                {
+                    name: 'hotspot-dim+X-Y',
+                    position: [
+                        center.x + halfSize.x * 1.2,
+                        center.y - halfSize.y * 1.1,
+                        center.z
+                    ],
+                    label: `${(size.z * 100).toFixed(0)} cm`,
+                    labelSelector: 'button[slot="hotspot-dim+X-Y"]'
+                },
+                {
+                    name: 'hotspot-dot+X-Y-Z',
+                    position: [
+                        center.x + halfSize.x,
+                        center.y - halfSize.y,
+                        center.z - halfSize.z
+                    ]
+                },
+                {
+                    name: 'hotspot-dim+X-Z',
+                    position: [
+                        center.x + halfSize.x * 1.2,
+                        center.y,
+                        center.z - halfSize.z * 1.2
+                    ],
+                    label: `${(size.y * 100).toFixed(0)} cm`,
+                    labelSelector: 'button[slot="hotspot-dim+X-Z"]'
+                },
+                {
+                    name: 'hotspot-dot+X+Y-Z',
+                    position: [
+                        center.x + halfSize.x,
+                        center.y + halfSize.y,
+                        center.z - halfSize.z
+                    ]
+                },
+                {
+                    name: 'hotspot-dim+Y-Z',
+                    position: [
+                        center.x,
+                        center.y + halfSize.y * 1.1,
+                        center.z - halfSize.z * 1.1
+                    ],
+                    label: `${(size.x * 100).toFixed(0)} cm`,
+                    labelSelector: 'button[slot="hotspot-dim+Y-Z"]'
+                },
+                {
+                    name: 'hotspot-dot-X+Y-Z',
+                    position: [
+                        center.x - halfSize.x,
+                        center.y + halfSize.y,
+                        center.z - halfSize.z
+                    ]
+                },
+                {
+                    name: 'hotspot-dim-X-Z',
+                    position: [
+                        center.x - halfSize.x * 1.2,
+                        center.y,
+                        center.z - halfSize.z * 1.2
+                    ],
+                    label: `${(size.y * 100).toFixed(0)} cm`,
+                    labelSelector: 'button[slot="hotspot-dim-X-Z"]'
+                },
+                {
+                    name: 'hotspot-dot-X-Y-Z',
+                    position: [
+                        center.x - halfSize.x,
+                        center.y - halfSize.y,
+                        center.z - halfSize.z
+                    ]
+                },
+                {
+                    name: 'hotspot-dim-X-Y',
+                    position: [
+                        center.x - halfSize.x * 1.2,
+                        center.y - halfSize.y * 1.1,
+                        center.z
+                    ],
+                    label: `${(size.z * 100).toFixed(0)} cm`,
+                    labelSelector: 'button[slot="hotspot-dim-X-Y"]'
+                },
+                {
+                    name: 'hotspot-dot-X-Y+Z',
+                    position: [
+                        center.x - halfSize.x,
+                        center.y - halfSize.y,
+                        center.z + halfSize.z
+                    ]
+                }
+            ];
+    
+            hotspotsData.forEach(({ name, position, label, labelSelector }) => {
+                modelViewer.updateHotspot({
+                    name,
+                    position: position.join(' ')
+                });
+    
+                if (label && labelSelector) {
+                    const labelElement = modelViewer.querySelector(labelSelector);
+                    if (labelElement) {
+                        labelElement.textContent = label;
+                    }
                 }
             });
+        };
+    
+        requestAnimationFrame(() => {
+            renderSVG();
+            updateDimensionHotspots();
+        });
+
+        // Update dimensions when the camera changes
+        modelViewer.addEventListener('camera-change', () => {
+            renderSVG();
+            updateDimensionHotspots();
+        });
+
+        // Update dimensions when the scene graph is ready
+        modelViewer.addEventListener('scene-graph-ready', () => {
+            renderSVG();
+            updateDimensionHotspots();
+        });
+    }
+
+    applyScale() {
+        if (this.calculatedScale && this.shadow) {
+            const modelViewer = this.shadowRoot.querySelector('model-viewer');
+            if (modelViewer) {
+                modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
+
+                if (typeof modelViewer.updateFraming === 'function') {
+                    requestAnimationFrame(() => {
+                        modelViewer.updateFraming();
+                        document.dispatchEvent(this.scaleEvent);
+                    });
+                }
+
+                this.updateHotspots(modelViewer);
+            }
         }
+    }
+
+    async calculateAndApplyScale(modelURL) {
+        const desiredSize = this.sizes[this.currentSize];
+        if (!desiredSize) return;
+        try {
+            const scale = await this.calculateModelScale(modelURL, desiredSize);
+            this.calculatedScale = scale;
+            this.applyScale();
+        } catch (error) {
+            console.error("Error applying scale for size", this.currentSize, error);
+        }
+    }
+
+    cmToMeters(cmString) {
+        return parseFloat(cmString.replace('cm', '')) / 100;
     }
 
     calculateModelScale(url, desiredSize) {

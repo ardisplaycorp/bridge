@@ -1,3 +1,5 @@
+import hotspotsTemplate from './hotspots.js';
+
 const modalStyles = {
     
 };
@@ -29,6 +31,7 @@ function styleObjectToString(styles) {
 
 export default (src, alt, ar, cameraControls, touchAction, shadowIntensity) => {
     const styles = styleObjectToString(modalStyles)
+    const template = hotspotsTemplate();
     return `
         <!-- Template for modal view -->
         <style>${styles}</style>
@@ -40,6 +43,7 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity) => {
             touch-action="${touchAction}"
             shadow-intensity="${shadowIntensity}"
         >
+            ${template}
         </model-viewer>
     `;
 };
