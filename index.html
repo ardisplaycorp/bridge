@@ -7,7 +7,16 @@
   </head>
   <body>
     <div id="app">
-      <ardisplay-viewer></ardisplay-viewer>
+      <ardisplay-viewer 
+        src="/Chair.glb" 
+        poster="/Chair.webp" 
+        shadow-intensity="1" 
+        ar camera-controls 
+        touch-action="pan-y" 
+        alt="A 3D model carousel"
+        view-mode="modal"
+      >
+      </ardisplay-viewer>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
