@@ -70,10 +70,16 @@ class ARDisplayViewer extends HTMLElement{
     }
 
     _moveSlottedContent() {
-        const customPanel = this.shadow?.querySelector('ar-display-custom-panel');
-        if (customPanel) {
-            while (this.firstChild) {
-                customPanel.appendChild(this.firstChild);
+        const customPanel = this.shadowRoot?.querySelector('.ar-display-custom-panel');
+        const slottedContent = this.querySelector('[slot="custom-panel"]');
+        if (customPanel && slottedContent) {
+            if(slottedContent) {
+                customPanel.appendChild(slottedContent);
+            }
+        } else {
+            const arDisplayDetailsPanel = this.shadowRoot?.querySelector('.details-panel');
+            if(arDisplayDetailsPanel) {
+                arDisplayDetailsPanel.remove();
             }
         }
     }

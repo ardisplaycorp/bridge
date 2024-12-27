@@ -68,6 +68,13 @@ const modalStyles = {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         zIndex: '-1',
         display: 'none',
+    },
+    '.details-panel': {
+        width: '400px',
+        height: '100%',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
     }
 };
 
@@ -122,6 +129,9 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                     </svg>
                 </button>
+                <div class="details-panel">
+                    <div class="ar-display-custom-panel"></div>
+                </div>
             </div>
             <div class="overlay"></div>
         </div>
