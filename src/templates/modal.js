@@ -95,8 +95,9 @@ const modalStyles = {
     },
     '.qr-code-button': {
         position: 'absolute',
-        bottom: '10px',
-        right: '10px',
+        bottom: '130px',
+        right: '50%',
+        transform: 'translateX(50%)',
         background: 'white',
         border: '1px solid black',
         cursor: 'pointer',
@@ -203,9 +204,9 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
         </div>
         <!-- QR Code Modal -->
         <div id="qrModal" class="qr-modal">
-            <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;">
+            <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
             <button class="qr-close-button">×</button>
-            <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+            <div style="width: 45%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                 <h2>
                     <p id="btn-text" style="margin: 0">${modelData.title}</p>
                 </h2>

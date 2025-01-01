@@ -117,6 +117,14 @@ class ARDisplayViewer extends HTMLElement{
                 position: relative;
             }
 
+            model-viewer[ar-status="session-started"] .qr-code-button {
+                display: none;
+            }
+
+            model-viewer[ar-status="object-placed"] .qr-code-button {
+                display: none;
+            }
+
             .dimensionLineContainer {
                 pointer-events: none;
                 display: block;
@@ -179,7 +187,7 @@ class ARDisplayViewer extends HTMLElement{
             .qr-close-button {
                 position: absolute;
                 top: 10px;
-                right: -30px;
+                right: 10px;
                 width: 30px;
                 height: 30px;
                 background-color: rgba(0, 0, 0, 0.5);
@@ -192,12 +200,6 @@ class ARDisplayViewer extends HTMLElement{
                 display: flex;
                 justify-content: center;
                 align-items: center;
-            }
-
-            @media only screen and (max-width: 500px) {
-                .qr-code-button {
-                    display: none!important;
-                }
             }
         `;
         this.shadowRoot.appendChild(styles);
@@ -242,6 +244,8 @@ class ARDisplayViewer extends HTMLElement{
                 button.disabled = false;
                 button.style.cursor = 'pointer';
             });
+
+            modelViewer.shadowRoot.querySelector('.slot.ar-button').style.display = 'none';
         });
 
         // Add event listeners here
@@ -287,11 +291,26 @@ class ARDisplayViewer extends HTMLElement{
             });
             qrCode.append(qrCodeContainer);
         };
+
+        const modelViewer = this.shadowRoot.querySelector('model-viewer');
     
         qrCodeButton.addEventListener('click', () => {
-            const currentUrl = window.location.href;
-            updateQrCode(currentUrl);
-            qrModal.style.display = 'flex';
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile && modelViewer.canActivateAR) {
+                try {
+                    modelViewer.activateAR();
+                } catch (err) {
+                    console.warn('Could not activate AR:', err);
+                    // Fallback to QR if it fails
+                    const currentUrl = window.location.href;
+                    updateQrCode(currentUrl);
+                    qrModal.style.display = 'flex';
+                }
+            } else {
+                const currentUrl = window.location.href;
+                updateQrCode(currentUrl);
+                qrModal.style.display = 'flex';
+            }
         });
 
         qrCloseButton.addEventListener('click', () => {
@@ -677,12 +696,6 @@ class ARDisplayViewer extends HTMLElement{
         const sizePanel = document.createElement('div');
         sizePanel.classList.add('size-panel');
       
-        // Optional label
-        const sizeLabel = document.createElement('span');
-        sizeLabel.classList.add('size-label');
-        sizeLabel.textContent = 'Select Size:';
-        sizePanel.appendChild(sizeLabel);
-      
         // Create an inner container for the buttons
         const sizeButtonsWrapper = document.createElement('div');
         sizeButtonsWrapper.classList.add('size-buttons-wrapper');
@@ -704,7 +717,7 @@ class ARDisplayViewer extends HTMLElement{
         sizePanel.appendChild(sizeButtonsWrapper);
       
         // Inject into the <model-viewer>'s shadow root
-        modelViewer.shadowRoot.appendChild(sizePanel);
+        modelViewer.appendChild(sizePanel);
       
         // Add styling
         const style = document.createElement('style');
@@ -760,7 +773,7 @@ class ARDisplayViewer extends HTMLElement{
             background-color: #e6f0ff;
           }
         `;
-        modelViewer.shadowRoot.appendChild(style);
+        modelViewer.appendChild(style);
       
         return sizePanel;
     }
