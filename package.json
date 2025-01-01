@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000",
     "build": "vite build",
     "build:cdn": "vite build --config vite.cdn.config.js",
     "preview": "vite preview"
@@ -26,6 +26,6 @@
   "dependencies": {
     "@google/model-viewer": "^4.0.0",
     "qr-code-styling": "^1.8.4",
-    "three": "^0.171.0"
+    "three": "^0.169.0"
   }
 }

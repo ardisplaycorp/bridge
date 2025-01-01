@@ -6,6 +6,11 @@ import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
 import './style.css';
 
+// headers: {
+//     "X-Secret-Key": "2jiXHGqKE5DH7cwDdyJZCmSndKhjvTto",
+//     "X-Requested-With": "XMLHttpRequest",
+//   }
+
 // Utility function for Base64 decoding
 function base64Decode(base64String) {
     // Use atob if available
@@ -27,22 +32,63 @@ class ARDisplayViewer extends HTMLElement{
 
         this.calculatedScale = null;
 
-        this.sizes = {
-            s: { width: '47.5cm', height: '50cm', depth: '69.5cm' },
-            m: { width: '94cm', height: '100cm', depth: '139cm' },
-            l: { width: '141cm', height: '150cm', depth: '208.5cm' }
-        };
+        this.modelData = null;
+
+        this.originalSize = null;
 
         // Initialize custom 'scale' event
         this.scaleEvent = new Event('scale', { bubbles: true, composed: true });
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const attributes = this._getAttributes();
-        this._createStyles();
-        this._loadTemplate(attributes.viewMode);
-        this._moveSlottedContent();
-        this._setupEventListeners();
+        await this._getModelData().then(() => {
+            this._createStyles();
+            this._loadTemplate(attributes.viewMode);
+            this._moveSlottedContent();
+            this._setupEventListeners();
+            this._setupVariantsColors(); // <--- Add this line
+        })
+    }
+
+    async _getModelData() {
+        const url = this.getAttribute('href');
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            this.modelData = data;
+            this.modelData.model = '/art.webp (2).glb';
+            this._setupVariantsSizes();
+        } catch (error) {
+            console.error(error.message);
+        } 
+    }
+
+    _setupVariantsSizes() {
+        console.log('hi');
+        // Find the part of the options array that has type = "size"
+        const sizeOption = this.modelData?.options?.find(opt => opt.type === 'size');
+        console.log(this.modelData);
+        console.log(sizeOption);
+        if (!sizeOption) return;
+
+        // Store the sizes on the instance for easy access
+        // (Map them by label or any key you like)
+        this.sizes = {};
+        sizeOption.values.forEach(obj => {
+            // Example: { width: "50cm", height: "30cm", label: "small" }
+            // Use the label as a key, or transform it however you want
+            const key = obj.label.toLowerCase();
+            this.sizes[key] = {
+            width: obj.width,
+            height: obj.height,
+            depth: obj.depth || '' // if your JSON might not have depth
+            };
+        });
     }
 
     _getAttributes() {
@@ -68,6 +114,7 @@ class ARDisplayViewer extends HTMLElement{
                 width: 100%;
                 height: 100%;
                 --min-hotspot-opacity: 0;
+                position: relative;
             }
 
             .dimensionLineContainer {
@@ -146,6 +193,12 @@ class ARDisplayViewer extends HTMLElement{
                 justify-content: center;
                 align-items: center;
             }
+
+            @media only screen and (max-width: 500px) {
+                .qr-code-button {
+                    display: none!important;
+                }
+            }
         `;
         this.shadowRoot.appendChild(styles);
     }
@@ -157,7 +210,7 @@ class ARDisplayViewer extends HTMLElement{
         } else {
              template = normalTemplate;
         }
-        const templateString = template(this.getAttribute('src'), this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '',this.getAttribute('ar-placement') || 'floor');
+        const templateString = template(this.modelData.model, this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '',this.getAttribute('ar-placement') || 'floor', this.modelData);
         this.shadowRoot.innerHTML += templateString;
     }
 
@@ -177,6 +230,20 @@ class ARDisplayViewer extends HTMLElement{
     }
 
     _setupEventListeners() {
+        this.shadowRoot.querySelector('model-viewer').addEventListener('model-visibility', () => {
+            const modelViewer = this.shadowRoot.querySelector('model-viewer');
+            const sizes = modelViewer.getDimensions();
+            this.originalSize = new THREE.Vector3(sizes.x, sizes.y, sizes.z);
+            this.calculateAndApplyScale();
+
+            // Enable size buttons
+            const sizeButtons = sizeControls.querySelectorAll('.size-button');
+            sizeButtons.forEach(button => {
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+            });
+        });
+
         // Add event listeners here
         if (this.getAttribute('view-mode') === 'modal') {
             this._setupModalEventListeners();
@@ -187,7 +254,7 @@ class ARDisplayViewer extends HTMLElement{
         const sizeControls = this._createSizeControls(this.shadowRoot.querySelector('model-viewer'));
 
         // Event listener for size buttons
-        sizeControls.addEventListener('click', (event) => this._handleSizeChange(event, this.getAttribute('src')));
+        sizeControls.addEventListener('click', (event) => this._handleSizeChange(event));
         // Event listener for the custom 'scale' event
         document.addEventListener('scale', () => this._setupDimensions(this.shadowRoot.querySelector('model-viewer')));
 
@@ -237,6 +304,109 @@ class ARDisplayViewer extends HTMLElement{
             }
         });
     }
+
+    _setupVariantsColors() {
+        // 1) Find the part of the options array that has type="color"  
+        const colorOption = this.modelData?.options?.find(opt => opt.type === 'color');
+        if (!colorOption) return;
+      
+        // 2) Build the container for the slider
+        const slider = document.createElement('div');
+        slider.classList.add('slider');
+      
+        const slidesWrapper = document.createElement('div');
+        slidesWrapper.classList.add('slides');
+      
+        // 3) For each color variant, create a "slide" button
+        colorOption.values.forEach((colorObj, index) => {
+          // colorObj might look like:
+          // {
+          //   color: "#FF0000",
+          //   label: "Red",
+          //   model: "chairRed.glb",
+          //   poster: "chairRed.webp"
+          // }
+      
+          const slideButton = document.createElement('button');
+          slideButton.classList.add('slide');
+          
+          // Show a selected outline on the first slide by default:
+          if (index === 0) {
+            slideButton.classList.add('selected');
+          }
+      
+          // If you have a poster image or color swatch:
+          if (colorObj.poster) {
+            slideButton.style.backgroundImage = `url('${colorObj.poster}')`;
+          } else {
+            // Fallback: just show a color background
+            slideButton.style.backgroundColor = colorObj.color;
+          }
+      
+          // 4) On click, switch the model’s src/poster (like your switchSrc function)
+          slideButton.onclick = () => {
+            // const modelViewer = this.shadowRoot.querySelector('model-viewer');
+            // if (colorObj.model) {
+            //   modelViewer.src = colorObj.model;
+            // }
+            // if (colorObj.poster) {
+            //   modelViewer.poster = colorObj.poster;
+            // }
+            // Update "selected" visual
+            const allSlides = slider.querySelectorAll('.slide');
+            allSlides.forEach(s => s.classList.remove('selected'));
+            slideButton.classList.add('selected');
+          };
+      
+          // Append slide to .slides container
+          slidesWrapper.appendChild(slideButton);
+        });
+      
+        // 5) Append the .slides container into .slider, then into model-viewer
+        slider.appendChild(slidesWrapper);
+        const modelViewerElem = this.shadowRoot.querySelector('model-viewer');
+        modelViewerElem.appendChild(slider);
+      
+        // 6) Add carousel styling
+        const style = document.createElement('style');
+        style.textContent = `
+          .slider {
+            width: 100%;
+            text-align: center;
+            overflow: hidden;
+            position: absolute;
+            bottom: 16px;
+            left: 0;
+          }
+          .slides {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 10px;
+          }
+          .slide {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #fff;
+            margin-right: 10px;
+            border-radius: 10px;
+            border: none;
+            display: flex;
+            cursor: pointer;
+          }
+          .slide.selected {
+            outline: 2px solid #4285f4;
+          }
+        `;
+        modelViewerElem.appendChild(style);
+      }
 
     _setupModalEventListeners() {
         // Add event listeners here
@@ -503,50 +673,116 @@ class ARDisplayViewer extends HTMLElement{
     }
 
     _createSizeControls(modelViewer) {
-        // Add size buttons
-        const sizeControls = document.createElement('div');
-        sizeControls.innerHTML = `
-            <button class="size-button" data-size="s">S</button>
-            <button class="size-button" data-size="m">M</button>
-            <button class="size-button" data-size="l">L</button>
-        `;
-        sizeControls.classList.add('size-controls');
-        modelViewer.shadowRoot.appendChild(sizeControls);
-
-        const modelViewerStyles = document.createElement('style');
-        modelViewerStyles.textContent = `  
-          /* Style for size controls */
-          .size-controls {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            display: flex;
-            gap: 10px;
-          }
-
-          .size-button {
-            padding: 5px 10px;
-            background-color: rgba(0, 0, 0, 0.75);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-          }
-        `;
-        modelViewer.shadowRoot.appendChild(modelViewerStyles);
-
-        return sizeControls;
-    }
-
-    _handleSizeChange(event, modelSrc) {
-        if (event.target.classList.contains('size-button')) {
-          this.currentSize = event.target.getAttribute('data-size');
-          this.calculateAndApplyScale(modelSrc);
+        // Create a container for size controls
+        const sizePanel = document.createElement('div');
+        sizePanel.classList.add('size-panel');
+      
+        // Optional label
+        const sizeLabel = document.createElement('span');
+        sizeLabel.classList.add('size-label');
+        sizeLabel.textContent = 'Select Size:';
+        sizePanel.appendChild(sizeLabel);
+      
+        // Create an inner container for the buttons
+        const sizeButtonsWrapper = document.createElement('div');
+        sizeButtonsWrapper.classList.add('size-buttons-wrapper');
+      
+        // If you have sizes loaded, create a button per size
+        if (this.sizes) {
+          Object.entries(this.sizes).forEach(([labelKey, sizeObj]) => {
+            // labelKey could be "small", "medium", "large"
+            const button = document.createElement('button');
+            button.classList.add('size-button');
+            button.textContent = labelKey;
+            button.setAttribute('data-size-key', labelKey);
+            button.disabled = true; // initially disabled until model-visibility event
+      
+            sizeButtonsWrapper.appendChild(button);
+          });
         }
+      
+        sizePanel.appendChild(sizeButtonsWrapper);
+      
+        // Inject into the <model-viewer>'s shadow root
+        modelViewer.shadowRoot.appendChild(sizePanel);
+      
+        // Add styling
+        const style = document.createElement('style');
+        style.textContent = `
+          .size-panel {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 8px;
+            gap: 10px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          }
+      
+          .size-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+          }
+      
+          .size-buttons-wrapper {
+            display: flex;
+            gap: 8px;
+          }
+      
+          .size-button {
+            min-width: 60px;
+            padding: 6px 10px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+          }
+      
+          .size-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+      
+          .size-button:hover:not(:disabled) {
+            background-color: #e5e5e5;
+          }
+      
+          .size-button.selected {
+            border-color: #4285f4;
+            background-color: #e6f0ff;
+          }
+        `;
+        modelViewer.shadowRoot.appendChild(style);
+      
+        return sizePanel;
     }
 
-    _setupVariantsSizes() {
-
+    _handleSizeChange(event) {
+        if (event.target.classList.contains('size-button')) {
+            const sizeKey = event.target.getAttribute('data-size-key');
+            if (this.sizes && this.sizes[sizeKey]) {
+            // Remove "selected" from all size buttons
+            const allSizeBtns = this.shadowRoot
+                .querySelector('model-viewer')
+                ?.shadowRoot.querySelectorAll('.size-button');
+            allSizeBtns?.forEach(btn => btn.classList.remove('selected'));
+        
+            // Add "selected" to the clicked button
+            event.target.classList.add('selected');
+        
+            // Apply the scale
+            const desiredSize = this.sizes[sizeKey];
+            this.calculateAndApplyScale(desiredSize);
+            }
+        }
     }
 
     applyScale() {
@@ -565,15 +801,14 @@ class ARDisplayViewer extends HTMLElement{
         }
     }
 
-    async calculateAndApplyScale(modelURL) {
-        const desiredSize = this.sizes[this.currentSize];
+    async calculateAndApplyScale(desiredSize) {
         if (!desiredSize) return;
         try {
-            const scale = await this.calculateModelScale(modelURL, desiredSize);
-            this.calculatedScale = scale;
-            this.applyScale();
+          const scale = await this.calculateModelScale(desiredSize);
+          this.calculatedScale = scale;
+          this.applyScale();
         } catch (error) {
-            console.error("Error applying scale for size", this.currentSize, error);
+          console.error("Error applying scale for chosen size:", error);
         }
     }
 
@@ -581,40 +816,28 @@ class ARDisplayViewer extends HTMLElement{
         return parseFloat(cmString.replace('cm', '')) / 100;
     }
 
-    calculateModelScale(url, desiredSize) {
-        return new Promise((resolve, reject) => {
-            const loader = new GLTFLoader();
+    calculateModelScale(desiredSize) {
+        const size = this.originalSize
 
-            loader.load(
-                url,
-                (gltf) => {
-                    const scene = gltf.scene;
-                    const box = new THREE.Box3().setFromObject(scene);
-                    const size = new THREE.Vector3();
-                    box.getSize(size);
+        const originalWidth = size.x;
+        const originalHeight = size.y;
+        const originalDepth = size.z;
 
-                    const originalWidth = size.x;
-                    const originalHeight = size.y;
-                    const originalDepth = size.z;
+        // Convert cm strings to meters
+        const desiredWidth = this.cmToMeters(desiredSize.width);
+        const desiredHeight = this.cmToMeters(desiredSize.height);
+        let desiredDepth;
+        if (!desiredSize.depth) {
+            desiredDepth = 0.05;
+        }
+        else{
+            desiredDepth = this.cmToMeters(desiredSize.depth);
+        }
+        const scaleX = desiredWidth / originalWidth;
+        const scaleY = desiredHeight / originalHeight;
+        const scaleZ = desiredDepth / originalDepth;
 
-                    // Convert cm strings to meters
-                    const desiredWidth = this.cmToMeters(desiredSize.width);
-                    const desiredHeight = this.cmToMeters(desiredSize.height);
-                    const desiredDepth = this.cmToMeters(desiredSize.depth);
-
-                    const scaleX = desiredWidth / originalWidth;
-                    const scaleY = desiredHeight / originalHeight;
-                    const scaleZ = desiredDepth / originalDepth;
-
-                    resolve({ scaleX, scaleY, scaleZ });
-                },
-                undefined,
-                (error) => {
-                    console.error('An error occurred while loading the model for scaling:', error);
-                    reject(error);
-                }
-            );
-        });
+        return { scaleX, scaleY, scaleZ };
     }
 }
 

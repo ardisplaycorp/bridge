@@ -102,6 +102,10 @@ const modalStyles = {
         cursor: 'pointer',
         padding: '10px',
         zIndex: '1000',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
     },
 };
 
@@ -155,14 +159,14 @@ function styleObjectToString(styles) {
     }
 }
 
-export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, modelPoster, arPlacement) => {
+export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, modelPoster, arPlacement, modelData) => {
     const styles = styleObjectToString(modalStyles)
     const template = hotspotsTemplate();
     return `
         <!-- Template for modal view -->
         <style>${styles}</style>
         <div class="custom-model-viewer-container">
-            <img class="preview-image" src="${modelPoster}" alt="Model Preview">
+            <img class="preview-image" src="${modelData.image}" alt="Model Preview">
             <button class="view-3d-button">
                 <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="pip-svg-icon pip-btn__icon"><path d="M11 16.9766c.3294.0154.663.0233 1 .0233 2.2351 0 4.3234-.3458 6-.9495 1.7881-.6438 4-1.8975 4-4.0505 0-1.9568-1.8939-3.1985-3.5147-3.864l-1.5605 1.5606C17.8623 9.9943 20 10.7292 20 11.9999c0 .9329-1.2789 1.5728-2 1.8958-1.8614.8335-3.9768 1.1042-6 1.1042-.3392 0-.6729-.0088-1-.0257v-1.9743l-3 3 3 3v2.0233zm2-9.9532A21.3903 21.3903 0 0 0 12.0001 7c-2.235 0-4.3234.3457-6 .9494-1.7881.6438-4 1.8976-4 4.0506 0 1.9568 1.894 3.1984 3.5146 3.8639l1.5606-1.5605C6.1378 14.0057 4 13.2707 4 12.0001c0-.9329 1.2789-1.5729 2-1.8958 1.8614-.8336 3.9767-1.1042 6-1.1042.3392 0 .6729.0087.9999.0257V11l3-3-3-3v2.0234z"></path></svg>
                 View in 3D
@@ -174,13 +178,16 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
                     ar="${ar}"
                     camera-controls="${cameraControls}"
                     touch-action="${touchAction}"
-                    shadow-intensity="${shadowIntensity}"
-                    ar-placement="${arPlacement}"
+                    shadow-intensity="${modelData.shadow}"
+                    ar-placement="${modelData.placement}"
                     ar-modes="webxr scene-viewer quick-look"
                 >
                     ${template}
-                    <button class="qr-code-button">
-                        View in AR
+                    <button class="qr-code-button" style="background-color: ${modelData.arBtn.bgColor};color: ${modelData.arBtn.textColor};">
+                        ${modelData.arBtn.icon ? (
+                            '<img src="' + modelData.arBtn.icon + '" style="width: 24px; height: 24px;">'
+                        ) : ''}
+                        ${modelData.arBtn.text}
                     </button>
                 </model-viewer>
                 <button class="close-button">
@@ -200,9 +207,9 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
             <button class="qr-close-button">×</button>
             <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                 <h2>
-                    <p id="btn-text" style="margin: 0">View on your wall</p>
+                    <p id="btn-text" style="margin: 0">${modelData.title}</p>
                 </h2>
-                <p data-id="qrcode-info" class="translate-lang" style="margin:0">To view the artwork in your space, scan the QR code with your mobile device camera</p>
+                <p data-id="qrcode-info" class="translate-lang" style="margin:0">${modelData.description}</p>
                 <div class="qr-code-container">
                     <div id="qr-code"></div>
                 </div>
