@@ -94,12 +94,12 @@ const modalStyles = {
         }
     },
     '.qr-code-button': {
+        all: 'unset',
         position: 'absolute',
-        bottom: '130px',
+        top: '50px', 
         right: '50%',
         transform: 'translateX(50%)',
         background: 'white',
-        border: '1px solid black',
         cursor: 'pointer',
         padding: '10px',
         zIndex: '1000',
@@ -184,11 +184,11 @@ export default (src, alt, ar, cameraControls, touchAction, shadowIntensity, mode
                     ar-modes="webxr scene-viewer quick-look"
                 >
                     ${template}
-                    <button class="qr-code-button" style="background-color: ${modelData.arBtn.bgColor};color: ${modelData.arBtn.textColor};">
-                        ${modelData.arBtn.icon ? (
-                            '<img src="' + modelData.arBtn.icon + '" style="width: 24px; height: 24px;">'
+                    <button class="qr-code-button" style="background-color: ${modelData.arBtn.btnBgColor};color: ${modelData.arBtn.btnTextColor};border-radius: ${modelData.arBtn.cornerRadius}px;font-size: ${modelData.arBtn.btnSize}px;">
+                        ${modelData.arBtn.btnIcon ? (
+                            `<i data-lucide="${modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`
                         ) : ''}
-                        ${modelData.arBtn.text}
+                        ${modelData.arBtn.btnText}
                     </button>
                 </model-viewer>
                 <button class="close-button">

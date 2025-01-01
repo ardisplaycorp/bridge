@@ -5,6 +5,7 @@ import QRCodeStyling, { QRCode } from 'qr-code-styling';
 import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
 import buttonTemplate from './templates/button.js';
+import { createIcons, icons } from 'lucide';
 import './style.css';
 
 // headers: {
@@ -48,7 +49,9 @@ class ARDisplayViewer extends HTMLElement{
             this._loadTemplate(attributes.viewMode);
             this._moveSlottedContent();
             this._setupEventListeners();
-            this._setupVariantsColors(); // <--- Add this line
+            // Call _setupBottomNavBar AFTER the <model-viewer> is present
+            const modelViewer = this.shadowRoot.querySelector('model-viewer');
+            this._setupBottomNavBar(modelViewer);
         })
     }
 
@@ -62,7 +65,6 @@ class ARDisplayViewer extends HTMLElement{
 
             const data = await response.json();
             this.modelData = data;
-            this.modelData.model = '/art.webp (2).glb';
             this._setupVariantsSizes();
         } catch (error) {
             console.error(error.message);
@@ -217,6 +219,49 @@ class ARDisplayViewer extends HTMLElement{
         }
         const templateString = template(this.modelData.model, this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '',this.getAttribute('ar-placement') || 'floor', this.modelData);
         this.shadowRoot.innerHTML += templateString;
+
+        // Process the icons within the shadow root
+        this._processLucideIcons();
+    }
+
+    _processLucideIcons() {
+        const element = this.shadowRoot.querySelector('[data-lucide]');
+        console.log(this.shadowRoot.querySelector('[data-lucide]'));
+    
+        const iconName = element.getAttribute('data-lucide');
+        const iconData = icons[iconName];
+
+        if (iconData) {
+            // 1. Create the SVG element
+            const svgElement = document.createElementNS('http://www.w3.org/2000/svg', iconData[0]);
+      
+            // 2. Set attributes on the SVG element
+            const svgAttributes = iconData[1];
+            for (const attr in svgAttributes) {
+              svgElement.setAttribute(attr, svgAttributes[attr]);
+            }
+      
+            // 3. Update attributes based on element attributes (if any)
+            svgElement.setAttribute('width', element.getAttribute('width') || svgElement.getAttribute('width') || '24');
+            svgElement.setAttribute('height', element.getAttribute('height') || svgElement.getAttribute('height') || '24');
+            svgElement.setAttribute('color', element.getAttribute('color') || svgElement.getAttribute('color') || 'currentColor');
+      
+            // 4. Create child elements (paths, circles, etc.)
+            const childElementsData = iconData[2];
+            childElementsData.forEach(childData => {
+              const childElement = document.createElementNS('http://www.w3.org/2000/svg', childData[0]);
+              const childAttributes = childData[1];
+              for (const attr in childAttributes) {
+                childElement.setAttribute(attr, childAttributes[attr]);
+              }
+              svgElement.appendChild(childElement);
+            });
+      
+            // 5. Replace the <i> element with the new <svg> element
+            element.parentNode.replaceChild(svgElement, element);
+        } else {
+            console.warn(`Icon "${iconName}" not found in Lucide icons.`);
+        }
     }
 
     _moveSlottedContent() {
@@ -235,21 +280,7 @@ class ARDisplayViewer extends HTMLElement{
     }
 
     _setupEventListeners() {
-        this.shadowRoot.querySelector('model-viewer').addEventListener('model-visibility', () => {
-            const modelViewer = this.shadowRoot.querySelector('model-viewer');
-            const sizes = modelViewer.getDimensions();
-            this.originalSize = new THREE.Vector3(sizes.x, sizes.y, sizes.z);
-            this.calculateAndApplyScale();
-
-            // Enable size buttons
-            const sizeButtons = sizeControls.querySelectorAll('.size-button');
-            sizeButtons.forEach(button => {
-                button.disabled = false;
-                button.style.cursor = 'pointer';
-            });
-
-            modelViewer.shadowRoot.querySelector('.slot.ar-button').style.display = 'none';
-        });
+        const modelViewer = this.shadowRoot.querySelector('model-viewer');
 
         // Add event listeners here
         if (this.getAttribute('view-mode') === 'modal') {
@@ -257,11 +288,6 @@ class ARDisplayViewer extends HTMLElement{
         } else {
             this._setupNormalEventListeners();
         }
-
-        const sizeControls = this._createSizeControls(this.shadowRoot.querySelector('model-viewer'));
-
-        // Event listener for size buttons
-        sizeControls.addEventListener('click', (event) => this._handleSizeChange(event));
         // Event listener for the custom 'scale' event
         document.addEventListener('scale', () => this._setupDimensions(this.shadowRoot.querySelector('model-viewer')));
 
@@ -272,30 +298,76 @@ class ARDisplayViewer extends HTMLElement{
 
 
         let qrCode = null;
-        // Function to initialize and update QR code
-        const updateQrCode = (url) => {
-        if (qrCodeContainer.firstChild) {
-            qrCodeContainer.removeChild(qrCodeContainer.firstChild);
+        
+        // Utility function to load an image
+        function loadImage(url) {
+            return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve();
+            img.onerror = img.onabort = () => reject(new Error('Image failed to load'));
+            img.src = url;
+            });
         }
-            qrCode = new QRCodeStyling({
-            width: 240,
-            height: 240,
+
+        // Function to initialize and update QR code
+        const updateQrCode = async (url) => {
+            if (qrCodeContainer.firstChild) {
+            qrCodeContainer.removeChild(qrCodeContainer.firstChild);
+            }
+
+            // Get qrCode settings from this.modelData.qrCode
+            const qrCodeSettings = this.modelData?.qrCode;
+
+            let imageUrl = qrCodeSettings?.image;
+
+            // Check if image URL is provided
+            if (imageUrl) {
+            try {
+                // Attempt to load the image
+                await loadImage(imageUrl);
+                // Image loaded successfully, proceed with imageUrl
+            } catch (err) {
+                console.warn('Failed to load image for QR code:', err);
+                imageUrl = null;
+                // Proceed without image
+            }
+            }
+
+            // Now, set up the QR code options
+            const qrCodeOptions = {
+            width: parseInt(qrCodeSettings.width) || 240,
+            height: parseInt(qrCodeSettings.width) || 240,
             data: url,
             dotsOptions: {
-                color: "#555555",
-                type: "rounded"
+                color: qrCodeSettings.dotColor || "#000000",
+                type: qrCodeSettings.dotStyle || "square",
             },
             cornersSquareOptions: {
-                type: 'extra-rounded',
-                },
-                cornersDotOptions: {
-                    type: 'dot',
-                },
-            });
+                color: qrCodeSettings.cornerColor || "#000000",
+                type: qrCodeSettings.cornerStyle || "square",
+            },
+            cornersDotOptions: {
+                color: qrCodeSettings.cornerDotColor || "#000000",
+                type: qrCodeSettings.cornerDotStyle || "square",
+            },
+            backgroundOptions: {
+                color: qrCodeSettings.backgroundColor || "#ffffff",
+            },
+            };
+
+            // Include image options if imageUrl is valid
+            if (imageUrl) {
+            qrCodeOptions.image = imageUrl;
+            qrCodeOptions.imageOptions = {
+                margin: parseInt(qrCodeSettings.imgMargin) || 0,
+                hideBackgroundDots: qrCodeSettings.imgBackground || false,
+            };
+            }
+
+            qrCode = new QRCodeStyling(qrCodeOptions);
+
             qrCode.append(qrCodeContainer);
         };
-
-        const modelViewer = this.shadowRoot.querySelector('model-viewer');
     
         qrCodeButton.addEventListener('click', () => {
             const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -328,107 +400,246 @@ class ARDisplayViewer extends HTMLElement{
     }
 
     _setupVariantsColors() {
-        // 1) Find the part of the options array that has type="color"  
         const colorOption = this.modelData?.options?.find(opt => opt.type === 'color');
-        if (!colorOption) return;
+        if (!colorOption) return null; 
       
-        // 2) Build the container for the slider
         const slider = document.createElement('div');
         slider.classList.add('slider');
       
         const slidesWrapper = document.createElement('div');
         slidesWrapper.classList.add('slides');
       
-        // 3) For each color variant, create a "slide" button
         colorOption.values.forEach((colorObj, index) => {
-          // colorObj might look like:
-          // {
-          //   color: "#FF0000",
-          //   label: "Red",
-          //   model: "chairRed.glb",
-          //   poster: "chairRed.webp"
-          // }
-      
           const slideButton = document.createElement('button');
           slideButton.classList.add('slide');
-          
-          // Show a selected outline on the first slide by default:
           if (index === 0) {
             slideButton.classList.add('selected');
           }
-      
-          // If you have a poster image or color swatch:
           if (colorObj.poster) {
             slideButton.style.backgroundImage = `url('${colorObj.poster}')`;
           } else {
-            // Fallback: just show a color background
             slideButton.style.backgroundColor = colorObj.color;
           }
-      
-          // 4) On click, switch the model’s src/poster (like your switchSrc function)
           slideButton.onclick = () => {
-            // const modelViewer = this.shadowRoot.querySelector('model-viewer');
-            // if (colorObj.model) {
-            //   modelViewer.src = colorObj.model;
-            // }
-            // if (colorObj.poster) {
-            //   modelViewer.poster = colorObj.poster;
-            // }
-            // Update "selected" visual
-            const allSlides = slider.querySelectorAll('.slide');
+            // Swap model src/poster or do your color logic here
+            // ...
+            // Update "selected" classes:
+            const allSlides = slidesWrapper.querySelectorAll('.slide');
             allSlides.forEach(s => s.classList.remove('selected'));
             slideButton.classList.add('selected');
           };
-      
-          // Append slide to .slides container
           slidesWrapper.appendChild(slideButton);
         });
       
-        // 5) Append the .slides container into .slider, then into model-viewer
         slider.appendChild(slidesWrapper);
-        const modelViewerElem = this.shadowRoot.querySelector('model-viewer');
-        modelViewerElem.appendChild(slider);
       
-        // 6) Add carousel styling
+        // Return the slider DOM so we can place it in the nav bar
+        return slider;
+    }
+
+    _setupBottomNavBar(modelViewer) {
+        // 1) Create the navbar container
+        const navBar = document.createElement('div');
+        navBar.classList.add('bottom-nav-bar');
+      
+        // 2) Create two buttons: Size and Color
+        const sizeBtn = document.createElement('button');
+        sizeBtn.textContent = 'Size';
+        sizeBtn.classList.add('nav-btn');
+      
+        const colorBtn = document.createElement('button');
+        colorBtn.textContent = 'Color';
+        colorBtn.classList.add('nav-btn');
+      
+        // 3) Create sub-panel containers (initially hidden)
+        const sizePanel = document.createElement('div');
+        sizePanel.classList.add('sub-panel', 'hidden');
+        const colorPanel = document.createElement('div');
+        colorPanel.classList.add('sub-panel', 'hidden');
+      
+        // 4) Get the DOM from your existing methods
+        const sizeControls = this._createSizeControls();
+        const colorControls = this._setupVariantsColors();
+
+        sizePanel.addEventListener('click', (event) => this._handleSizeChange(event));
+        this.shadowRoot.querySelector('model-viewer').addEventListener('model-visibility', () => {
+            const sizes = modelViewer.getDimensions();
+            this.originalSize = new THREE.Vector3(sizes.x, sizes.y, sizes.z);
+            this.calculateAndApplyScale();
+
+            // Enable size buttons
+            const sizeButtons = sizeControls.querySelectorAll('.size-button');
+            sizeButtons.forEach(button => {
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+            });
+
+            modelViewer.shadowRoot.querySelector('.slot.ar-button').style.display = 'none';
+        });
+      
+        // If either method can return null, check before appending:
+        if (sizeControls) sizePanel.appendChild(sizeControls);
+        if (colorControls) colorPanel.appendChild(colorControls);
+      
+        // 5) Append panels to navBar
+        navBar.appendChild(sizeBtn);
+        navBar.appendChild(colorBtn);
+        navBar.appendChild(sizePanel);
+        navBar.appendChild(colorPanel);
+      
+        // 6) Toggle logic
+        let currentOpenPanel = null;
+      
+        function togglePanel(panel) {
+          sizePanel.classList.add('hidden');
+          colorPanel.classList.add('hidden');
+          panel.classList.toggle('hidden');
+        }
+      
+        sizeBtn.addEventListener('click', () => {
+          togglePanel(sizePanel);
+        });
+      
+        colorBtn.addEventListener('click', () => {
+          togglePanel(colorPanel);
+        });
+      
+        // 7) Close on click-away
+        document.addEventListener('click', (e) => {
+          // If click is outside the navBar and outside the open panel, close
+          if (
+            currentOpenPanel &&
+            !navBar.contains(e.target)
+          ) {
+            currentOpenPanel.classList.add('hidden');
+            currentOpenPanel = null;
+          }
+        });
+      
+        // 8) Finally, append navBar to the modelViewer or the shadowRoot
+        //    Depending on your layout, you might do modelViewer.appendChild(navBar);
+        //    or attach it to something else in the shadow.
+        modelViewer.appendChild(navBar);
+      
+        // 9) Add styling
         const style = document.createElement('style');
+        // 9) Add combined styling for nav bar, color slider, and size buttons
         style.textContent = `
-          .slider {
+            /* The bottom nav bar container */
+            .bottom-nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            z-index: 10;
+            }
+            
+            .nav-btn {
+            background-color: #f0f0f0;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            flex: 1;
+            }
+            .nav-btn:hover {
+            background-color: #ddd;
+            }
+            
+            /* Sub-panels that slide up above the nav bar */
+            .sub-panel {
+            position: absolute;
+            bottom: 60px; /* ensure it sits over the nav bar */
+            left: 0;
+            width: 100%;
+            background-color: transparent;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+            padding: 16px 0;
+            }
+            .hidden {
+            display: none !important;
+            }
+
+            /* COLOR SLIDER STYLES */
+            .slider {
             width: 100%;
             text-align: center;
             overflow: hidden;
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-          }
-          .slides {
+            margin: 0 auto;
+            }
+            .slides {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             padding: 0 10px;
-          }
-          .slide {
+            gap: 10px; /* spacing between slides */
+            }
+            .slide {
             scroll-snap-align: start;
             flex-shrink: 0;
-            width: 100px;
-            height: 100px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            width: 80px;
+            height: 80px;
             background-color: #fff;
-            margin-right: 10px;
+            border: 1px solid #ccc;
             border-radius: 10px;
-            border: none;
-            display: flex;
             cursor: pointer;
-          }
-          .slide.selected {
-            outline: 2px solid #4285f4;
-          }
+            outline: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .slide:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
+            .slide.selected {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
+            }
+
+            /* SIZE PANEL STYLES */
+            .size-panel {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            padding: 10px;
+            }
+
+            .size-buttons-wrapper {
+                display: flex;
+                flex-direction: row;
+                gap: 12px;
+            }
+            .size-button {
+            padding: 10px 16px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            }
+            .size-button:hover:not(:disabled) {
+            background-color: #ddd;
+            }
+            .size-button.selected {
+            background-color: #4285f4 !important;
+            color: #fff;
+            border-color: #4285f4;
+            opacity: 1;
+            }
         `;
-        modelViewerElem.appendChild(style);
-      }
+        modelViewer.appendChild(style);
+    }
 
     _setupModalEventListeners() {
         // Add event listeners here
@@ -694,7 +905,7 @@ class ARDisplayViewer extends HTMLElement{
         });
     }
 
-    _createSizeControls(modelViewer) {
+    _createSizeControls() {
         // Create a container for size controls
         const sizePanel = document.createElement('div');
         sizePanel.classList.add('size-panel');
@@ -711,84 +922,26 @@ class ARDisplayViewer extends HTMLElement{
             button.classList.add('size-button');
             button.textContent = labelKey;
             button.setAttribute('data-size-key', labelKey);
-            button.disabled = true; // initially disabled until model-visibility event
-      
+            button.disabled = true; // initially disabled until the model loads
             sizeButtonsWrapper.appendChild(button);
           });
         }
       
         sizePanel.appendChild(sizeButtonsWrapper);
       
-        // Inject into the <model-viewer>'s shadow root
-        modelViewer.appendChild(sizePanel);
-      
-        // Add styling
-        const style = document.createElement('style');
-        style.textContent = `
-          .size-panel {
-            position: absolute;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 8px 12px;
-            border-radius: 8px;
-            gap: 10px;
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-          }
-      
-          .size-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-          }
-      
-          .size-buttons-wrapper {
-            display: flex;
-            gap: 8px;
-          }
-      
-          .size-button {
-            min-width: 60px;
-            padding: 6px 10px;
-            background-color: #f0f0f0;
-            color: #333;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-          }
-      
-          .size-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-          }
-      
-          .size-button:hover:not(:disabled) {
-            background-color: #e5e5e5;
-          }
-      
-          .size-button.selected {
-            border-color: #4285f4;
-            background-color: #e6f0ff;
-          }
-        `;
-        modelViewer.appendChild(style);
-      
+        // Return the DOM element instead of appending
         return sizePanel;
     }
 
     _handleSizeChange(event) {
+        console.log('clicked');
         if (event.target.classList.contains('size-button')) {
             const sizeKey = event.target.getAttribute('data-size-key');
             if (this.sizes && this.sizes[sizeKey]) {
             // Remove "selected" from all size buttons
             const allSizeBtns = this.shadowRoot
                 .querySelector('model-viewer')
-                ?.shadowRoot.querySelectorAll('.size-button');
+                ?.querySelectorAll('.size-button');
             allSizeBtns?.forEach(btn => btn.classList.remove('selected'));
         
             // Add "selected" to the clicked button
