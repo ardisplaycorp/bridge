@@ -4,6 +4,7 @@ import { ModelViewerElement } from '@google/model-viewer';
 import QRCodeStyling, { QRCode } from 'qr-code-styling';
 import normalTemplate from './templates/normal.js';
 import modalTemplate from './templates/modal.js';
+import buttonTemplate from './templates/button.js';
 import './style.css';
 
 // headers: {
@@ -209,8 +210,10 @@ class ARDisplayViewer extends HTMLElement{
         let template;
         if (viewMode === 'modal') {
             template = modalTemplate;
-        } else {
+        } else if (viewMode === 'normal') {
              template = normalTemplate;
+        } else {
+             template = buttonTemplate;
         }
         const templateString = template(this.modelData.model, this.getAttribute('alt'), this.hasAttribute('ar'), this.hasAttribute('camera-controls'), this.getAttribute('touch-action') || 'none', this.getAttribute('shadow-intensity') || '0', this.getAttribute('poster') || '',this.getAttribute('ar-placement') || 'floor', this.modelData);
         this.shadowRoot.innerHTML += templateString;
