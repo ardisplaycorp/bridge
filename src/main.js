@@ -450,6 +450,10 @@ class ARDisplayViewer extends HTMLElement{
         const colorBtn = document.createElement('button');
         colorBtn.textContent = 'Color';
         colorBtn.classList.add('nav-btn');
+
+        const shareBtn = document.createElement('button');
+        shareBtn.textContent = 'Share';
+        shareBtn.classList.add('nav-btn', 'share-btn');
       
         // 3) Create sub-panel containers (initially hidden)
         const sizePanel = document.createElement('div');
@@ -484,6 +488,7 @@ class ARDisplayViewer extends HTMLElement{
         // 5) Append panels to navBar
         navBar.appendChild(sizeBtn);
         navBar.appendChild(colorBtn);
+        navBar.appendChild(shareBtn);
         navBar.appendChild(sizePanel);
         navBar.appendChild(colorPanel);
       
@@ -502,6 +507,16 @@ class ARDisplayViewer extends HTMLElement{
       
         colorBtn.addEventListener('click', () => {
           togglePanel(colorPanel);
+        });
+
+        shareBtn.addEventListener('click', async () => {
+            const shareData = {
+                title: document.title,
+                text: 'Check out this AR model!',
+                url: window.location.href
+            };
+            await navigator.share(shareData);
+            console.log('Content shared successfully');
         });
       
         // 7) Close on click-away

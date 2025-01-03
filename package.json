@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite --port 3000 --host",
     "build": "vite build",
     "build:cdn": "vite build --config vite.cdn.config.js",
     "preview": "vite preview"
