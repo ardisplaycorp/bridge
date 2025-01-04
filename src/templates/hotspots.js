@@ -1,5 +1,5 @@
 export default () => {
-    return `
+  return `
         <!-- Template for hotspots -->
         <button data-hotspot slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
         <button data-hotspot slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
@@ -20,4 +20,4 @@ export default () => {
             <line class="dimensionLine"></line>
         </svg>
     `;
-}
+};
