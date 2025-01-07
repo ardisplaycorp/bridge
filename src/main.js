@@ -35,7 +35,7 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _getModelData() {
-    const url = this.getAttribute("href");
+    const url = this.getAttribute("src");
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -52,7 +52,7 @@ class ARDisplayViewer extends HTMLElement {
 
   _setupVariantsSizes() {
     const sizeOption = this.modelData?.options?.find(
-      (opt) => opt.type === "size"
+      (opt) => opt.name.toLowerCase() === "size"
     );
     if (!sizeOption) return;
 
@@ -72,11 +72,9 @@ class ARDisplayViewer extends HTMLElement {
     return {
       modelSrc: this.getAttribute("src") || "",
       modelPoster: this.getAttribute("poster") || "",
-      ar: this.hasAttribute("ar"),
-      shadowIntensity: this.getAttribute("shadow-intensity") || "0",
-      cameraControls: this.hasAttribute("camera-controls"),
-      touchAction: this.getAttribute("touch-action") || "none",
-      alt: this.getAttribute("alt") || "",
+      ar: true,
+      cameraControls: true,
+      touchAction: "none",
       viewMode: this.getAttribute("view-mode") || "normal",
       arPlacement: this.getAttribute("ar-placement") || "floor",
     };
@@ -190,15 +188,14 @@ class ARDisplayViewer extends HTMLElement {
     } else {
       template = buttonTemplate;
     }
+
+    const attributes = this._getAttributes();
     const templateString = template(
-      this.modelData.model,
-      this.getAttribute("alt"),
-      this.hasAttribute("ar"),
-      this.hasAttribute("camera-controls"),
-      this.getAttribute("touch-action") || "none",
-      this.getAttribute("shadow-intensity") || "0",
-      this.getAttribute("poster") || "",
-      this.getAttribute("ar-placement") || "floor",
+      attributes.ar,
+      attributes.cameraControls,
+      attributes.touchAction,
+      attributes.modelPoster,
+      attributes.arPlacement,
       this.modelData
     );
     this.shadowRoot.innerHTML += templateString;
@@ -371,6 +368,11 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     qrCodeButton.addEventListener("click", () => {
+      if (navigator.xr) {
+        console.log("WebXR is supported");
+      } else {
+        console.log("WebXR is not supported");
+      }
       const isMobile =
         /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent
@@ -404,7 +406,7 @@ class ARDisplayViewer extends HTMLElement {
 
   _setupVariantsColors() {
     const colorOption = this.modelData?.options?.find(
-      (opt) => opt.type === "color"
+      (opt) => opt.name.toLowerCase() === "variants"
     );
     if (!colorOption) return null;
 
@@ -415,18 +417,35 @@ class ARDisplayViewer extends HTMLElement {
     slidesWrapper.classList.add("slides");
 
     colorOption.values.forEach((colorObj, index) => {
+      const modelViewer = this.shadowRoot.querySelector("model-viewer");
       const slideButton = document.createElement("button");
       slideButton.classList.add("slide");
-      if (index === 0) {
+      if (colorObj.default) {
         slideButton.classList.add("selected");
+        if (modelViewer) {
+          modelViewer.src = colorObj.model;
+          if (colorObj.image) {
+            modelViewer.poster = colorObj.image;
+          } else {
+            modelViewer.removeAttribute("poster");
+          }
+        }
       }
-      if (colorObj.poster) {
-        slideButton.style.backgroundImage = `url('${colorObj.poster}')`;
+      if (colorObj.image) {
+        slideButton.style.backgroundImage = `url('${colorObj.image}')`;
       } else {
         slideButton.style.backgroundColor = colorObj.color;
       }
       slideButton.onclick = () => {
         // Swap model src/poster or handle color logic here
+        if (modelViewer) {
+          modelViewer.src = colorObj.model;
+          if (colorObj.image) {
+            modelViewer.poster = colorObj.image;
+          } else {
+            modelViewer.removeAttribute("poster");
+          }
+        }
 
         // Update "selected" classes:
         const allSlides = slidesWrapper.querySelectorAll(".slide");
@@ -472,6 +491,22 @@ class ARDisplayViewer extends HTMLElement {
       const sizes = modelViewer.getDimensions();
       this.originalSize = new THREE.Vector3(sizes.x, sizes.y, sizes.z);
       this.calculateAndApplyScale();
+
+      // update size to default size
+      const sizeOption = this.modelData.options.find(
+        (opt) => opt.name.toLowerCase() === "size"
+      );
+      const sizeKey = sizeOption.values.find((size) => size.default).label;
+      this.calculatedScale = this.calculateModelScale(this.sizes[sizeKey]);
+      this.applyScale();
+
+      // Add the "selected" class to the default size button
+      const defaultSizeButton = sizeControls.querySelector(
+        `[data-size-key="${sizeKey}"]`
+      );
+      if (defaultSizeButton) {
+        defaultSizeButton.classList.add("selected");
+      }
 
       // Enable size buttons
       const sizeButtons = sizeControls.querySelectorAll(".size-button");
@@ -601,6 +636,9 @@ class ARDisplayViewer extends HTMLElement {
         border: 1px solid #ccc;
         border-radius: 10px;
         cursor: pointer;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
         outline: none;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
@@ -684,10 +722,6 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupDimensions(modelViewer) {
-    if (!this.hasAttribute("show-hotspots")) {
-      return;
-    }
-
     const dimElements = [
       ...modelViewer.querySelectorAll("[data-hotspot]"),
       modelViewer.querySelector("#dimLines"),

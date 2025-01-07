@@ -22,12 +22,9 @@ const modalStyles = {
 };
 
 export default (
-  src,
-  alt,
   ar,
   cameraControls,
   touchAction,
-  shadowIntensity,
   modelPoster,
   arPlacement,
   modelData
@@ -50,9 +47,9 @@ export default (
             ${modelData.arBtn.btnText}
         </button>
         <model-viewer
-            src="${src}"
-            alt="${alt}"
             ar="${ar}"
+            disable-pan="true"
+            disable-tap="true"
             camera-controls="${cameraControls}"
             touch-action="${touchAction}"
             shadow-intensity="${modelData.shadow}"
