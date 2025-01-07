@@ -4,8 +4,22 @@ import QRCodeStyling from "qr-code-styling";
 import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
+import ARApp from "./AdvancedAR/index.js";
 import { icons } from "lucide";
 import "./style.css";
+
+async function isWebXRAvailable() {
+  if (navigator.xr) {
+    try {
+      const isSupported = await navigator.xr.isSessionSupported("immersive-ar");
+      return isSupported;
+    } catch (e) {
+      console.warn("Error while checking WebXR support:", e);
+      return false;
+    }
+  }
+  return false;
+}
 
 class ARDisplayViewer extends HTMLElement {
   constructor() {
@@ -297,7 +311,40 @@ class ARDisplayViewer extends HTMLElement {
     this._setupQRCodeListeners(modelViewer);
   }
 
-  _setupQRCodeListeners(modelViewer) {
+  startCustomARApp() {
+    // Properly dispose of model-viewer
+    this.disposeModelViewer();
+
+    // Initialize ARApp
+    const app = new ARApp();
+
+    this.arButton = app.arButton;
+
+    // Add the selected model
+    app.addModel(
+      this.modelData.options
+        .find((opt) => opt.name.toLowerCase() === "variants")
+        .values.find((variant) => variant.default).model
+    );
+  }
+
+  disposeModelViewer() {
+    const modelViewer = this.shadowRoot.querySelector("model-viewer");
+    if (modelViewer) {
+      // Exit AR session if active
+      if (modelViewer.session) {
+        modelViewer.session.end();
+      }
+
+      // Pause rendering
+      modelViewer.pause();
+
+      // Remove from DOM
+      modelViewer.parentNode.removeChild(modelViewer);
+    }
+  }
+
+  async _setupQRCodeListeners(modelViewer) {
     const qrCodeButton = this.shadowRoot.querySelector(".qr-code-button");
     const qrModal = this.shadowRoot.getElementById("qrModal");
     const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
@@ -367,24 +414,28 @@ class ARDisplayViewer extends HTMLElement {
       qrCode.append(qrCodeContainer);
     };
 
-    qrCodeButton.addEventListener("click", () => {
-      if (navigator.xr) {
-        console.log("WebXR is supported");
-      } else {
-        console.log("WebXR is not supported");
-      }
+    if (await isWebXRAvailable()) {
+      // Initialize and start your custom ARApp
+      this.startCustomARApp();
+    }
+
+    qrCodeButton.addEventListener("click", async () => {
       const isMobile =
         /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent
         );
       if (isMobile && modelViewer.canActivateAR) {
-        try {
-          modelViewer.activateAR();
-        } catch (err) {
-          console.warn("Could not activate AR:", err);
-          const currentUrl = window.location.href;
-          updateQrCode(currentUrl);
-          qrModal.style.display = "flex";
+        if (this.arButton) {
+          this.arButton.click();
+        } else {
+          try {
+            modelViewer.activateAR();
+          } catch (err) {
+            console.warn("Could not activate AR:", err);
+            const currentUrl = window.location.href;
+            updateQrCode(currentUrl);
+            qrModal.style.display = "flex";
+          }
         }
       } else {
         const currentUrl = window.location.href;
