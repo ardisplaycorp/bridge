@@ -6,6 +6,7 @@ import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
 import { icons } from "lucide";
 import "./style.css";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 class ARDisplayViewer extends HTMLElement {
   constructor() {
@@ -14,8 +15,17 @@ class ARDisplayViewer extends HTMLElement {
 
     this.currentSize = "m";
     this.calculatedScale = null;
+    // Holds the JSON from "src" plus variant data
     this.modelData = null;
+    // This will be replaced per-variant once we measure the unscaled bounding box
     this.originalSize = null;
+
+    // Will store the array of variant info, each with:
+    // { url, image, sizes, blobUrl, boundingBox: { x, y, z } }
+    this.variants = [];
+
+    // For each variant index => { s: {width, height, depth}, m: {...}, ... }
+    this.variantSizes = [];
 
     // Initialize custom 'scale' event
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
@@ -23,13 +33,20 @@ class ARDisplayViewer extends HTMLElement {
 
   async connectedCallback() {
     const attributes = this._getAttributes();
+
+    // 1. Fetch the model JSON.
     await this._getModelData();
+
+    // 2. Preload the variant models as blobs and measure their bounding boxes.
+    await this._preloadVariants();
+
+    // 3. Create styles, template, and place any user-slotted content.
     this._createStyles();
     this._loadTemplate(attributes.viewMode);
     this._moveSlottedContent();
-    this._setupEventListeners();
 
-    // Call _setupBottomNavBar AFTER the <model-viewer> is present
+    // 4. Wire up event listeners, etc.
+    this._setupEventListeners();
     const modelViewer = this.shadowRoot.querySelector("model-viewer");
     this._setupBottomNavBar(modelViewer);
   }
@@ -51,21 +68,74 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupVariantsSizes() {
-    const sizeOption = this.modelData?.options?.find(
-      (opt) => opt.name.toLowerCase() === "size"
-    );
-    if (!sizeOption) return;
+    this.variants = this.modelData?.options || [];
+    // We'll create an array parallel to this.variants, each element is an object of sizes keyed by label
+    this.variantSizes = [];
 
-    // Store the sizes on the instance for easy access
-    this.sizes = {};
-    sizeOption.values.forEach((obj) => {
-      const key = obj.label.toLowerCase();
-      this.sizes[key] = {
-        width: obj.width,
-        height: obj.height,
-        depth: obj.depth || "",
-      };
+    this.variants.forEach((variant, variantIndex) => {
+      const sizesForThisVariant = {};
+      variant.sizes.forEach((size) => {
+        const key = size.label.toLowerCase();
+        sizesForThisVariant[key] = {
+          width: size.width,
+          height: size.height,
+          depth: size.depth || "",
+        };
+      });
+      // Store these size definitions for each variant
+      this.variantSizes[variantIndex] = sizesForThisVariant;
     });
+  }
+
+  //---------------------------------------------------------------------------
+  // Preload each variant’s GLB/GLTF as a Blob, measure bounding box unscaled
+  //---------------------------------------------------------------------------
+  async _preloadVariants() {
+    // If no variants, do nothing
+    if (!this.variants || this.variants.length === 0) return;
+
+    const gltfLoader = new GLTFLoader();
+
+    for (let i = 0; i < this.variants.length; i++) {
+      const variant = this.variants[i];
+      if (!variant.url) continue;
+
+      try {
+        // 1) Fetch as Blob
+        const res = await fetch(variant.url);
+        if (!res.ok) {
+          throw new Error(
+            `Failed to fetch variant ${i}, status: ${res.status}`
+          );
+        }
+        const blob = await res.blob();
+        variant.blobUrl = URL.createObjectURL(blob);
+
+        // 2) Measure bounding box using GLTFLoader
+        // Use the blob URL so we don't re-fetch from network.
+        const size = await new Promise((resolve, reject) => {
+          gltfLoader.load(
+            variant.blobUrl,
+            (gltf) => {
+              const box = new THREE.Box3().setFromObject(gltf.scene);
+              const dimension = new THREE.Vector3();
+              box.getSize(dimension);
+              resolve(dimension);
+            },
+            undefined,
+            (err) => reject(err)
+          );
+        });
+
+        variant.boundingBox = {
+          x: size.x,
+          y: size.y,
+          z: size.z,
+        };
+      } catch (err) {
+        console.warn(`Error preloading variant ${i}:`, err);
+      }
+    }
   }
 
   _getAttributes() {
@@ -83,99 +153,99 @@ class ARDisplayViewer extends HTMLElement {
   _createStyles() {
     const styles = document.createElement("style");
     styles.textContent = `
-      /* Add your styles here */
-      model-viewer {
-        width: 100%;
-        height: 100%;
-        --min-hotspot-opacity: 0;
-        position: relative;
-      }
+/* Add your styles here */
+model-viewer {
+width: 100%;
+height: 100%;
+--min-hotspot-opacity: 0;
+position: relative;
+}
 
-      model-viewer[ar-status="session-started"] .qr-code-button {
-        display: none;
-      }
+model-viewer[ar-status="session-started"] .qr-code-button {
+display: none;
+}
 
-      model-viewer[ar-status="object-placed"] .qr-code-button {
-        display: none;
-      }
+model-viewer[ar-status="object-placed"] .qr-code-button {
+display: none;
+}
 
-      .dimensionLineContainer {
-        pointer-events: none;
-        display: block;
-      }
+.dimensionLineContainer {
+pointer-events: none;
+display: block;
+}
 
-      .dimensionLine {
-        stroke: #16a5e6;
-        stroke-width: 2;
-        stroke-dasharray: 2;
-      }
+.dimensionLine {
+stroke: #16a5e6;
+stroke-width: 2;
+stroke-dasharray: 2;
+}
 
-      .hide {
-        display: none;
-      }
+.hide {
+display: none;
+}
 
-      .dot {
-        display: none;
-      }
+.dot {
+display: none;
+}
 
-      .qr-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        background-color: rgba(0,0,0,0.4);
-        backdrop-filter: blur(5px);
-        justify-content: center;
-        align-items: center;
-        font-family: sans-serif;
-      }
+.qr-modal {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+width: 100vw;
+height: 100vh;
+overflow: hidden;
+background-color: rgba(0,0,0,0.4);
+backdrop-filter: blur(5px);
+justify-content: center;
+align-items: center;
+font-family: sans-serif;
+}
 
-      .qr-modal-content {
-        background-color: #fefefe;
-        border: 1px solid #888;
-        width: 820px;
-        height: 418px;
-        position: relative;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
+.qr-modal-content {
+background-color: #fefefe;
+border: 1px solid #888;
+width: 820px;
+height: 418px;
+position: relative;
+border-radius: 8px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-      .qr-modal-content h2 {
-        margin-top: 0;
-        color: #333;
-        text-align: center;
-      }
+.qr-modal-content h2 {
+margin-top: 0;
+color: #333;
+text-align: center;
+}
 
-      .qr-code-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 20px 0;
-      }
+.qr-code-container {
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 20px 0;
+}
 
-      .qr-close-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    `;
+.qr-close-button {
+position: absolute;
+top: 10px;
+right: 10px;
+width: 30px;
+height: 30px;
+background-color: rgba(0, 0, 0, 0.5);
+color: white;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+border: none;
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+`;
     this.shadowRoot.appendChild(styles);
   }
 
@@ -202,6 +272,47 @@ class ARDisplayViewer extends HTMLElement {
 
     // Process the icons within the shadow root
     this._processLucideIcons();
+  }
+
+  _updateSizePanel(variantIndex) {
+    const sizePanel = this.shadowRoot.querySelector(".size-panel");
+    if (!sizePanel) return;
+
+    // Clear existing size buttons
+    sizePanel.innerHTML = "";
+
+    // Create the wrapper again
+    const sizeButtonsWrapper = document.createElement("div");
+    sizeButtonsWrapper.classList.add("size-buttons-wrapper");
+
+    const sizesForVariant = this.variantSizes[variantIndex];
+    if (sizesForVariant) {
+      Object.entries(sizesForVariant).forEach(([sizeKey, sizeValues]) => {
+        const button = document.createElement("button");
+        button.classList.add("size-button");
+        button.textContent = sizeKey;
+        button.setAttribute("data-size-key", sizeKey);
+        // Enable as soon as variant is chosen
+        button.disabled = false;
+
+        // On click, apply that size
+        button.addEventListener("click", (event) => {
+          // Remove "selected" from all size buttons
+          const allSizeBtns = this.shadowRoot.querySelectorAll(".size-button");
+          allSizeBtns.forEach((btn) => btn.classList.remove("selected"));
+
+          // Add "selected" to the clicked button
+          event.target.classList.add("selected");
+
+          // Calculate scale and apply
+          this.calculateAndApplyScale(sizeValues);
+        });
+
+        sizeButtonsWrapper.appendChild(button);
+      });
+    }
+
+    sizePanel.appendChild(sizeButtonsWrapper);
   }
 
   _processLucideIcons() {
@@ -405,10 +516,7 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupVariantsColors() {
-    const colorOption = this.modelData?.options?.find(
-      (opt) => opt.name.toLowerCase() === "variants"
-    );
-    if (!colorOption) return null;
+    if (!this.variants || this.variants.length === 0) return null;
 
     const slider = document.createElement("div");
     slider.classList.add("slider");
@@ -416,42 +524,65 @@ class ARDisplayViewer extends HTMLElement {
     const slidesWrapper = document.createElement("div");
     slidesWrapper.classList.add("slides");
 
-    colorOption.values.forEach((colorObj, index) => {
+    this.variants.forEach((variant, index) => {
       const modelViewer = this.shadowRoot.querySelector("model-viewer");
       const slideButton = document.createElement("button");
       slideButton.classList.add("slide");
-      if (colorObj.default) {
+
+      // If it’s the first variant, treat it as default
+      if (index === 0) {
         slideButton.classList.add("selected");
-        if (modelViewer) {
-          modelViewer.src = colorObj.model;
-          if (colorObj.image) {
-            modelViewer.poster = colorObj.image;
+        if (modelViewer && variant.blobUrl) {
+          modelViewer.src = variant.blobUrl;
+          // For dimension measurements, store the boundingBox as originalSize:
+          this.originalSize = variant.boundingBox
+            ? { ...variant.boundingBox }
+            : { x: 1, y: 1, z: 1 }; // fallback
+          // Possibly set poster
+          if (variant.image) {
+            modelViewer.poster = variant.image;
           } else {
             modelViewer.removeAttribute("poster");
           }
         }
       }
-      if (colorObj.image) {
-        slideButton.style.backgroundImage = `url('${colorObj.image}')`;
+
+      // If there's a color or an image used for the "chip"
+      if (variant.image) {
+        slideButton.style.backgroundImage = `url('${variant.image}')`;
       } else {
-        slideButton.style.backgroundColor = colorObj.color;
+        slideButton.style.backgroundColor = variant.color || "#ccc";
       }
+
       slideButton.onclick = () => {
-        // Swap model src/poster or handle color logic here
-        if (modelViewer) {
-          modelViewer.src = colorObj.model;
-          if (colorObj.image) {
-            modelViewer.poster = colorObj.image;
-          } else {
-            modelViewer.removeAttribute("poster");
-          }
+        if (!modelViewer) return;
+
+        // Swap model src to the blob URL
+        if (variant.blobUrl) {
+          modelViewer.src = variant.blobUrl;
         }
 
-        // Update "selected" classes:
+        // Also update our "originalSize" for subsequent scale calcs
+        this.originalSize = variant.boundingBox
+          ? { ...variant.boundingBox }
+          : { x: 1, y: 1, z: 1 };
+
+        // Rebuild the size panel for this variant index
+        this._updateSizePanel(index);
+
+        // Poster?
+        if (variant.image) {
+          modelViewer.poster = variant.image;
+        } else {
+          modelViewer.removeAttribute("poster");
+        }
+
+        // Manage “selected” classes
         const allSlides = slidesWrapper.querySelectorAll(".slide");
         allSlides.forEach((s) => s.classList.remove("selected"));
         slideButton.classList.add("selected");
       };
+
       slidesWrapper.appendChild(slideButton);
     });
 
@@ -487,36 +618,51 @@ class ARDisplayViewer extends HTMLElement {
       this._handleSizeChange(event)
     );
 
-    modelViewer.addEventListener("model-visibility", () => {
-      const sizes = modelViewer.getDimensions();
-      this.originalSize = new THREE.Vector3(sizes.x, sizes.y, sizes.z);
-      this.calculateAndApplyScale();
+    modelViewer.addEventListener("load", () => {
+      // After the internal <model-viewer> has loaded
+      // We can attempt a neutral scale of 1
+      modelViewer.scale = "1 1 1";
 
-      // update size to default size
-      const sizeOption = this.modelData.options.find(
-        (opt) => opt.name.toLowerCase() === "size"
-      );
-      const sizeKey = sizeOption.values.find((size) => size.default).label;
-      this.calculatedScale = this.calculateModelScale(this.sizes[sizeKey]);
-      this.applyScale();
-
-      // Add the "selected" class to the default size button
-      const defaultSizeButton = sizeControls.querySelector(
-        `[data-size-key="${sizeKey}"]`
-      );
-      if (defaultSizeButton) {
-        defaultSizeButton.classList.add("selected");
+      // If no explicit boundingBox is found for the initially loaded variant,
+      // we fallback to model-viewer's reported size (but note, the user wants
+      // to rely on the bounding-box approach, so do that first if possible).
+      if (!this.originalSize) {
+        this.originalSize = modelViewer.getDimensions();
       }
 
-      // Enable size buttons
-      const sizeButtons = sizeControls.querySelectorAll(".size-button");
-      sizeButtons.forEach((button) => {
-        button.disabled = false;
-        button.style.cursor = "pointer";
-      });
+      // Build the size panel UI for the first variant (index 0)
+      this._updateSizePanel(0);
 
-      modelViewer.shadowRoot.querySelector(".slot.ar-button").style.display =
-        "none";
+      // Automatically apply the first size in the first variant if it exists
+      if (this.variantSizes && this.variantSizes[0]) {
+        const sizesForVariant = this.variantSizes[0];
+        const firstSizeKey = Object.keys(sizesForVariant)[0];
+        if (firstSizeKey) {
+          const firstSizeValues = sizesForVariant[firstSizeKey];
+          // Apply the scale computation
+          this.calculateAndApplyScale(firstSizeValues);
+
+          // Mark the correct button as "selected" in the UI
+          requestAnimationFrame(() => {
+            const sizeButtons =
+              this.shadowRoot.querySelectorAll(".size-button");
+            sizeButtons.forEach((btn) => {
+              if (btn.textContent === firstSizeKey) {
+                btn.classList.add("selected");
+              } else {
+                btn.classList.remove("selected");
+              }
+            });
+          });
+        }
+      }
+
+      // Hide the default AR-button slot if desired
+      const arButtonSlot =
+        modelViewer.shadowRoot.querySelector(".slot.ar-button");
+      if (arButtonSlot) {
+        arButtonSlot.style.display = "none";
+      }
     });
 
     if (sizeControls) sizePanel.appendChild(sizeControls);
@@ -549,8 +695,12 @@ class ARDisplayViewer extends HTMLElement {
         text: "Check out this AR model!",
         url: window.location.href,
       };
-      await navigator.share(shareData);
-      console.log("Content shared successfully");
+      try {
+        await navigator.share(shareData);
+        console.log("Content shared successfully");
+      } catch (err) {
+        console.warn("Share failed:", err);
+      }
     });
 
     // Add the click-away event listener
@@ -567,122 +717,122 @@ class ARDisplayViewer extends HTMLElement {
     // Add styling
     const style = document.createElement("style");
     style.textContent = `
-      /* The bottom nav bar container */
-      .bottom-nav-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px;
-        z-index: 10;
-      }
+    /* The bottom nav bar container */
+    .bottom-nav-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      z-index: 10;
+    }
 
-      .nav-btn {
-        background-color: #f0f0f0;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 4px;
-        margin-right: 8px;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-        flex: 1;
-      }
-      .nav-btn:hover {
-        background-color: #ddd;
-      }
+    .nav-btn {
+      background-color: #f0f0f0;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-right: 8px;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+      flex: 1;
+    }
+    .nav-btn:hover {
+      background-color: #ddd;
+    }
 
-      /* Sub-panels that slide up above the nav bar */
-      .sub-panel {
-        position: absolute;
-        bottom: 60px; /* ensure it sits over the nav bar */
-        left: 0;
-        width: 100%;
-        background-color: transparent;
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-        padding: 16px 0;
-      }
-      .hidden {
-        display: none;
-      }
+    /* Sub-panels that slide up above the nav bar */
+    .sub-panel {
+      position: absolute;
+      bottom: 60px; /* ensure it sits over the nav bar */
+      left: 0;
+      width: 100%;
+      background-color: transparent;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+      padding: 16px 0;
+    }
+    .hidden {
+      display: none;
+    }
 
-      /* COLOR SLIDER STYLES */
-      .slider {
-        width: 100%;
-        text-align: center;
-        overflow: hidden;
-        margin: 0 auto;
-      }
-      .slides {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        padding: 0 10px;
-        gap: 10px; /* spacing between slides */
-      }
-      .slide {
-        scroll-snap-align: start;
-        flex-shrink: 0;
-        width: 80px;
-        height: 80px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        cursor: pointer;
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        outline: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .slide:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      }
-      .slide.selected {
-        border-color: #4285f4;
-        box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
-      }
+    /* COLOR SLIDER STYLES */
+    .slider {
+      width: 100%;
+      text-align: center;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .slides {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 10px;
+      gap: 10px; /* spacing between slides */
+    }
+    .slide {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      cursor: pointer;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      outline: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .slide:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .slide.selected {
+      border-color: #4285f4;
+      box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
+    }
 
-      /* SIZE PANEL STYLES */
-      .size-panel {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-        padding: 10px;
-      }
+    /* SIZE PANEL STYLES */
+    .size-panel {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding: 10px;
+    }
 
-      .size-buttons-wrapper {
-        display: flex;
-        flex-direction: row;
-        gap: 12px;
-        padding: 0 10px;
-      }
-      .size-button {
-        padding: 10px 16px;
-        background-color: #eee;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        font-weight: 500;
-      }
-      .size-button:hover:not(:disabled) {
-        background-color: #ddd;
-      }
-      .size-button.selected {
-        background-color: #4285f4 !important;
-        color: #fff;
-        border-color: #4285f4;
-        opacity: 1;
-      }
+    .size-buttons-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      padding: 0 10px;
+    }
+    .size-button {
+      padding: 10px 16px;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    .size-button:hover:not(:disabled) {
+      background-color: #ddd;
+    }
+    .size-button.selected {
+      background-color: #4285f4 !important;
+      color: #fff;
+      border-color: #4285f4;
+      opacity: 1;
+    }
     `;
     modelViewer.appendChild(style);
   }
@@ -740,12 +890,10 @@ class ARDisplayViewer extends HTMLElement {
 
     const drawLine = (svgLine, startHotspot, endHotspot, dimensionHotspot) => {
       if (!svgLine || !startHotspot || !endHotspot) return;
-
       svgLine.setAttribute("x1", startHotspot.canvasPosition.x);
       svgLine.setAttribute("y1", startHotspot.canvasPosition.y);
       svgLine.setAttribute("x2", endHotspot.canvasPosition.x);
       svgLine.setAttribute("y2", endHotspot.canvasPosition.y);
-
       if (dimensionHotspot) {
         svgLine.classList.toggle("hide", !dimensionHotspot.facingCamera);
       }
@@ -773,7 +921,6 @@ class ARDisplayViewer extends HTMLElement {
           line: dimLines[2],
           start: "hotspot-dot+X+Y-Z",
           end: "hotspot-dot-X+Y-Z",
-          // Line always visible; no dimension hotspot needed
         },
         {
           line: dimLines[3],
@@ -800,6 +947,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     const updateDimensionHotspots = () => {
+      // Position dimension hotspots around the current bounding box
       const center = modelViewer.getBoundingBoxCenter();
       const size = modelViewer.getDimensions();
       const halfSize = {
@@ -825,7 +973,7 @@ class ARDisplayViewer extends HTMLElement {
             center.z,
           ],
           label: `${(size.z * 100).toFixed(0)} cm`,
-          labelSelector: 'button[slot="hotspot-dim+X-Y"]',
+          labelSelector: '[slot="hotspot-dim+X-Y"]',
         },
         {
           name: "hotspot-dot+X-Y-Z",
@@ -843,7 +991,7 @@ class ARDisplayViewer extends HTMLElement {
             center.z - halfSize.z * 1.2,
           ],
           label: `${(size.y * 100).toFixed(0)} cm`,
-          labelSelector: 'button[slot="hotspot-dim+X-Z"]',
+          labelSelector: '[slot="hotspot-dim+X-Z"]',
         },
         {
           name: "hotspot-dot+X+Y-Z",
@@ -861,7 +1009,7 @@ class ARDisplayViewer extends HTMLElement {
             center.z - halfSize.z * 1.1,
           ],
           label: `${(size.x * 100).toFixed(0)} cm`,
-          labelSelector: 'button[slot="hotspot-dim+Y-Z"]',
+          labelSelector: '[slot="hotspot-dim+Y-Z"]',
         },
         {
           name: "hotspot-dot-X+Y-Z",
@@ -879,7 +1027,7 @@ class ARDisplayViewer extends HTMLElement {
             center.z - halfSize.z * 1.2,
           ],
           label: `${(size.y * 100).toFixed(0)} cm`,
-          labelSelector: 'button[slot="hotspot-dim-X-Z"]',
+          labelSelector: '[slot="hotspot-dim-X-Z"]',
         },
         {
           name: "hotspot-dot-X-Y-Z",
@@ -897,7 +1045,7 @@ class ARDisplayViewer extends HTMLElement {
             center.z,
           ],
           label: `${(size.z * 100).toFixed(0)} cm`,
-          labelSelector: 'button[slot="hotspot-dim-X-Y"]',
+          labelSelector: '[slot="hotspot-dim-X-Y"]',
         },
         {
           name: "hotspot-dot-X-Y+Z",
@@ -914,7 +1062,6 @@ class ARDisplayViewer extends HTMLElement {
           name,
           position: position.join(" "),
         });
-
         if (label && labelSelector) {
           const labelElement = modelViewer.querySelector(labelSelector);
           if (labelElement) {
@@ -947,17 +1094,8 @@ class ARDisplayViewer extends HTMLElement {
     const sizeButtonsWrapper = document.createElement("div");
     sizeButtonsWrapper.classList.add("size-buttons-wrapper");
 
-    if (this.sizes) {
-      Object.entries(this.sizes).forEach(([labelKey]) => {
-        const button = document.createElement("button");
-        button.classList.add("size-button");
-        button.textContent = labelKey;
-        button.setAttribute("data-size-key", labelKey);
-        button.disabled = true; // Initially disabled until the model loads
-        sizeButtonsWrapper.appendChild(button);
-      });
-    }
-
+    // The actual size buttons get appended or replaced later in _updateSizePanel.
+    // This is just the container.
     sizePanel.appendChild(sizeButtonsWrapper);
     return sizePanel;
   }
@@ -965,6 +1103,7 @@ class ARDisplayViewer extends HTMLElement {
   _handleSizeChange(event) {
     if (event.target.classList.contains("size-button")) {
       const sizeKey = event.target.getAttribute("data-size-key");
+      // Not used in the updated code because we call calculateAndApplyScale ourselves
       if (this.sizes && this.sizes[sizeKey]) {
         // Remove "selected" from all size buttons
         const allSizeBtns = this.shadowRoot.querySelectorAll(".size-button");
@@ -981,17 +1120,15 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   applyScale() {
-    if (this.calculatedScale && this.shadowRoot) {
-      const modelViewer = this.shadowRoot.querySelector("model-viewer");
-      if (modelViewer) {
-        modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
+    const modelViewer = this.shadowRoot.querySelector("model-viewer");
+    if (this.calculatedScale && modelViewer) {
+      modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
 
-        if (typeof modelViewer.updateFraming === "function") {
-          requestAnimationFrame(() => {
-            modelViewer.updateFraming();
-            document.dispatchEvent(this.scaleEvent);
-          });
-        }
+      if (typeof modelViewer.updateFraming === "function") {
+        requestAnimationFrame(() => {
+          modelViewer.updateFraming();
+          document.dispatchEvent(this.scaleEvent);
+        });
       }
     }
   }
@@ -1012,7 +1149,8 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   calculateModelScale(desiredSize) {
-    const size = this.originalSize;
+    // If for some reason we never measured bounding box, fallback
+    const size = this.originalSize || { x: 1, y: 1, z: 1 };
 
     const originalWidth = size.x;
     const originalHeight = size.y;
@@ -1020,6 +1158,7 @@ class ARDisplayViewer extends HTMLElement {
 
     const desiredWidth = this.cmToMeters(desiredSize.width);
     const desiredHeight = this.cmToMeters(desiredSize.height);
+    // If no depth is specified, pick a small default
     const desiredDepth = desiredSize.depth
       ? this.cmToMeters(desiredSize.depth)
       : 0.05;
