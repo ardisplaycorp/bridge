@@ -6,23 +6,21 @@ import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
 import { icons } from "lucide";
 import "./style.css";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { mod } from "three/tsl";
 
 class ARDisplayViewer extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
 
-    this.currentSize = "m";
+    this.selectedIndex = 0;
     this.calculatedScale = null;
     // Holds the JSON from "src" plus variant data
     this.modelData = null;
-    // This will be replaced per-variant once we measure the unscaled bounding box
+    // This will be replaced per-variant once we measure or fetch bounding box
     this.originalSize = null;
 
     // Will store the array of variant info, each with:
-    // { url, image, sizes, blobUrl, boundingBox: { x, y, z } }
+    // { url, image, sizes }
     this.variants = [];
 
     // For each variant index => { s: {width, height, depth}, m: {...}, ... }
@@ -35,18 +33,15 @@ class ARDisplayViewer extends HTMLElement {
   async connectedCallback() {
     const attributes = this._getAttributes();
 
-    // 1. Fetch the model JSON.
+    // 1. Fetch the model JSON
     await this._getModelData();
 
-    // 2. Preload the variant models as blobs and measure their bounding boxes.
-    await this._preloadVariants();
-
-    // 3. Create styles, template, and place any user-slotted content.
+    // 2. Create styles, template, and place any user-slotted content
     this._createStyles();
     this._loadTemplate(attributes.viewMode);
     this._moveSlottedContent();
 
-    // 4. Wire up event listeners, etc.
+    // 3. Wire up event listeners, etc
     this._setupEventListeners();
     const modelViewer = this.shadowRoot.querySelector("model-viewer");
     this._setupBottomNavBar(modelViewer);
@@ -59,7 +54,6 @@ class ARDisplayViewer extends HTMLElement {
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-
       const data = await response.json();
       this.modelData = data;
       this._setupVariantsSizes();
@@ -89,55 +83,8 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   //---------------------------------------------------------------------------
-  // Preload each variant’s GLB/GLTF as a Blob, measure bounding box unscaled
+  // Removed _preloadVariants() - no more blob fetching
   //---------------------------------------------------------------------------
-  async _preloadVariants() {
-    // If no variants, do nothing
-    if (!this.variants || this.variants.length === 0) return;
-
-    const gltfLoader = new GLTFLoader();
-
-    for (let i = 0; i < this.variants.length; i++) {
-      const variant = this.variants[i];
-      if (!variant.url) continue;
-
-      try {
-        // 1) Fetch as Blob
-        const res = await fetch(variant.url);
-        if (!res.ok) {
-          throw new Error(
-            `Failed to fetch variant ${i}, status: ${res.status}`
-          );
-        }
-        const blob = await res.blob();
-        variant.blobUrl = URL.createObjectURL(blob);
-
-        // 2) Measure bounding box using GLTFLoader
-        // Use the blob URL so we don't re-fetch from network.
-        const size = await new Promise((resolve, reject) => {
-          gltfLoader.load(
-            variant.blobUrl,
-            (gltf) => {
-              const box = new THREE.Box3().setFromObject(gltf.scene);
-              const dimension = new THREE.Vector3();
-              box.getSize(dimension);
-              resolve(dimension);
-            },
-            undefined,
-            (err) => reject(err)
-          );
-        });
-
-        variant.boundingBox = {
-          x: size.x,
-          y: size.y,
-          z: size.z,
-        };
-      } catch (err) {
-        console.warn(`Error preloading variant ${i}:`, err);
-      }
-    }
-  }
 
   _getAttributes() {
     return {
@@ -154,99 +101,99 @@ class ARDisplayViewer extends HTMLElement {
   _createStyles() {
     const styles = document.createElement("style");
     styles.textContent = `
-/* Add your styles here */
-model-viewer {
-width: 100%;
-height: 100%;
---min-hotspot-opacity: 0;
-position: relative;
-}
+      /* Add your styles here */
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        --min-hotspot-opacity: 0;
+        position: relative;
+      }
 
-model-viewer[ar-status="session-started"] .qr-code-button {
-display: none;
-}
+      model-viewer[ar-status="session-started"] .qr-code-button {
+        display: none;
+      }
 
-model-viewer[ar-status="object-placed"] .qr-code-button {
-display: none;
-}
+      model-viewer[ar-status="object-placed"] .qr-code-button {
+        display: none;
+      }
 
-.dimensionLineContainer {
-pointer-events: none;
-display: block;
-}
+      .dimensionLineContainer {
+        pointer-events: none;
+        display: block;
+      }
 
-.dimensionLine {
-stroke: #16a5e6;
-stroke-width: 2;
-stroke-dasharray: 2;
-}
+      .dimensionLine {
+        stroke: #16a5e6;
+        stroke-width: 2;
+        stroke-dasharray: 2;
+      }
 
-.hide {
-display: none;
-}
+      .hide {
+        display: none;
+      }
 
-.dot {
-display: none;
-}
+      .dot {
+        display: none;
+      }
 
-.qr-modal {
-display: none;
-position: fixed;
-z-index: 1000;
-left: 50%;
-top: 50%;
-transform: translate(-50%, -50%);
-width: 100vw;
-height: 100vh;
-overflow: hidden;
-background-color: rgba(0,0,0,0.4);
-backdrop-filter: blur(5px);
-justify-content: center;
-align-items: center;
-font-family: sans-serif;
-}
+      .qr-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background-color: rgba(0,0,0,0.4);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        font-family: sans-serif;
+      }
 
-.qr-modal-content {
-background-color: #fefefe;
-border: 1px solid #888;
-width: 820px;
-height: 418px;
-position: relative;
-border-radius: 8px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+      .qr-modal-content {
+        background-color: #fefefe;
+        border: 1px solid #888;
+        width: 820px;
+        height: 418px;
+        position: relative;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-.qr-modal-content h2 {
-margin-top: 0;
-color: #333;
-text-align: center;
-}
+      .qr-modal-content h2 {
+        margin-top: 0;
+        color: #333;
+        text-align: center;
+      }
 
-.qr-code-container {
-display: flex;
-justify-content: center;
-align-items: center;
-margin: 20px 0;
-}
+      .qr-code-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+      }
 
-.qr-close-button {
-position: absolute;
-top: 10px;
-right: 10px;
-width: 30px;
-height: 30px;
-background-color: rgba(0, 0, 0, 0.5);
-color: white;
-font-size: 28px;
-font-weight: bold;
-cursor: pointer;
-border: none;
-border-radius: 50%;
-display: flex;
-justify-content: center;
-align-items: center;
-}
-`;
+      .qr-close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    `;
     this.shadowRoot.appendChild(styles);
   }
 
@@ -381,7 +328,7 @@ align-items: center;
     const customPanel = this.shadowRoot.querySelector(
       ".ar-display-custom-panel"
     );
-    const slottedContent = this.querySelector('[slot="custom-panel"]');
+    const slottedContent = this.querySelector('slot[name="custom-panel"]');
     if (customPanel && slottedContent) {
       customPanel.appendChild(slottedContent);
     } else {
@@ -480,11 +427,6 @@ align-items: center;
     };
 
     qrCodeButton.addEventListener("click", () => {
-      if (navigator.xr) {
-        console.log("WebXR is supported");
-      } else {
-        console.log("WebXR is not supported");
-      }
       const isMobile =
         /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent
@@ -533,12 +475,8 @@ align-items: center;
       // If it’s the first variant, treat it as default
       if (index === 0) {
         slideButton.classList.add("selected");
-        if (modelViewer && variant.blobUrl) {
-          modelViewer.src = variant.blobUrl;
-          // For dimension measurements, store the boundingBox as originalSize:
-          this.originalSize = variant.boundingBox
-            ? { ...variant.boundingBox }
-            : { x: 1, y: 1, z: 1 }; // fallback
+        if (modelViewer && variant.url) {
+          modelViewer.src = variant.url;
           // Possibly set poster
           if (variant.image) {
             modelViewer.poster = variant.image;
@@ -558,43 +496,13 @@ align-items: center;
       slideButton.onclick = () => {
         if (!modelViewer) return;
 
-        // Swap model src to the blob URL
-        if (variant.blobUrl) {
-          modelViewer.src = variant.blobUrl;
+        // Swap model src to the direct URL
+        if (variant.url) {
+          modelViewer.src = variant.url;
         }
-
-        // Also update our “originalSize” for subsequent scale calculations
-        this.originalSize = variant.boundingBox
-          ? { ...variant.boundingBox }
-          : { x: 1, y: 1, z: 1 };
 
         // Update the size panel for this variant’s sizes
         this._updateSizePanel(index);
-
-        // Automatically apply the first size in the selected variant if it exists
-        if (this.variantSizes && this.variantSizes[index]) {
-          const sizesForVariant = this.variantSizes[index];
-          const firstSizeKey = Object.keys(sizesForVariant)[0];
-          if (firstSizeKey) {
-            const firstSizeValues = sizesForVariant[firstSizeKey];
-
-            // Apply the scale computation
-            this.calculateAndApplyScale(firstSizeValues);
-
-            // Mark the correct button as "selected" in the UI
-            requestAnimationFrame(() => {
-              const sizeButtons =
-                this.shadowRoot.querySelectorAll(".size-button");
-              sizeButtons.forEach((btn) => {
-                if (btn.textContent === firstSizeKey) {
-                  btn.classList.add("selected");
-                } else {
-                  btn.classList.remove("selected");
-                }
-              });
-            });
-          }
-        }
 
         // Poster?
         if (variant.image) {
@@ -607,6 +515,9 @@ align-items: center;
         const allSlides = slidesWrapper.querySelectorAll(".slide");
         allSlides.forEach((s) => s.classList.remove("selected"));
         slideButton.classList.add("selected");
+
+        // Update the selectedIndex
+        this.selectedIndex = index;
       };
 
       slidesWrapper.appendChild(slideButton);
@@ -646,10 +557,37 @@ align-items: center;
 
     modelViewer.addEventListener("load", () => {
       // If no explicit boundingBox is found for the initially loaded variant,
-      // we fallback to model-viewer's reported size (but note, the user wants
-      // to rely on the bounding-box approach, so do that first if possible).
-      if (!this.originalSize) {
-        this.originalSize = modelViewer.getDimensions();
+      // fallback to model-viewer's reported size
+      const size = modelViewer.getDimensions();
+      const scale = modelViewer.scale.toString().split(" ").map(Number);
+      this.originalSize = new THREE.Vector3();
+      this.originalSize.x = size.x / scale[0];
+      this.originalSize.y = size.y / scale[1];
+      this.originalSize.z = size.z / scale[2];
+
+      // Automatically apply the first size in the selected variant if it exists
+      if (this.variantSizes && this.variantSizes[this.selectedIndex]) {
+        const sizesForVariant = this.variantSizes[this.selectedIndex];
+        const firstSizeKey = Object.keys(sizesForVariant)[0];
+        if (firstSizeKey) {
+          const firstSizeValues = sizesForVariant[firstSizeKey];
+
+          // Apply the scale computation
+          this.calculateAndApplyScale(firstSizeValues);
+
+          // Mark the correct button as "selected" in the UI
+          requestAnimationFrame(() => {
+            const sizeButtons =
+              this.shadowRoot.querySelectorAll(".size-button");
+            sizeButtons.forEach((btn) => {
+              if (btn.textContent === firstSizeKey) {
+                btn.classList.add("selected");
+              } else {
+                btn.classList.remove("selected");
+              }
+            });
+          });
+        }
       }
 
       // if not size panel exists, create it
@@ -717,122 +655,122 @@ align-items: center;
     // Add styling
     const style = document.createElement("style");
     style.textContent = `
-    /* The bottom nav bar container */
-    .bottom-nav-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      z-index: 10;
-    }
+      /* The bottom nav bar container */
+      .bottom-nav-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px;
+        z-index: 10;
+      }
 
-    .nav-btn {
-      background-color: #f0f0f0;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 4px;
-      margin-right: 8px;
-      font-weight: 500;
-      transition: background-color 0.2s ease;
-      flex: 1;
-    }
-    .nav-btn:hover {
-      background-color: #ddd;
-    }
+      .nav-btn {
+        background-color: #f0f0f0;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-right: 8px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+        flex: 1;
+      }
+      .nav-btn:hover {
+        background-color: #ddd;
+      }
 
-    /* Sub-panels that slide up above the nav bar */
-    .sub-panel {
-      position: absolute;
-      bottom: 60px; /* ensure it sits over the nav bar */
-      left: 0;
-      width: 100%;
-      background-color: transparent;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-      padding: 16px 0;
-    }
-    .hidden {
-      display: none;
-    }
+      /* Sub-panels that slide up above the nav bar */
+      .sub-panel {
+        position: absolute;
+        bottom: 60px; /* ensure it sits over the nav bar */
+        left: 0;
+        width: 100%;
+        background-color: transparent;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+        padding: 16px 0;
+      }
+      .hidden {
+        display: none;
+      }
 
-    /* COLOR SLIDER STYLES */
-    .slider {
-      width: 100%;
-      text-align: center;
-      overflow: hidden;
-      margin: 0 auto;
-    }
-    .slides {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      padding: 0 10px;
-      gap: 10px; /* spacing between slides */
-    }
-    .slide {
-      scroll-snap-align: start;
-      flex-shrink: 0;
-      width: 80px;
-      height: 80px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      cursor: pointer;
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
-      outline: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .slide:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .slide.selected {
-      border-color: #4285f4;
-      box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
-    }
+      /* COLOR SLIDER STYLES */
+      .slider {
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        margin: 0 auto;
+      }
+      .slides {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 10px;
+        gap: 10px; /* spacing between slides */
+      }
+      .slide {
+        scroll-snap-align: start;
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        cursor: pointer;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        outline: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .slide:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      .slide.selected {
+        border-color: #4285f4;
+        box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
+      }
 
-    /* SIZE PANEL STYLES */
-    .size-panel {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      padding: 10px;
-    }
+      /* SIZE PANEL STYLES */
+      .size-panel {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+        padding: 10px;
+      }
 
-    .size-buttons-wrapper {
-      display: flex;
-      flex-direction: row;
-      gap: 12px;
-      padding: 0 10px;
-    }
-    .size-button {
-      padding: 10px 16px;
-      background-color: #eee;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      font-weight: 500;
-    }
-    .size-button:hover:not(:disabled) {
-      background-color: #ddd;
-    }
-    .size-button.selected {
-      background-color: #4285f4 !important;
-      color: #fff;
-      border-color: #4285f4;
-      opacity: 1;
-    }
+      .size-buttons-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        padding: 0 10px;
+      }
+      .size-button {
+        padding: 10px 16px;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      .size-button:hover:not(:disabled) {
+        background-color: #ddd;
+      }
+      .size-button.selected {
+        background-color: #4285f4 !important;
+        color: #fff;
+        border-color: #4285f4;
+        opacity: 1;
+      }
     `;
     modelViewer.appendChild(style);
   }
@@ -1094,8 +1032,7 @@ align-items: center;
     const sizeButtonsWrapper = document.createElement("div");
     sizeButtonsWrapper.classList.add("size-buttons-wrapper");
 
-    // The actual size buttons get appended or replaced later in _updateSizePanel.
-    // This is just the container.
+    // The actual size buttons get appended/replaced later in _updateSizePanel.
     sizePanel.appendChild(sizeButtonsWrapper);
     return sizePanel;
   }
