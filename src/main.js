@@ -7,6 +7,7 @@ import buttonTemplate from "./templates/button.js";
 import { icons } from "lucide";
 import "./style.css";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { mod } from "three/tsl";
 
 class ARDisplayViewer extends HTMLElement {
   constructor() {
@@ -562,13 +563,38 @@ align-items: center;
           modelViewer.src = variant.blobUrl;
         }
 
-        // Also update our "originalSize" for subsequent scale calcs
+        // Also update our “originalSize” for subsequent scale calculations
         this.originalSize = variant.boundingBox
           ? { ...variant.boundingBox }
           : { x: 1, y: 1, z: 1 };
 
-        // Rebuild the size panel for this variant index
+        // Update the size panel for this variant’s sizes
         this._updateSizePanel(index);
+
+        // Automatically apply the first size in the selected variant if it exists
+        if (this.variantSizes && this.variantSizes[index]) {
+          const sizesForVariant = this.variantSizes[index];
+          const firstSizeKey = Object.keys(sizesForVariant)[0];
+          if (firstSizeKey) {
+            const firstSizeValues = sizesForVariant[firstSizeKey];
+
+            // Apply the scale computation
+            this.calculateAndApplyScale(firstSizeValues);
+
+            // Mark the correct button as "selected" in the UI
+            requestAnimationFrame(() => {
+              const sizeButtons =
+                this.shadowRoot.querySelectorAll(".size-button");
+              sizeButtons.forEach((btn) => {
+                if (btn.textContent === firstSizeKey) {
+                  btn.classList.add("selected");
+                } else {
+                  btn.classList.remove("selected");
+                }
+              });
+            });
+          }
+        }
 
         // Poster?
         if (variant.image) {
@@ -619,10 +645,6 @@ align-items: center;
     );
 
     modelViewer.addEventListener("load", () => {
-      // After the internal <model-viewer> has loaded
-      // We can attempt a neutral scale of 1
-      modelViewer.scale = "1 1 1";
-
       // If no explicit boundingBox is found for the initially loaded variant,
       // we fallback to model-viewer's reported size (but note, the user wants
       // to rely on the bounding-box approach, so do that first if possible).
@@ -630,31 +652,9 @@ align-items: center;
         this.originalSize = modelViewer.getDimensions();
       }
 
-      // Build the size panel UI for the first variant (index 0)
-      this._updateSizePanel(0);
-
-      // Automatically apply the first size in the first variant if it exists
-      if (this.variantSizes && this.variantSizes[0]) {
-        const sizesForVariant = this.variantSizes[0];
-        const firstSizeKey = Object.keys(sizesForVariant)[0];
-        if (firstSizeKey) {
-          const firstSizeValues = sizesForVariant[firstSizeKey];
-          // Apply the scale computation
-          this.calculateAndApplyScale(firstSizeValues);
-
-          // Mark the correct button as "selected" in the UI
-          requestAnimationFrame(() => {
-            const sizeButtons =
-              this.shadowRoot.querySelectorAll(".size-button");
-            sizeButtons.forEach((btn) => {
-              if (btn.textContent === firstSizeKey) {
-                btn.classList.add("selected");
-              } else {
-                btn.classList.remove("selected");
-              }
-            });
-          });
-        }
+      // if not size panel exists, create it
+      if (!this.shadowRoot.querySelector(".size-panel button")) {
+        this._updateSizePanel(0);
       }
 
       // Hide the default AR-button slot if desired
@@ -1123,7 +1123,6 @@ align-items: center;
     const modelViewer = this.shadowRoot.querySelector("model-viewer");
     if (this.calculatedScale && modelViewer) {
       modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
-
       if (typeof modelViewer.updateFraming === "function") {
         requestAnimationFrame(() => {
           modelViewer.updateFraming();
