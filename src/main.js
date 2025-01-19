@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { ModelViewerElement } from "@google/model-viewer";
 import QRCodeStyling from "qr-code-styling";
 import normalTemplate from "./templates/normal.js";
@@ -7,6 +6,105 @@ import buttonTemplate from "./templates/button.js";
 import { icons } from "lucide";
 import "./style.css";
 
+// Utility for creating and appending elements
+function createElement(tag, options = {}) {
+  const element = document.createElement(tag);
+  Object.entries(options).forEach(([key, value]) => {
+    if (key === "classList") {
+      value.forEach((className) => element.classList.add(className));
+    } else if (key === "textContent") {
+      element.textContent = value;
+    } else if (key === "attributes") {
+      Object.entries(value).forEach(([attr, attrValue]) => {
+        element.setAttribute(attr, attrValue);
+      });
+    } else {
+      element[key] = value;
+    }
+  });
+  return element;
+}
+
+// Debug/Logging Utility
+const logger = {
+  debug: (...args) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log(...args);
+    }
+  },
+  error: (...args) => console.error(...args),
+  warn: (...args) => console.warn(...args),
+};
+
+// QR Code Manager
+class QrCodeManager {
+  constructor(container, modelData) {
+    this.container = container;
+    this.modelData = modelData;
+    this.qrCode = null;
+  }
+
+  async loadImage(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = img.onabort = () =>
+        reject(new Error("Image failed to load"));
+      img.src = url;
+    });
+  }
+
+  async updateQrCode(url) {
+    if (this.container.firstChild) {
+      this.container.removeChild(this.container.firstChild);
+    }
+
+    const qrCodeSettings = this.modelData?.qrCode;
+    let imageUrl = qrCodeSettings?.image;
+
+    if (imageUrl) {
+      try {
+        await this.loadImage(imageUrl);
+      } catch (err) {
+        logger.warn("Failed to load image for QR code:", err);
+        imageUrl = null;
+      }
+    }
+
+    const qrCodeOptions = {
+      width: parseInt(qrCodeSettings.width) || 240,
+      height: parseInt(qrCodeSettings.width) || 240,
+      data: url,
+      dotsOptions: {
+        color: qrCodeSettings.dotColor || "#000000",
+        type: qrCodeSettings.dotStyle || "square",
+      },
+      cornersSquareOptions: {
+        color: qrCodeSettings.cornerColor || "#000000",
+        type: qrCodeSettings.cornerStyle || "square",
+      },
+      cornersDotOptions: {
+        color: qrCodeSettings.cornerDotColor || "#000000",
+        type: qrCodeSettings.cornerDotStyle || "square",
+      },
+      backgroundOptions: {
+        color: qrCodeSettings.backgroundColor || "#ffffff",
+      },
+    };
+
+    if (imageUrl) {
+      qrCodeOptions.image = imageUrl;
+      qrCodeOptions.imageOptions = {
+        margin: parseInt(qrCodeSettings.imgMargin) || 0,
+        hideBackgroundDots: qrCodeSettings.imgBackground || false,
+      };
+    }
+
+    this.qrCode = new QRCodeStyling(qrCodeOptions);
+    this.qrCode.append(this.container);
+  }
+}
+
 class ARDisplayViewer extends HTMLElement {
   constructor() {
     super();
@@ -14,60 +112,148 @@ class ARDisplayViewer extends HTMLElement {
 
     this.selectedIndex = 0;
     this.calculatedScale = null;
-    // Holds the JSON from "src" plus variant data
     this.modelData = null;
-    // This will be replaced per-variant once we measure or fetch bounding box
     this.originalSize = null;
-
-    // Will store the array of variant info, each with:
-    // { url, image, sizes }
     this.variants = [];
-
-    // For each variant index => { s: {width, height, depth}, m: {...}, ... }
     this.variantSizes = [];
-
-    // Initialize custom 'scale' event
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
+
+    // Cache elements
+    this.modelViewer = null;
+
+    // Bundling external styles and scripts
+    this.styles = this._consolidateStyles();
+    this.shadowRoot.appendChild(this.styles);
+
+    // Use requestAnimationFrame for smoother updates
+    this.debouncedRenderSVG = this.animationFrameDebounce(this._renderSVG);
+    this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
+      this._updateDimensionHotspots
+    );
+  }
+
+  // Debounce using requestAnimationFrame
+  animationFrameDebounce(func) {
+    let requested = false;
+    return (...args) => {
+      if (!requested) {
+        requested = true;
+        requestAnimationFrame(() => {
+          func.apply(this, args);
+          requested = false;
+        });
+      }
+    };
+  }
+
+  debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+  }
+
+  _sendShortStatsEvent(action, message = "") {
+    logger.debug(this.modelData);
+    const eventData = {
+      dmodelId: this.modelData?.modelId || "no-model-id",
+      action,
+      browser: navigator.userAgent,
+      message: message || undefined,
+    };
+
+    // Use a queue or offline handling for stats if necessary
+    fetch("https://26eb-102-100-169-68.ngrok-free.app/api/stats", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(eventData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          logger.error("Error sending stats:", response.status);
+        }
+      })
+      .catch((error) => {
+        logger.error("Error sending stats:", error);
+      });
   }
 
   async connectedCallback() {
     const attributes = this._getAttributes();
 
-    // 1. Fetch the model JSON
     await this._getModelData();
 
-    // 2. Create styles, template, and place any user-slotted content
-    this._createStyles();
     this._loadTemplate(attributes.viewMode);
     this._moveSlottedContent();
 
-    // 3. Wire up event listeners, etc
+    this.modelViewer = this.shadowRoot.querySelector("model-viewer");
     this._setupEventListeners();
-    const modelViewer = this.shadowRoot.querySelector("model-viewer");
-    this._setupBottomNavBar(modelViewer);
+    this._setupBottomNavBar(this.modelViewer);
+
+    this._sendShortStatsEvent("View");
+  }
+
+  disconnectedCallback() {
+    // Remove global event listeners
+    document.removeEventListener(
+      "mousedown",
+      this.boundHandleDocumentMouseDown
+    );
+    document.removeEventListener("scale", this.boundHandleScale);
+
+    if (this.modelViewer) {
+      this.modelViewer.removeEventListener(
+        "model-visibility",
+        this.boundHandleModelVisibility
+      );
+      this.modelViewer.removeEventListener(
+        "ar-status",
+        this.boundHandleArStatus
+      );
+      this.modelViewer.removeEventListener(
+        "camera-change",
+        this.boundHandleCameraChange
+      );
+      this.modelViewer.removeEventListener(
+        "scene-graph-ready",
+        this.boundHandleSceneGraphReady
+      );
+      this.modelViewer.removeEventListener("load", this.boundHandleLoad);
+    }
   }
 
   async _getModelData() {
     const url = this.getAttribute("src");
     try {
+      // Consider local caching of model data
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
       const data = await response.json();
       this.modelData = data;
+
+      // Handle missing data gracefully
+      if (!this.modelData?.options) {
+        logger.warn("Missing model options. Skipping variant initialization.");
+      }
+
       this._setupVariantsSizes();
     } catch (error) {
-      console.error(error.message);
+      logger.error(error.message);
+      // Show a fallback UI message
     }
   }
 
   _setupVariantsSizes() {
     this.variants = this.modelData?.options || [];
-    // We'll create an array parallel to this.variants, each element is an object of sizes keyed by label
     this.variantSizes = [];
 
-    this.variants.forEach((variant, variantIndex) => {
+    this.variants.forEach((variant) => {
       const sizesForThisVariant = {};
       variant.sizes.forEach((size) => {
         const key = size.label.toLowerCase();
@@ -77,31 +263,26 @@ class ARDisplayViewer extends HTMLElement {
           depth: size.depth || "",
         };
       });
-      // Store these size definitions for each variant
-      this.variantSizes[variantIndex] = sizesForThisVariant;
+      this.variantSizes.push(sizesForThisVariant);
     });
   }
-
-  //---------------------------------------------------------------------------
-  // Removed _preloadVariants() - no more blob fetching
-  //---------------------------------------------------------------------------
 
   _getAttributes() {
     return {
       modelSrc: this.getAttribute("src") || "",
       modelPoster: this.getAttribute("poster") || "",
-      ar: true,
-      cameraControls: true,
-      touchAction: "none",
+      ar: this.hasAttribute("ar"),
+      cameraControls: this.hasAttribute("camera-controls"),
+      touchAction: this.getAttribute("touch-action") || "none",
       viewMode: this.getAttribute("view-mode") || "normal",
       arPlacement: this.getAttribute("ar-placement") || "floor",
     };
   }
 
-  _createStyles() {
-    const styles = document.createElement("style");
-    styles.textContent = `
-      /* Add your styles here */
+  _consolidateStyles() {
+    const combinedStyles = createElement("style");
+    combinedStyles.textContent = `
+      /* Consolidated Styles */
       model-viewer {
         width: 100%;
         height: 100%;
@@ -109,10 +290,7 @@ class ARDisplayViewer extends HTMLElement {
         position: relative;
       }
 
-      model-viewer[ar-status="session-started"] .qr-code-button {
-        display: none;
-      }
-
+      model-viewer[ar-status="session-started"] .qr-code-button,
       model-viewer[ar-status="object-placed"] .qr-code-button {
         display: none;
       }
@@ -136,6 +314,7 @@ class ARDisplayViewer extends HTMLElement {
         display: none;
       }
 
+      /* QR Modal */
       .qr-modal {
         display: none;
         position: fixed;
@@ -193,469 +372,7 @@ class ARDisplayViewer extends HTMLElement {
         justify-content: center;
         align-items: center;
       }
-    `;
-    this.shadowRoot.appendChild(styles);
-  }
-
-  _loadTemplate(viewMode) {
-    let template;
-    if (viewMode === "modal") {
-      template = modalTemplate;
-    } else if (viewMode === "normal") {
-      template = normalTemplate;
-    } else {
-      template = buttonTemplate;
-    }
-
-    const attributes = this._getAttributes();
-    const templateString = template(
-      attributes.ar,
-      attributes.cameraControls,
-      attributes.touchAction,
-      attributes.modelPoster,
-      attributes.arPlacement,
-      this.modelData
-    );
-    this.shadowRoot.innerHTML += templateString;
-
-    // Process the icons within the shadow root
-    this._processLucideIcons();
-  }
-
-  _updateSizePanel(variantIndex) {
-    const sizePanel = this.shadowRoot.querySelector(".size-panel");
-    if (!sizePanel) return;
-
-    // Clear existing size buttons
-    sizePanel.innerHTML = "";
-
-    // Create the wrapper again
-    const sizeButtonsWrapper = document.createElement("div");
-    sizeButtonsWrapper.classList.add("size-buttons-wrapper");
-
-    const sizesForVariant = this.variantSizes[variantIndex];
-    if (sizesForVariant) {
-      Object.entries(sizesForVariant).forEach(([sizeKey, sizeValues]) => {
-        const button = document.createElement("button");
-        button.classList.add("size-button");
-        button.textContent = sizeKey;
-        button.setAttribute("data-size-key", sizeKey);
-        // Enable as soon as variant is chosen
-        button.disabled = false;
-
-        // On click, apply that size
-        button.addEventListener("click", (event) => {
-          // Remove "selected" from all size buttons
-          const allSizeBtns = this.shadowRoot.querySelectorAll(".size-button");
-          allSizeBtns.forEach((btn) => btn.classList.remove("selected"));
-
-          // Add "selected" to the clicked button
-          event.target.classList.add("selected");
-
-          // Calculate scale and apply
-          this.calculateAndApplyScale(sizeValues);
-        });
-
-        sizeButtonsWrapper.appendChild(button);
-      });
-    }
-
-    sizePanel.appendChild(sizeButtonsWrapper);
-  }
-
-  _processLucideIcons() {
-    const element = this.shadowRoot.querySelector("[data-lucide]");
-    if (!element) return;
-
-    const iconName = element.getAttribute("data-lucide");
-    const iconData = icons[iconName];
-
-    if (iconData) {
-      // Create the SVG element
-      const svgElement = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        iconData[0]
-      );
-
-      // Set attributes on the SVG element
-      const svgAttributes = iconData[1];
-      for (const attr in svgAttributes) {
-        svgElement.setAttribute(attr, svgAttributes[attr]);
-      }
-
-      // Update attributes based on element attributes
-      svgElement.setAttribute(
-        "width",
-        element.getAttribute("width") ||
-          svgElement.getAttribute("width") ||
-          "24"
-      );
-      svgElement.setAttribute(
-        "height",
-        element.getAttribute("height") ||
-          svgElement.getAttribute("height") ||
-          "24"
-      );
-      svgElement.setAttribute(
-        "color",
-        element.getAttribute("color") ||
-          svgElement.getAttribute("color") ||
-          "currentColor"
-      );
-
-      // Create child elements (paths, circles, etc.)
-      const childElementsData = iconData[2];
-      childElementsData.forEach((childData) => {
-        const childElement = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          childData[0]
-        );
-        const childAttributes = childData[1];
-        for (const attr in childAttributes) {
-          childElement.setAttribute(attr, childAttributes[attr]);
-        }
-        svgElement.appendChild(childElement);
-      });
-
-      // Replace the element with the new SVG element
-      element.parentNode.replaceChild(svgElement, element);
-    } else {
-      console.warn(`Icon "${iconName}" not found in Lucide icons.`);
-    }
-  }
-
-  _moveSlottedContent() {
-    const customPanel = this.shadowRoot.querySelector(
-      ".ar-display-custom-panel"
-    );
-    const slottedContent = this.querySelector('slot[name="custom-panel"]');
-    if (customPanel && slottedContent) {
-      customPanel.appendChild(slottedContent);
-    } else {
-      const arDisplayDetailsPanel =
-        this.shadowRoot.querySelector(".details-panel");
-      if (arDisplayDetailsPanel) {
-        arDisplayDetailsPanel.remove();
-      }
-    }
-  }
-
-  _setupEventListeners() {
-    const modelViewer = this.shadowRoot.querySelector("model-viewer");
-
-    if (this.getAttribute("view-mode") === "modal") {
-      this._setupModalEventListeners();
-    } else {
-      this._setupNormalEventListeners();
-    }
-
-    document.addEventListener("scale", () =>
-      this._setupDimensions(modelViewer)
-    );
-
-    this._setupQRCodeListeners(modelViewer);
-  }
-
-  _setupQRCodeListeners(modelViewer) {
-    const qrCodeButton = this.shadowRoot.querySelector(".qr-code-button");
-    const qrModal = this.shadowRoot.getElementById("qrModal");
-    const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
-    const qrCodeContainer = this.shadowRoot.getElementById("qr-code");
-
-    let qrCode = null;
-
-    // Utility function to load an image
-    const loadImage = (url) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve();
-        img.onerror = img.onabort = () =>
-          reject(new Error("Image failed to load"));
-        img.src = url;
-      });
-    };
-
-    // Function to initialize and update QR code
-    const updateQrCode = async (url) => {
-      if (qrCodeContainer.firstChild) {
-        qrCodeContainer.removeChild(qrCodeContainer.firstChild);
-      }
-
-      const qrCodeSettings = this.modelData?.qrCode;
-      let imageUrl = qrCodeSettings?.image;
-
-      if (imageUrl) {
-        try {
-          await loadImage(imageUrl);
-        } catch (err) {
-          console.warn("Failed to load image for QR code:", err);
-          imageUrl = null;
-        }
-      }
-
-      const qrCodeOptions = {
-        width: parseInt(qrCodeSettings.width) || 240,
-        height: parseInt(qrCodeSettings.width) || 240,
-        data: url,
-        dotsOptions: {
-          color: qrCodeSettings.dotColor || "#000000",
-          type: qrCodeSettings.dotStyle || "square",
-        },
-        cornersSquareOptions: {
-          color: qrCodeSettings.cornerColor || "#000000",
-          type: qrCodeSettings.cornerStyle || "square",
-        },
-        cornersDotOptions: {
-          color: qrCodeSettings.cornerDotColor || "#000000",
-          type: qrCodeSettings.cornerDotStyle || "square",
-        },
-        backgroundOptions: {
-          color: qrCodeSettings.backgroundColor || "#ffffff",
-        },
-      };
-
-      if (imageUrl) {
-        qrCodeOptions.image = imageUrl;
-        qrCodeOptions.imageOptions = {
-          margin: parseInt(qrCodeSettings.imgMargin) || 0,
-          hideBackgroundDots: qrCodeSettings.imgBackground || false,
-        };
-      }
-
-      qrCode = new QRCodeStyling(qrCodeOptions);
-      qrCode.append(qrCodeContainer);
-    };
-
-    qrCodeButton.addEventListener("click", () => {
-      const isMobile =
-        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-      if (isMobile && modelViewer.canActivateAR) {
-        try {
-          modelViewer.activateAR();
-        } catch (err) {
-          console.warn("Could not activate AR:", err);
-          const currentUrl = window.location.href;
-          updateQrCode(currentUrl);
-          qrModal.style.display = "flex";
-        }
-      } else {
-        const currentUrl = window.location.href;
-        updateQrCode(currentUrl);
-        qrModal.style.display = "flex";
-      }
-    });
-
-    qrCloseButton.addEventListener("click", () => {
-      qrModal.style.display = "none";
-    });
-
-    window.addEventListener("click", (event) => {
-      if (event.target === qrModal) {
-        qrModal.style.display = "none";
-      }
-    });
-  }
-
-  _setupVariantsColors() {
-    if (!this.variants || this.variants.length === 0) return null;
-
-    const slider = document.createElement("div");
-    slider.classList.add("slider");
-
-    const slidesWrapper = document.createElement("div");
-    slidesWrapper.classList.add("slides");
-
-    this.variants.forEach((variant, index) => {
-      const modelViewer = this.shadowRoot.querySelector("model-viewer");
-      const slideButton = document.createElement("button");
-      slideButton.classList.add("slide");
-
-      // If it’s the first variant, treat it as default
-      if (index === 0) {
-        slideButton.classList.add("selected");
-        if (modelViewer && variant.url) {
-          modelViewer.src = variant.url;
-          // Possibly set poster
-          if (variant.image) {
-            modelViewer.poster = variant.image;
-          } else {
-            modelViewer.removeAttribute("poster");
-          }
-        }
-      }
-
-      // If there's a color or an image used for the "chip"
-      if (variant.image) {
-        slideButton.style.backgroundImage = `url('${variant.image}')`;
-      } else {
-        slideButton.style.backgroundColor = variant.color || "#ccc";
-      }
-
-      slideButton.onclick = () => {
-        if (!modelViewer) return;
-
-        // Swap model src to the direct URL
-        if (variant.url) {
-          modelViewer.src = variant.url;
-        }
-
-        // Update the size panel for this variant’s sizes
-        this._updateSizePanel(index);
-
-        // Poster?
-        if (variant.image) {
-          modelViewer.poster = variant.image;
-        } else {
-          modelViewer.removeAttribute("poster");
-        }
-
-        // Manage “selected” classes
-        const allSlides = slidesWrapper.querySelectorAll(".slide");
-        allSlides.forEach((s) => s.classList.remove("selected"));
-        slideButton.classList.add("selected");
-
-        // Update the selectedIndex
-        this.selectedIndex = index;
-      };
-
-      slidesWrapper.appendChild(slideButton);
-    });
-
-    slider.appendChild(slidesWrapper);
-    return slider;
-  }
-
-  _setupBottomNavBar(modelViewer) {
-    const navBar = document.createElement("div");
-    navBar.classList.add("bottom-nav-bar");
-
-    const sizeBtn = document.createElement("button");
-    sizeBtn.textContent = "Size";
-    sizeBtn.classList.add("nav-btn");
-
-    const colorBtn = document.createElement("button");
-    colorBtn.textContent = "Color";
-    colorBtn.classList.add("nav-btn");
-
-    const shareBtn = document.createElement("button");
-    shareBtn.textContent = "Share";
-    shareBtn.classList.add("nav-btn", "share-btn");
-
-    const sizePanel = document.createElement("div");
-    sizePanel.classList.add("sub-panel", "hidden");
-    const colorPanel = document.createElement("div");
-    colorPanel.classList.add("sub-panel", "hidden");
-
-    const sizeControls = this._createSizeControls();
-    const colorControls = this._setupVariantsColors();
-
-    sizePanel.addEventListener("click", (event) =>
-      this._handleSizeChange(event)
-    );
-
-    modelViewer.addEventListener("load", () => {
-      // If no explicit boundingBox is found for the initially loaded variant,
-      // fallback to model-viewer's reported size
-      const size = modelViewer.getDimensions();
-      const scale = modelViewer.scale.toString().split(" ").map(Number);
-      this.originalSize = new THREE.Vector3();
-      this.originalSize.x = size.x / scale[0];
-      this.originalSize.y = size.y / scale[1];
-      this.originalSize.z = size.z / scale[2];
-
-      // Automatically apply the first size in the selected variant if it exists
-      if (this.variantSizes && this.variantSizes[this.selectedIndex]) {
-        const sizesForVariant = this.variantSizes[this.selectedIndex];
-        const firstSizeKey = Object.keys(sizesForVariant)[0];
-        if (firstSizeKey) {
-          const firstSizeValues = sizesForVariant[firstSizeKey];
-
-          // Apply the scale computation
-          this.calculateAndApplyScale(firstSizeValues);
-
-          // Mark the correct button as "selected" in the UI
-          requestAnimationFrame(() => {
-            const sizeButtons =
-              this.shadowRoot.querySelectorAll(".size-button");
-            sizeButtons.forEach((btn) => {
-              if (btn.textContent === firstSizeKey) {
-                btn.classList.add("selected");
-              } else {
-                btn.classList.remove("selected");
-              }
-            });
-          });
-        }
-      }
-
-      // if not size panel exists, create it
-      if (!this.shadowRoot.querySelector(".size-panel button")) {
-        this._updateSizePanel(0);
-      }
-
-      // Hide the default AR-button slot if desired
-      const arButtonSlot =
-        modelViewer.shadowRoot.querySelector(".slot.ar-button");
-      if (arButtonSlot) {
-        arButtonSlot.style.display = "none";
-      }
-    });
-
-    if (sizeControls) sizePanel.appendChild(sizeControls);
-    if (colorControls) colorPanel.appendChild(colorControls);
-
-    navBar.appendChild(sizeBtn);
-    navBar.appendChild(colorBtn);
-    navBar.appendChild(shareBtn);
-    navBar.appendChild(sizePanel);
-    navBar.appendChild(colorPanel);
-
-    const togglePanel = (panel) => {
-      const currentPanelState = panel.classList.contains("hidden");
-      sizePanel.classList.add("hidden");
-      colorPanel.classList.add("hidden");
-      panel.classList.toggle("hidden", !currentPanelState);
-    };
-
-    sizeBtn.addEventListener("click", () => {
-      togglePanel(sizePanel);
-    });
-
-    colorBtn.addEventListener("click", () => {
-      togglePanel(colorPanel);
-    });
-
-    shareBtn.addEventListener("click", async () => {
-      const shareData = {
-        title: document.title,
-        text: "Check out this AR model!",
-        url: window.location.href,
-      };
-      try {
-        await navigator.share(shareData);
-        console.log("Content shared successfully");
-      } catch (err) {
-        console.warn("Share failed:", err);
-      }
-    });
-
-    // Add the click-away event listener
-    document.addEventListener("mousedown", (e) => {
-      const path = e.composedPath();
-      if (!path.includes(navBar)) {
-        sizePanel.classList.add("hidden");
-        colorPanel.classList.add("hidden");
-      }
-    });
-
-    modelViewer.appendChild(navBar);
-
-    // Add styling
-    const style = document.createElement("style");
-    style.textContent = `
-      /* The bottom nav bar container */
+      /* Bottom Nav Bar */
       .bottom-nav-bar {
         position: absolute;
         bottom: 0;
@@ -685,7 +402,7 @@ class ARDisplayViewer extends HTMLElement {
         background-color: #ddd;
       }
 
-      /* Sub-panels that slide up above the nav bar */
+      /* Sub-panels */
       .sub-panel {
         position: absolute;
         bottom: 60px; /* ensure it sits over the nav bar */
@@ -699,7 +416,7 @@ class ARDisplayViewer extends HTMLElement {
         display: none;
       }
 
-      /* COLOR SLIDER STYLES */
+      /* Color Slider */
       .slider {
         width: 100%;
         text-align: center;
@@ -739,7 +456,7 @@ class ARDisplayViewer extends HTMLElement {
         box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
       }
 
-      /* SIZE PANEL STYLES */
+      /* Size Panel */
       .size-panel {
         display: flex;
         gap: 12px;
@@ -772,7 +489,412 @@ class ARDisplayViewer extends HTMLElement {
         opacity: 1;
       }
     `;
-    modelViewer.appendChild(style);
+    return combinedStyles;
+  }
+
+  _loadTemplate(viewMode) {
+    const template =
+      viewMode === "modal"
+        ? modalTemplate
+        : viewMode === "normal"
+        ? normalTemplate
+        : buttonTemplate;
+
+    const attributes = this._getAttributes();
+    const templateString = template(
+      attributes.ar,
+      attributes.cameraControls,
+      attributes.touchAction,
+      attributes.modelPoster,
+      attributes.arPlacement,
+      this.modelData
+    );
+
+    // Use a DocumentFragment for better DOM updates
+    const fragment = document
+      .createRange()
+      .createContextualFragment(templateString);
+
+    // Process the icons within the fragment
+    this._processLucideIcons(fragment);
+
+    this.shadowRoot.appendChild(fragment);
+  }
+
+  _updateSizePanel(variantIndex) {
+    const sizePanel = this.shadowRoot.querySelector(".size-panel");
+    if (!sizePanel) return;
+
+    sizePanel.innerHTML = "";
+
+    const sizeButtonsWrapper = createElement("div", {
+      classList: ["size-buttons-wrapper"],
+    });
+
+    const sizesForVariant = this.variantSizes[variantIndex];
+    if (sizesForVariant) {
+      Object.entries(sizesForVariant).forEach(([sizeKey, sizeValues]) => {
+        const button = createElement("button", {
+          classList: ["size-button"],
+          textContent: sizeKey,
+          attributes: {
+            "data-size-key": sizeKey,
+          },
+          disabled: false,
+        });
+
+        button.addEventListener("click", (event) => {
+          this.shadowRoot
+            .querySelectorAll(".size-button")
+            .forEach((btn) => btn.classList.remove("selected"));
+          event.target.classList.add("selected");
+          this.calculateAndApplyScale(sizeValues);
+        });
+
+        sizeButtonsWrapper.appendChild(button);
+      });
+    }
+
+    sizePanel.appendChild(sizeButtonsWrapper);
+  }
+
+  _processLucideIcons(fragment) {
+    const elements = fragment.querySelectorAll("[data-lucide]");
+
+    elements.forEach((element) => {
+      const iconName = element.getAttribute("data-lucide");
+      const iconData = icons[iconName];
+
+      if (iconData) {
+        const [tagName, attributes, children] = iconData;
+
+        const svgElement = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          tagName
+        );
+
+        for (const attr in attributes) {
+          svgElement.setAttribute(attr, attributes[attr]);
+        }
+
+        const defaultAttributes = {
+          width: "24",
+          height: "24",
+          color: "currentColor",
+        };
+        for (const attr in defaultAttributes) {
+          svgElement.setAttribute(
+            attr,
+            element.getAttribute(attr) ||
+              svgElement.getAttribute(attr) ||
+              defaultAttributes[attr]
+          );
+        }
+
+        children.forEach((childData) => {
+          const [childTagName, childAttributes] = childData;
+          const childElement = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            childTagName
+          );
+          for (const attr in childAttributes) {
+            childElement.setAttribute(attr, childAttributes[attr]);
+          }
+          svgElement.appendChild(childElement);
+        });
+
+        element.parentNode.replaceChild(svgElement, element);
+      } else {
+        logger.warn(`Icon "${iconName}" not found in Lucide icons.`);
+      }
+    });
+  }
+
+  _moveSlottedContent() {
+    const customPanel = this.shadowRoot.querySelector(
+      ".ar-display-custom-panel"
+    );
+    const slottedContent = this.querySelector('slot[name="custom-panel"]');
+    if (customPanel && slottedContent) {
+      customPanel.appendChild(slottedContent);
+    } else {
+      const arDisplayDetailsPanel =
+        this.shadowRoot.querySelector(".details-panel");
+      if (arDisplayDetailsPanel) {
+        arDisplayDetailsPanel.remove();
+      }
+    }
+  }
+
+  _setupEventListeners() {
+    if (this.getAttribute("view-mode") === "modal") {
+      this._setupModalEventListeners();
+    } else {
+      this._setupNormalEventListeners();
+    }
+
+    // Use a single debounced/throttled method for dimension updates
+    this.boundHandleScale = () => this._setupDimensions(this.modelViewer);
+    this.boundHandleModelVisibility = () =>
+      this._setupDimensions(this.modelViewer);
+    this.boundHandleArStatus = (event) => this._handleArStatusChange(event);
+    this.boundHandleCameraChange = () => {
+      this.debouncedRenderSVG();
+      this.debouncedUpdateDimensionHotspots();
+    };
+    this.boundHandleSceneGraphReady = () => {
+      this.debouncedRenderSVG();
+      this.debouncedUpdateDimensionHotspots();
+    };
+    this.boundHandleLoad = () => {
+      // If no explicit boundingBox is found for the initially loaded variant,
+      // fallback to model-viewer's reported size
+      const size = this.modelViewer.getDimensions();
+      const scale = this.modelViewer.scale.toString().split(" ").map(Number);
+      this.originalSize = { x: 0, y: 0, z: 0 };
+      this.originalSize.x = size.x / scale[0];
+      this.originalSize.y = size.y / scale[1];
+      this.originalSize.z = size.z / scale[2];
+
+      // Automatically apply the first size in the selected variant if it exists
+      if (this.variantSizes && this.variantSizes[this.selectedIndex]) {
+        const sizesForVariant = this.variantSizes[this.selectedIndex];
+        const firstSizeKey = Object.keys(sizesForVariant)[0];
+        if (firstSizeKey) {
+          const firstSizeValues = sizesForVariant[firstSizeKey];
+
+          // Apply the scale computation
+          this.calculateAndApplyScale(firstSizeValues);
+
+          // Mark the correct button as "selected" in the UI
+          requestAnimationFrame(() => {
+            const sizeButtons =
+              this.shadowRoot.querySelectorAll(".size-button");
+            sizeButtons.forEach((btn) => {
+              if (btn.textContent === firstSizeKey) {
+                btn.classList.add("selected");
+              } else {
+                btn.classList.remove("selected");
+              }
+            });
+          });
+        }
+      }
+
+      // if not size panel exists, create it
+      if (!this.shadowRoot.querySelector(".size-panel button")) {
+        this._updateSizePanel(0);
+      }
+
+      // Hide the default AR-button slot if desired
+      const arButtonSlot =
+        this.modelViewer.shadowRoot.querySelector(".slot.ar-button");
+      if (arButtonSlot) {
+        arButtonSlot.style.display = "none";
+      }
+    };
+
+    document.addEventListener("scale", this.boundHandleScale);
+    this.modelViewer.addEventListener(
+      "model-visibility",
+      this.boundHandleModelVisibility
+    );
+    this.modelViewer.addEventListener("ar-status", this.boundHandleArStatus);
+    this.modelViewer.addEventListener(
+      "camera-change",
+      this.boundHandleCameraChange
+    );
+    this.modelViewer.addEventListener(
+      "scene-graph-ready",
+      this.boundHandleSceneGraphReady
+    );
+    this.modelViewer.addEventListener("load", this.boundHandleLoad);
+
+    this._setupQRCodeListeners();
+  }
+
+  _setupQRCodeListeners() {
+    const qrCodeButton = this.shadowRoot.querySelector(".qr-code-button");
+    const qrModal = this.shadowRoot.getElementById("qrModal");
+    const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
+    const qrCodeContainer = this.shadowRoot.getElementById("qr-code");
+
+    const qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
+
+    qrCodeButton.addEventListener("click", () => {
+      this._sendShortStatsEvent("Click");
+      const isMobile =
+        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+      if (isMobile && this.modelViewer.canActivateAR) {
+        try {
+          this._sendShortStatsEvent("Try");
+          this.modelViewer.activateAR();
+        } catch (err) {
+          this._sendShortStatsEvent("Failed", err.message);
+          logger.warn("Could not activate AR:", err);
+          // AR Fallback Flow
+          logger.warn("AR not supported on this device. Displaying QR code.");
+          const currentUrl = window.location.href;
+          qrCodeManager.updateQrCode(currentUrl);
+          qrModal.style.display = "flex";
+        }
+      } else {
+        const currentUrl = window.location.href;
+        qrCodeManager.updateQrCode(currentUrl);
+        qrModal.style.display = "flex";
+      }
+    });
+
+    qrCloseButton.addEventListener("click", () => {
+      qrModal.style.display = "none";
+    });
+
+    this.boundHandleDocumentMouseDown = (event) => {
+      if (event.target === qrModal) {
+        qrModal.style.display = "none";
+      }
+    };
+
+    window.addEventListener("click", this.boundHandleDocumentMouseDown);
+  }
+
+  _setupVariantsColors() {
+    if (!this.variants || this.variants.length === 0) return null;
+
+    const slider = createElement("div", { classList: ["slider"] });
+    const slidesWrapper = createElement("div", { classList: ["slides"] });
+
+    this.variants.forEach((variant, index) => {
+      const slideButton = createElement("button", { classList: ["slide"] });
+
+      if (index === 0) {
+        slideButton.classList.add("selected");
+        if (this.modelViewer && variant.url) {
+          this.modelViewer.src = variant.url;
+          if (variant.image) {
+            this.modelViewer.poster = variant.image;
+          } else {
+            this.modelViewer.removeAttribute("poster");
+          }
+        }
+      }
+
+      if (variant.image) {
+        slideButton.style.backgroundImage = `url('${variant.image}')`;
+      } else {
+        slideButton.style.backgroundColor = variant.color || "#ccc";
+      }
+
+      slideButton.onclick = () => {
+        if (!this.modelViewer) return;
+
+        if (variant.url) {
+          this.modelViewer.src = variant.url;
+        }
+
+        this._updateSizePanel(index);
+
+        if (variant.image) {
+          this.modelViewer.poster = variant.image;
+        } else {
+          this.modelViewer.removeAttribute("poster");
+        }
+
+        slidesWrapper
+          .querySelectorAll(".slide")
+          .forEach((s) => s.classList.remove("selected"));
+        slideButton.classList.add("selected");
+
+        this.selectedIndex = index;
+      };
+
+      slidesWrapper.appendChild(slideButton);
+    });
+
+    slider.appendChild(slidesWrapper);
+    return slider;
+  }
+
+  _setupBottomNavBar() {
+    const navBar = createElement("div", { classList: ["bottom-nav-bar"] });
+    const sizeBtn = createElement("button", {
+      textContent: "Size",
+      classList: ["nav-btn"],
+    });
+    const colorBtn = createElement("button", {
+      textContent: "Color",
+      classList: ["nav-btn"],
+    });
+    const shareBtn = createElement("button", {
+      textContent: "Share",
+      classList: ["nav-btn", "share-btn"],
+    });
+    const sizePanel = createElement("div", {
+      classList: ["sub-panel", "hidden"],
+    });
+    const colorPanel = createElement("div", {
+      classList: ["sub-panel", "hidden"],
+    });
+
+    const sizeControls = this._createSizeControls();
+    const colorControls = this._setupVariantsColors();
+
+    sizePanel.addEventListener("click", (event) =>
+      this._handleSizeChange(event)
+    );
+
+    if (sizeControls) sizePanel.appendChild(sizeControls);
+    if (colorControls) colorPanel.appendChild(colorControls);
+
+    navBar.appendChild(sizeBtn);
+    navBar.appendChild(colorBtn);
+    navBar.appendChild(shareBtn);
+    navBar.appendChild(sizePanel);
+    navBar.appendChild(colorPanel);
+
+    const togglePanel = (panel) => {
+      const currentPanelState = panel.classList.contains("hidden");
+      sizePanel.classList.add("hidden");
+      colorPanel.classList.add("hidden");
+      panel.classList.toggle("hidden", !currentPanelState);
+    };
+
+    sizeBtn.addEventListener("click", () => {
+      togglePanel(sizePanel);
+    });
+
+    colorBtn.addEventListener("click", () => {
+      togglePanel(colorPanel);
+    });
+
+    shareBtn.addEventListener("click", async () => {
+      this._sendShortStatsEvent("Share");
+      const shareData = {
+        title: document.title,
+        text: "Check out this AR model!",
+        url: window.location.href,
+      };
+      try {
+        await navigator.share(shareData);
+        logger.debug("Content shared successfully");
+      } catch (err) {
+        logger.warn("Share failed:", err);
+      }
+    });
+
+    this.boundHandleDocumentMouseDown = (e) => {
+      const path = e.composedPath();
+      if (!path.includes(navBar)) {
+        sizePanel.classList.add("hidden");
+        colorPanel.classList.add("hidden");
+      }
+    };
+
+    document.addEventListener("mousedown", this.boundHandleDocumentMouseDown);
+
+    this.modelViewer.appendChild(navBar);
   }
 
   _setupModalEventListeners() {
@@ -783,14 +905,13 @@ class ARDisplayViewer extends HTMLElement {
     );
     const closeButton = this.shadowRoot.querySelector(".close-button");
     const overlay = this.shadowRoot.querySelector(".overlay");
-    const modelViewer = this.shadowRoot.querySelector("model-viewer");
 
     view3DButton.addEventListener("click", () => {
       previewImage.style.display = "none";
       view3DButton.style.display = "none";
       modelViewerContainer.style.display = "flex";
       overlay.style.display = "block";
-      this._setupDimensions(modelViewer);
+      this._setupDimensions(this.modelViewer);
     });
 
     closeButton.addEventListener("click", () => {
@@ -802,17 +923,14 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupNormalEventListeners() {
-    this.shadowRoot
-      .querySelector("model-viewer")
-      .addEventListener("model-visibility", () => {
-        this._setupDimensions(this.shadowRoot.querySelector("model-viewer"));
-      });
+    // This is handled in _setupEventListeners
   }
 
-  _setupDimensions(modelViewer) {
+  _handleArStatusChange(event) {
+    const isSessionStarted = event.detail.status === "session-started";
     const dimElements = [
-      ...modelViewer.querySelectorAll("[data-hotspot]"),
-      modelViewer.querySelector("#dimLines"),
+      ...this.modelViewer.querySelectorAll("[data-hotspot]"),
+      this.modelViewer.querySelector("#dimLines"),
     ].filter(Boolean);
 
     const setVisibility = (visible) => {
@@ -821,218 +939,201 @@ class ARDisplayViewer extends HTMLElement {
       });
     };
 
-    modelViewer.addEventListener("ar-status", (event) => {
-      const isSessionStarted = event.detail.status === "session-started";
-      setVisibility(!isSessionStarted);
-    });
+    setVisibility(!isSessionStarted);
+  }
 
-    const drawLine = (svgLine, startHotspot, endHotspot, dimensionHotspot) => {
-      if (!svgLine || !startHotspot || !endHotspot) return;
-      svgLine.setAttribute("x1", startHotspot.canvasPosition.x);
-      svgLine.setAttribute("y1", startHotspot.canvasPosition.y);
-      svgLine.setAttribute("x2", endHotspot.canvasPosition.x);
-      svgLine.setAttribute("y2", endHotspot.canvasPosition.y);
-      if (dimensionHotspot) {
-        svgLine.classList.toggle("hide", !dimensionHotspot.facingCamera);
-      }
-    };
+  _drawLine(svgLine, startHotspot, endHotspot, dimensionHotspot) {
+    if (!svgLine || !startHotspot || !endHotspot) return;
+    svgLine.setAttribute("x1", startHotspot.canvasPosition.x);
+    svgLine.setAttribute("y1", startHotspot.canvasPosition.y);
+    svgLine.setAttribute("x2", endHotspot.canvasPosition.x);
+    svgLine.setAttribute("y2", endHotspot.canvasPosition.y);
+    if (dimensionHotspot) {
+      svgLine.classList.toggle("hide", !dimensionHotspot.facingCamera);
+    }
+  }
 
-    const dimLines = modelViewer.querySelectorAll("line");
+  _renderSVG() {
+    const dimLines = this.modelViewer.querySelectorAll("line");
+    if (dimLines.length === 0) return;
 
-    const renderSVG = () => {
-      if (dimLines.length === 0) return;
+    const lineMappings = [
+      {
+        line: dimLines[0],
+        start: "hotspot-dot+X-Y+Z",
+        end: "hotspot-dot+X-Y-Z",
+        dimension: "hotspot-dim+X-Y",
+      },
+      {
+        line: dimLines[1],
+        start: "hotspot-dot+X-Y-Z",
+        end: "hotspot-dot+X+Y-Z",
+        dimension: "hotspot-dim+X-Z",
+      },
+      {
+        line: dimLines[2],
+        start: "hotspot-dot+X+Y-Z",
+        end: "hotspot-dot-X+Y-Z",
+      },
+      {
+        line: dimLines[3],
+        start: "hotspot-dot-X+Y-Z",
+        end: "hotspot-dot-X-Y-Z",
+        dimension: "hotspot-dim-X-Z",
+      },
+      {
+        line: dimLines[4],
+        start: "hotspot-dot-X-Y-Z",
+        end: "hotspot-dot-X-Y+Z",
+        dimension: "hotspot-dim-X-Y",
+      },
+    ];
 
-      const lineMappings = [
-        {
-          line: dimLines[0],
-          start: "hotspot-dot+X-Y+Z",
-          end: "hotspot-dot+X-Y-Z",
-          dimension: "hotspot-dim+X-Y",
-        },
-        {
-          line: dimLines[1],
-          start: "hotspot-dot+X-Y-Z",
-          end: "hotspot-dot+X+Y-Z",
-          dimension: "hotspot-dim+X-Z",
-        },
-        {
-          line: dimLines[2],
-          start: "hotspot-dot+X+Y-Z",
-          end: "hotspot-dot-X+Y-Z",
-        },
-        {
-          line: dimLines[3],
-          start: "hotspot-dot-X+Y-Z",
-          end: "hotspot-dot-X-Y-Z",
-          dimension: "hotspot-dim-X-Z",
-        },
-        {
-          line: dimLines[4],
-          start: "hotspot-dot-X-Y-Z",
-          end: "hotspot-dot-X-Y+Z",
-          dimension: "hotspot-dim-X-Y",
-        },
-      ];
-
-      lineMappings.forEach(({ line, start, end, dimension }) => {
-        drawLine(
-          line,
-          modelViewer.queryHotspot(start),
-          modelViewer.queryHotspot(end),
-          dimension ? modelViewer.queryHotspot(dimension) : null
-        );
-      });
-    };
-
-    const updateDimensionHotspots = () => {
-      // Position dimension hotspots around the current bounding box
-      const center = modelViewer.getBoundingBoxCenter();
-      const size = modelViewer.getDimensions();
-      const halfSize = {
-        x: size.x / 2,
-        y: size.y / 2,
-        z: size.z / 2,
-      };
-
-      const hotspotsData = [
-        {
-          name: "hotspot-dot+X-Y+Z",
-          position: [
-            center.x + halfSize.x,
-            center.y - halfSize.y,
-            center.z + halfSize.z,
-          ],
-        },
-        {
-          name: "hotspot-dim+X-Y",
-          position: [
-            center.x + halfSize.x * 1.2,
-            center.y - halfSize.y * 1.1,
-            center.z,
-          ],
-          label: `${(size.z * 100).toFixed(0)} cm`,
-          labelSelector: '[slot="hotspot-dim+X-Y"]',
-        },
-        {
-          name: "hotspot-dot+X-Y-Z",
-          position: [
-            center.x + halfSize.x,
-            center.y - halfSize.y,
-            center.z - halfSize.z,
-          ],
-        },
-        {
-          name: "hotspot-dim+X-Z",
-          position: [
-            center.x + halfSize.x * 1.2,
-            center.y,
-            center.z - halfSize.z * 1.2,
-          ],
-          label: `${(size.y * 100).toFixed(0)} cm`,
-          labelSelector: '[slot="hotspot-dim+X-Z"]',
-        },
-        {
-          name: "hotspot-dot+X+Y-Z",
-          position: [
-            center.x + halfSize.x,
-            center.y + halfSize.y,
-            center.z - halfSize.z,
-          ],
-        },
-        {
-          name: "hotspot-dim+Y-Z",
-          position: [
-            center.x,
-            center.y + halfSize.y * 1.1,
-            center.z - halfSize.z * 1.1,
-          ],
-          label: `${(size.x * 100).toFixed(0)} cm`,
-          labelSelector: '[slot="hotspot-dim+Y-Z"]',
-        },
-        {
-          name: "hotspot-dot-X+Y-Z",
-          position: [
-            center.x - halfSize.x,
-            center.y + halfSize.y,
-            center.z - halfSize.z,
-          ],
-        },
-        {
-          name: "hotspot-dim-X-Z",
-          position: [
-            center.x - halfSize.x * 1.2,
-            center.y,
-            center.z - halfSize.z * 1.2,
-          ],
-          label: `${(size.y * 100).toFixed(0)} cm`,
-          labelSelector: '[slot="hotspot-dim-X-Z"]',
-        },
-        {
-          name: "hotspot-dot-X-Y-Z",
-          position: [
-            center.x - halfSize.x,
-            center.y - halfSize.y,
-            center.z - halfSize.z,
-          ],
-        },
-        {
-          name: "hotspot-dim-X-Y",
-          position: [
-            center.x - halfSize.x * 1.2,
-            center.y - halfSize.y * 1.1,
-            center.z,
-          ],
-          label: `${(size.z * 100).toFixed(0)} cm`,
-          labelSelector: '[slot="hotspot-dim-X-Y"]',
-        },
-        {
-          name: "hotspot-dot-X-Y+Z",
-          position: [
-            center.x - halfSize.x,
-            center.y - halfSize.y,
-            center.z + halfSize.z,
-          ],
-        },
-      ];
-
-      hotspotsData.forEach(({ name, position, label, labelSelector }) => {
-        modelViewer.updateHotspot({
-          name,
-          position: position.join(" "),
-        });
-        if (label && labelSelector) {
-          const labelElement = modelViewer.querySelector(labelSelector);
-          if (labelElement) {
-            labelElement.textContent = label;
-          }
-        }
-      });
-    };
-
-    requestAnimationFrame(() => {
-      renderSVG();
-      updateDimensionHotspots();
-    });
-
-    modelViewer.addEventListener("camera-change", () => {
-      renderSVG();
-      updateDimensionHotspots();
-    });
-
-    modelViewer.addEventListener("scene-graph-ready", () => {
-      renderSVG();
-      updateDimensionHotspots();
+    lineMappings.forEach(({ line, start, end, dimension }) => {
+      this._drawLine(
+        line,
+        this.modelViewer.queryHotspot(start),
+        this.modelViewer.queryHotspot(end),
+        dimension ? this.modelViewer.queryHotspot(dimension) : null
+      );
     });
   }
 
+  _updateDimensionHotspots() {
+    const center = this.modelViewer.getBoundingBoxCenter();
+    const size = this.modelViewer.getDimensions();
+    const halfSize = {
+      x: size.x / 2,
+      y: size.y / 2,
+      z: size.z / 2,
+    };
+
+    const hotspotsData = [
+      {
+        name: "hotspot-dot+X-Y+Z",
+        position: [
+          center.x + halfSize.x,
+          center.y - halfSize.y,
+          center.z + halfSize.z,
+        ],
+      },
+      {
+        name: "hotspot-dim+X-Y",
+        position: [
+          center.x + halfSize.x * 1.2,
+          center.y - halfSize.y * 1.1,
+          center.z,
+        ],
+        label: `${(size.z * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+X-Y"]',
+      },
+      {
+        name: "hotspot-dot+X-Y-Z",
+        position: [
+          center.x + halfSize.x,
+          center.y - halfSize.y,
+          center.z - halfSize.z,
+        ],
+      },
+      {
+        name: "hotspot-dim+X-Z",
+        position: [
+          center.x + halfSize.x * 1.2,
+          center.y,
+          center.z - halfSize.z * 1.2,
+        ],
+        label: `${(size.y * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+X-Z"]',
+      },
+      {
+        name: "hotspot-dot+X+Y-Z",
+        position: [
+          center.x + halfSize.x,
+          center.y + halfSize.y,
+          center.z - halfSize.z,
+        ],
+      },
+      {
+        name: "hotspot-dim+Y-Z",
+        position: [
+          center.x,
+          center.y + halfSize.y * 1.1,
+          center.z - halfSize.z * 1.1,
+        ],
+        label: `${(size.x * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+Y-Z"]',
+      },
+      {
+        name: "hotspot-dot-X+Y-Z",
+        position: [
+          center.x - halfSize.x,
+          center.y + halfSize.y,
+          center.z - halfSize.z,
+        ],
+      },
+      {
+        name: "hotspot-dim-X-Z",
+        position: [
+          center.x - halfSize.x * 1.2,
+          center.y,
+          center.z - halfSize.z * 1.2,
+        ],
+        label: `${(size.y * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim-X-Z"]',
+      },
+      {
+        name: "hotspot-dot-X-Y-Z",
+        position: [
+          center.x - halfSize.x,
+          center.y - halfSize.y,
+          center.z - halfSize.z,
+        ],
+      },
+      {
+        name: "hotspot-dim-X-Y",
+        position: [
+          center.x - halfSize.x * 1.2,
+          center.y - halfSize.y * 1.1,
+          center.z,
+        ],
+        label: `${(size.z * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim-X-Y"]',
+      },
+      {
+        name: "hotspot-dot-X-Y+Z",
+        position: [
+          center.x - halfSize.x,
+          center.y - halfSize.y,
+          center.z + halfSize.z,
+        ],
+      },
+    ];
+
+    hotspotsData.forEach(({ name, position, label, labelSelector }) => {
+      this.modelViewer.updateHotspot({
+        name,
+        position: position.join(" "),
+      });
+      if (label && labelSelector) {
+        const labelElement = this.modelViewer.querySelector(labelSelector);
+        if (labelElement) {
+          labelElement.textContent = label;
+        }
+      }
+    });
+  }
+
+  _setupDimensions() {
+    this.debouncedRenderSVG();
+    this.debouncedUpdateDimensionHotspots();
+  }
+
   _createSizeControls() {
-    const sizePanel = document.createElement("div");
-    sizePanel.classList.add("size-panel");
+    const sizePanel = createElement("div", { classList: ["size-panel"] });
+    const sizeButtonsWrapper = createElement("div", {
+      classList: ["size-buttons-wrapper"],
+    });
 
-    const sizeButtonsWrapper = document.createElement("div");
-    sizeButtonsWrapper.classList.add("size-buttons-wrapper");
-
-    // The actual size buttons get appended/replaced later in _updateSizePanel.
     sizePanel.appendChild(sizeButtonsWrapper);
     return sizePanel;
   }
@@ -1040,29 +1141,25 @@ class ARDisplayViewer extends HTMLElement {
   _handleSizeChange(event) {
     if (event.target.classList.contains("size-button")) {
       const sizeKey = event.target.getAttribute("data-size-key");
-      // Not used in the updated code because we call calculateAndApplyScale ourselves
-      if (this.sizes && this.sizes[sizeKey]) {
-        // Remove "selected" from all size buttons
-        const allSizeBtns = this.shadowRoot.querySelectorAll(".size-button");
-        allSizeBtns.forEach((btn) => btn.classList.remove("selected"));
+      if (this.variantSizes[this.selectedIndex][sizeKey]) {
+        this.shadowRoot
+          .querySelectorAll(".size-button")
+          .forEach((btn) => btn.classList.remove("selected"));
 
-        // Add "selected" to the clicked button
         event.target.classList.add("selected");
 
-        // Apply the scale
-        const desiredSize = this.sizes[sizeKey];
+        const desiredSize = this.variantSizes[this.selectedIndex][sizeKey];
         this.calculateAndApplyScale(desiredSize);
       }
     }
   }
 
   applyScale() {
-    const modelViewer = this.shadowRoot.querySelector("model-viewer");
-    if (this.calculatedScale && modelViewer) {
-      modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
-      if (typeof modelViewer.updateFraming === "function") {
+    if (this.calculatedScale && this.modelViewer) {
+      this.modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
+      if (typeof this.modelViewer.updateFraming === "function") {
         requestAnimationFrame(() => {
-          modelViewer.updateFraming();
+          this.modelViewer.updateFraming();
           document.dispatchEvent(this.scaleEvent);
         });
       }
@@ -1076,7 +1173,7 @@ class ARDisplayViewer extends HTMLElement {
       this.calculatedScale = scale;
       this.applyScale();
     } catch (error) {
-      console.error("Error applying scale for chosen size:", error);
+      logger.error("Error applying scale for chosen size:", error);
     }
   }
 
@@ -1085,7 +1182,6 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   calculateModelScale(desiredSize) {
-    // If for some reason we never measured bounding box, fallback
     const size = this.originalSize || { x: 1, y: 1, z: 1 };
 
     const originalWidth = size.x;
@@ -1094,7 +1190,6 @@ class ARDisplayViewer extends HTMLElement {
 
     const desiredWidth = this.cmToMeters(desiredSize.width);
     const desiredHeight = this.cmToMeters(desiredSize.height);
-    // If no depth is specified, pick a small default
     const desiredDepth = desiredSize.depth
       ? this.cmToMeters(desiredSize.depth)
       : 0.05;
