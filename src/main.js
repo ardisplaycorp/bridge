@@ -7,23 +7,21 @@ import { icons } from "lucide";
 import "./style.css";
 
 // Utility for creating and appending elements
-function createElement(tag, options = {}) {
-  const element = document.createElement(tag);
-  Object.entries(options).forEach(([key, value]) => {
-    if (key === "classList") {
-      value.forEach((className) => element.classList.add(className));
-    } else if (key === "textContent") {
-      element.textContent = value;
-    } else if (key === "attributes") {
-      Object.entries(value).forEach(([attr, attrValue]) => {
-        element.setAttribute(attr, attrValue);
-      });
-    } else {
-      element[key] = value;
-    }
-  });
-  return element;
-}
+const createElement = (tag, options = {}) => {
+  const el = document.createElement(tag);
+  if (options.classList) {
+    options.classList.forEach((cls) => el.classList.add(cls));
+  }
+  if (options.textContent) {
+    el.textContent = options.textContent;
+  }
+  if (options.attributes) {
+    Object.entries(options.attributes).forEach(([attr, val]) => {
+      el.setAttribute(attr, val);
+    });
+  }
+  return el;
+};
 
 // Debug/Logging Utility
 const logger = {
@@ -165,7 +163,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("https://26eb-102-100-169-68.ngrok-free.app/api/stats", {
+    fetch("https://ad64-102-100-169-68.ngrok-free.app/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -192,9 +190,23 @@ class ARDisplayViewer extends HTMLElement {
 
     this.modelViewer = this.shadowRoot.querySelector("model-viewer");
     this._setupEventListeners();
-    this._setupBottomNavBar(this.modelViewer);
+    // this._setupBottomNavBar(this.modelViewer);
 
     this._sendShortStatsEvent("View");
+
+    // ---------- UI updates for bottom nav and floating cart ----------
+    // Bottom area container (relative positioning for floating button)
+    const bottomContainer = createElement("div", {
+      classList: ["bottom-container"],
+    });
+    this.modelViewer.appendChild(bottomContainer);
+
+    // Setup the floating cart button
+    this._setupCartButton(bottomContainer);
+
+    // Setup the panels and bottom nav
+    this._setupBottomNavBar(bottomContainer);
+    // ------------------------------------------------------------------
   }
 
   disconnectedCallback() {
@@ -373,6 +385,13 @@ class ARDisplayViewer extends HTMLElement {
         align-items: center;
       }
       /* Bottom Nav Bar */
+      .bottom-container{
+        position: absolute;
+        width: 100%;
+        height: 0px;
+        bottom: 4rem;
+      }
+
       .bottom-nav-bar {
         position: absolute;
         bottom: 0;
@@ -405,7 +424,7 @@ class ARDisplayViewer extends HTMLElement {
       /* Sub-panels */
       .sub-panel {
         position: absolute;
-        bottom: 60px; /* ensure it sits over the nav bar */
+        bottom: 0; /* ensure it sits over the nav bar */
         left: 0;
         width: 100%;
         background-color: transparent;
@@ -456,38 +475,140 @@ class ARDisplayViewer extends HTMLElement {
         box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
       }
 
-      /* Size Panel */
       .size-panel {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-        padding: 10px;
+      /* Similar to 'flex flex-wrap gap-2' in Tailwind */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem; /* ~ Tailwind gap-2 */
+      margin-top: 8px;
+      padding: 1rem; /* for some breathing room */
+      background-color: transparent;
+    }
+
+    .size-buttons-wrapper {
+      /* If you need an extra wrapper, adjust accordingly */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0;
+    }
+
+    .size-button {
+      /* Mimicking "border-2 border-gray-300 rounded-lg px-4 py-2" */
+      border: 2px solid #ccc;
+      border-radius: 0.5rem; /* ~ Tailwind rounded-lg */
+      padding: 0.5rem 1rem; /* ~ px-4 py-2 in Tailwind */
+      background-color: rgba(255, 255, 255, 0.8); /* ~ bg-white/80 */
+      font-weight: 500;
+      cursor: pointer;
+      color: black;
+
+      /* Tailwind “transition-colors” is basically short for smooth border/color transitions */
+      transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Hover effect: "hover:border-blue-600 hover:text-blue-600" */
+    .size-button:hover:not(:disabled) {
+      border-color: #2563EB;
+      color: #2563EB;
+    }
+
+    /* Active/selected state similar to your existing .selected logic */
+    .size-button.selected {
+      color: #4285f4;
+      border-color: #4285f4;
+      opacity: 1;
+    }
+
+      /* ---------- New styles for bottom nav and floating cart ---------- */
+      /* Container for the bottom region (holds floating cart & bottom nav) */
+      .bottom-container {
+        position: relative;
+        width: 100%;
+        height: 0px; /* let content define height; this just serves as a positioning wrapper */
       }
 
-      .size-buttons-wrapper {
+      /* Floating Add to Cart button */
+      .cart-button-wrapper {
+        position: absolute;
+        top: -64px; /* similar to -top-16 from Tailwind */
+        left: 0;
+        right: 0;
         display: flex;
-        flex-direction: row;
-        gap: 12px;
-        padding: 0 10px;
+        justify-content: center;
       }
-      .size-button {
-        padding: 10px 16px;
-        background-color: #eee;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        font-weight: 500;
-      }
-      .size-button:hover:not(:disabled) {
-        background-color: #ddd;
-      }
-      .size-button.selected {
-        background-color: #4285f4 !important;
+      .cart-btn {
+        background-color: #2563EB; /* Tailwind blue-600 */
         color: #fff;
-        border-color: #4285f4;
-        opacity: 1;
+        border: none;
+        border-radius: 9999px; /* fully rounded */
+        padding: 0.75rem 2rem; /* ~py-3 px-8 */
+        font-weight: 600;
+        font-family: sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
       }
+      .cart-btn:hover {
+        background-color: #1D4ED8; /* Tailwind blue-700 */
+      }
+      .cart-btn svg {
+        height: 1.25rem; /* h-5 in Tailwind ~ 20px */
+        width: 1.25rem;
+      }
+
+      /* Bottom Nav Bar (matching the React code style) */
+      .bottom-nav {
+        height: 64px; /* h-16 in Tailwind */
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid #E5E7EB; /* border-gray-200 */
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        position: relative;
+        z-index: 10;
+      }
+      .nav-icon-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        color: #4B5563; /* text-gray-600 */
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .nav-icon-button.active {
+        color: #2563EB; /* text-blue-600 */
+      }
+      .nav-icon-button svg {
+        height: 1.5rem; /* h-6 */
+        width: 1.5rem;
+      }
+      .nav-icon-button span {
+        font-size: 0.75rem; /* text-xs ~12px */
+        margin-top: 0.25rem;
+      }
+
+      /* Sub-panels (size panel, variant panel) that appear above the nav */
+      .sub-panel {
+        position: absolute;
+        bottom: 0; /* sits just above nav (which is 64px tall) */
+        left: 0;
+        right: 0;
+        background-color: rgba(255,255,255,0.95);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid #E5E7EB;
+        padding: 16px;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+        z-index: 9;
+      }
+      /* ------------------------------------------------------------------ */
     `;
     return combinedStyles;
   }
@@ -817,58 +938,146 @@ class ARDisplayViewer extends HTMLElement {
     return slider;
   }
 
-  _setupBottomNavBar() {
-    const navBar = createElement("div", { classList: ["bottom-nav-bar"] });
-    const sizeBtn = createElement("button", {
-      textContent: "Size",
-      classList: ["nav-btn"],
+  // ---------- UI updates for bottom nav and floating cart ----------
+  _setupCartButton(container) {
+    // Wrapper to position the cart button above the bottom nav
+    const cartWrapper = createElement("div", {
+      classList: ["cart-button-wrapper"],
     });
-    const colorBtn = createElement("button", {
-      textContent: "Color",
-      classList: ["nav-btn"],
+    const cartBtn = createElement("button", { classList: ["cart-btn"] });
+    cartBtn.innerHTML = `
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293
+               2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4
+               2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        Add to Cart
+      `;
+    cartWrapper.appendChild(cartBtn);
+    container.appendChild(cartWrapper);
+
+    cartWrapper.addEventListener("click", async () => {
+      await this._sendShortStatsEvent("Cart");
+      window.location.href = this.modelData.addToCartUrl;
     });
-    const shareBtn = createElement("button", {
-      textContent: "Share",
-      classList: ["nav-btn", "share-btn"],
-    });
+  }
+
+  _setupBottomNavBar(container) {
+    // create sub-panels
+    // (Size panel)
     const sizePanel = createElement("div", {
       classList: ["sub-panel", "hidden"],
     });
-    const colorPanel = createElement("div", {
+    const sizeControls = this._createSizeControls();
+    if (sizeControls) sizePanel.appendChild(sizeControls);
+
+    // (Variant panel)
+    const variantPanel = createElement("div", {
       classList: ["sub-panel", "hidden"],
     });
+    const variantControls = this._setupVariantsColors();
+    if (variantControls) variantPanel.appendChild(variantControls);
 
-    const sizeControls = this._createSizeControls();
-    const colorControls = this._setupVariantsColors();
+    // Create the bottom nav container
+    const navBar = createElement("div", { classList: ["bottom-nav"] });
 
-    sizePanel.addEventListener("click", (event) =>
-      this._handleSizeChange(event)
-    );
-
-    if (sizeControls) sizePanel.appendChild(sizeControls);
-    if (colorControls) colorPanel.appendChild(colorControls);
-
-    navBar.appendChild(sizeBtn);
-    navBar.appendChild(colorBtn);
-    navBar.appendChild(shareBtn);
-    navBar.appendChild(sizePanel);
-    navBar.appendChild(colorPanel);
-
+    // Toggle function
     const togglePanel = (panel) => {
-      const currentPanelState = panel.classList.contains("hidden");
+      const isHidden = panel.classList.contains("hidden");
+      // Hide both
       sizePanel.classList.add("hidden");
-      colorPanel.classList.add("hidden");
-      panel.classList.toggle("hidden", !currentPanelState);
+      variantPanel.classList.add("hidden");
+      // Show only if it was hidden
+      if (isHidden) panel.classList.remove("hidden");
     };
 
+    // Size button with icon
+    const sizeBtn = createElement("button", {
+      classList: ["nav-icon-button"],
+    });
+    sizeBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+            <span>Size</span>
+          `;
     sizeBtn.addEventListener("click", () => {
       togglePanel(sizePanel);
+      sizeBtn.classList.toggle(
+        "active",
+        !sizePanel.classList.contains("hidden")
+      );
+      variantBtn.classList.remove("active");
     });
 
-    colorBtn.addEventListener("click", () => {
-      togglePanel(colorPanel);
+    // Variant (Color) button with icon
+    const variantBtn = createElement("button", {
+      classList: ["nav-icon-button"],
+    });
+    variantBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 21a4 4 0 01-4-4V5a2 2 0
+                   012-2h4a2 2 0 012 2v12a4 4 0
+                   01-4 4zm0 0h12a2 2 0 002-2v-4a2
+                   2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2
+                   2 0 012.828 0l2.829 2.829a2 2 0 010
+                   2.828l-8.486 8.485M7 17h.01"
+              />
+            </svg>
+            <span>Variant</span>
+          `;
+    variantBtn.addEventListener("click", () => {
+      togglePanel(variantPanel);
+      variantBtn.classList.toggle(
+        "active",
+        !variantPanel.classList.contains("hidden")
+      );
+      sizeBtn.classList.remove("active");
     });
 
+    // Share button with icon
+    const shareBtn = createElement("button", {
+      classList: ["nav-icon-button"],
+    });
+    shareBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8.684 13.342C8.886 12.938
+                   9 12.482 9 12c0-.482-.114-.938-.316-1.342m0
+                   2.684a3 3 0 110-2.684m0 2.684l6.632
+                   3.316m-6.632-6l6.632-3.316m0 0a3 3 0
+                   105.367-2.684 3 3 0 00-5.367 2.684zm0
+                   9.316a3 3 0 105.368 2.684 3 3 0
+                   00-5.368-2.684z"
+              />
+            </svg>
+            <span>Share</span>
+          `;
     shareBtn.addEventListener("click", async () => {
       this._sendShortStatsEvent("Share");
       const shareData = {
@@ -884,18 +1093,33 @@ class ARDisplayViewer extends HTMLElement {
       }
     });
 
+    // Append nav buttons
+    navBar.appendChild(sizeBtn);
+    navBar.appendChild(variantBtn);
+    navBar.appendChild(shareBtn);
+
+    // Event to close panels when clicking outside
     this.boundHandleDocumentMouseDown = (e) => {
       const path = e.composedPath();
-      if (!path.includes(navBar)) {
+      if (
+        !path.includes(navBar) &&
+        !path.includes(sizePanel) &&
+        !path.includes(variantPanel)
+      ) {
         sizePanel.classList.add("hidden");
-        colorPanel.classList.add("hidden");
+        variantPanel.classList.add("hidden");
+        sizeBtn.classList.remove("active");
+        variantBtn.classList.remove("active");
       }
     };
-
     document.addEventListener("mousedown", this.boundHandleDocumentMouseDown);
 
-    this.modelViewer.appendChild(navBar);
+    // Add everything to container
+    container.appendChild(sizePanel);
+    container.appendChild(variantPanel);
+    container.appendChild(navBar);
   }
+  // ------------------------------------------------------------------
 
   _setupModalEventListeners() {
     const view3DButton = this.shadowRoot.querySelector(".view-3d-button");
