@@ -128,6 +128,11 @@ class ARDisplayViewer extends HTMLElement {
     this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
       this._updateDimensionHotspots
     );
+
+    // Setup for iOS AR Quick Look custom button
+    if (this._isIOSDevice()) {
+      this._setupIOSARQuickLookButton();
+    }
   }
 
   // Debounce using requestAnimationFrame
@@ -163,7 +168,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("https://ad64-102-100-169-68.ngrok-free.app/api/stats", {
+    fetch("http://localhost:3000/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -832,6 +837,63 @@ class ARDisplayViewer extends HTMLElement {
     this.modelViewer.addEventListener("load", this.boundHandleLoad);
 
     this._setupQRCodeListeners();
+  }
+
+  _isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }
+
+  _setupIOSARQuickLookButton() {
+    // Construct the AR Quick Look URL with callToAction and other parameters
+    const iOSQuickLookURL = new URL(this.modelData.iosSrc); // Assuming you have an iosSrc in your modelData
+    iOSQuickLookURL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; // Or "🛒 Add to Cart"
+
+    // Add optional parameters if needed
+    if (this.modelData.checkoutTitle) {
+      iOSQuickLookURL.hash += `&checkoutTitle=${encodeURIComponent(
+        this.modelData.checkoutTitle
+      )}`;
+    }
+    if (this.modelData.checkoutSubtitle) {
+      iOSQuickLookURL.hash += `&checkoutSubtitle=${encodeURIComponent(
+        this.modelData.checkoutSubtitle
+      )}`;
+    }
+    if (this.modelData.price) {
+      iOSQuickLookURL.hash += `&price=${encodeURIComponent(
+        this.modelData.price
+      )}`;
+    }
+
+    // Dynamically create or update the <a> element for AR Quick Look
+    let linkElement = this.shadowRoot.querySelector("a[rel='ar']");
+    if (!linkElement) {
+      linkElement = document.createElement("a");
+      linkElement.setAttribute("rel", "ar");
+      // Add the link to your component (e.g., inside a container)
+      // container.appendChild(linkElement); // Assuming you have a suitable container
+      // Hide the default AR-button slot if desired
+      const arButtonSlot =
+        this.modelViewer.shadowRoot.querySelector(".slot.ar-button");
+      if (arButtonSlot) {
+        arButtonSlot.style.display = "none";
+      }
+      this.modelViewer.appendChild(linkElement);
+    }
+    linkElement.href = iOSQuickLookURL.toString();
+
+    // Listen for taps on the custom AR Quick Look banner
+    linkElement.removeEventListener("message", this._handleARQuickLookMessage); // Prevent duplicates
+    this._handleARQuickLookMessage = (event) => {
+      if (event.data === "_apple_ar_quicklook_button_tapped") {
+        // 1. Send stats event (same as Android)
+        this._sendShortStatsEvent("Cart");
+
+        // 2. Redirect to cart (same as Android)
+        window.location.href = this.modelData.addToCartUrl;
+      }
+    };
+    linkElement.addEventListener("message", this._handleARQuickLookMessage);
   }
 
   _setupQRCodeListeners() {
