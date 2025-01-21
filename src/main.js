@@ -6,6 +6,10 @@ import buttonTemplate from "./templates/button.js";
 import { icons } from "lucide";
 import "./style.css";
 
+const encodeBase64 = (text) => {
+  return btoa(text);
+};
+
 // Utility for creating and appending elements
 const createElement = (tag, options = {}) => {
   const el = document.createElement(tag);
@@ -168,7 +172,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("http://localhost:3000/api/stats", {
+    fetch("http://localhost:3001/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -244,10 +248,12 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _getModelData() {
-    const url = this.getAttribute("src");
+    // get current url
+    const url = window.location.href
+    console.log(url);
     try {
       // Consider local caching of model data
-      const response = await fetch(url);
+      const response = await fetch(`http://localhost:3001/api/3d-model?url=${encodeBase64(url)}`);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
