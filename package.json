@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "vite --port 3000 --host",
     "build": "vite build",
-    "build:cdn": "vite build --config vite.cdn.config.js",
+    "build:cdn": "vite build --config vite.config.cdn.js",
     "preview": "vite preview"
   },
   "devDependencies": {
