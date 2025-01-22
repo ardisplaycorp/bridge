@@ -5,6 +5,8 @@ import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
 import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from 'lucide';
 
+const NODE_ENV = "production"
+
 const encodeBase64 = (text) => {
   return btoa(text);
 };
@@ -29,7 +31,7 @@ const createElement = (tag, options = {}) => {
 // Debug/Logging Utility
 const logger = {
   debug: (...args) => {
-    if (process.env.NODE_ENV === "development") {
+    if (NODE_ENV === "development") {
       console.log(...args);
     }
   },
