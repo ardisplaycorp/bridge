@@ -3,8 +3,11 @@ import QRCodeStyling from "qr-code-styling";
 import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
-import { icons } from "lucide";
-import "./style.css";
+import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from 'lucide';
+
+const encodeBase64 = (text) => {
+  return btoa(text);
+};
 
 // Utility for creating and appending elements
 const createElement = (tag, options = {}) => {
@@ -116,6 +119,10 @@ class ARDisplayViewer extends HTMLElement {
     this.variantSizes = [];
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
 
+    document.querySelector('ardisplay-viewer').style.width = '100%'
+    document.querySelector('ardisplay-viewer').style.height = '100%'
+    document.querySelector('ardisplay-viewer').style.display = 'block'
+
     // Cache elements
     this.modelViewer = null;
 
@@ -168,7 +175,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("http://localhost:3000/api/stats", {
+    fetch("https://v2.ardisplay.io/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -190,7 +197,7 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
-    this._loadTemplate(attributes.viewMode);
+    this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
 
     this.modelViewer = this.shadowRoot.querySelector("model-viewer");
@@ -244,10 +251,12 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _getModelData() {
-    const url = this.getAttribute("src");
+    // get current url
+    const url = window.location.href
+    console.log(url);
     try {
       // Consider local caching of model data
-      const response = await fetch(url);
+      const response = await fetch(`https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
@@ -620,9 +629,9 @@ class ARDisplayViewer extends HTMLElement {
 
   _loadTemplate(viewMode) {
     const template =
-      viewMode === "modal"
+      viewMode === "popup"
         ? modalTemplate
-        : viewMode === "normal"
+        : viewMode === "inpage"
         ? normalTemplate
         : buttonTemplate;
 
@@ -685,53 +694,53 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _processLucideIcons(fragment) {
+    const iconMap = {
+      eye: Eye,
+      blocks: Blocks,
+      rotate3d: Rotate3D,
+      box: Box,
+      fileaxis3d: FileAxis3D,
+      scan: Scan
+    };
+  
     const elements = fragment.querySelectorAll("[data-lucide]");
-
-    elements.forEach((element) => {
-      const iconName = element.getAttribute("data-lucide");
-      const iconData = icons[iconName];
-
-      if (iconData) {
-        const [tagName, attributes, children] = iconData;
-
-        const svgElement = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          tagName
-        );
-
-        for (const attr in attributes) {
-          svgElement.setAttribute(attr, attributes[attr]);
-        }
-
-        const defaultAttributes = {
-          width: "24",
-          height: "24",
-          color: "currentColor",
-        };
-        for (const attr in defaultAttributes) {
-          svgElement.setAttribute(
-            attr,
-            element.getAttribute(attr) ||
-              svgElement.getAttribute(attr) ||
-              defaultAttributes[attr]
-          );
-        }
-
-        children.forEach((childData) => {
-          const [childTagName, childAttributes] = childData;
-          const childElement = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            childTagName
-          );
-          for (const attr in childAttributes) {
-            childElement.setAttribute(attr, childAttributes[attr]);
-          }
-          svgElement.appendChild(childElement);
+    
+    elements.forEach(element => {
+      const iconName = element.getAttribute("data-lucide").toLowerCase();
+      const icon = iconMap[iconName];
+      
+      if (icon) {
+        const size = element.getAttribute("width") || 24;
+        const color = element.getAttribute("color") || 'currentColor';
+        
+        // Create SVG element
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', size);
+        svg.setAttribute('height', size);
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', color);
+        svg.setAttribute('stroke-width', '2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+  
+        // Process icon children
+        icon[2].forEach(child => {
+          const [tagName, attributes] = child;
+          const element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+          
+          // Set attributes
+          Object.entries(attributes).forEach(([name, value]) => {
+            element.setAttribute(name, value);
+          });
+          
+          svg.appendChild(element);
         });
-
-        element.parentNode.replaceChild(svgElement, element);
+  
+        // Replace original element
+        element.parentNode.replaceChild(svg, element);
       } else {
-        logger.warn(`Icon "${iconName}" not found in Lucide icons.`);
+        console.warn(`Icon "${iconName}" not found`);
       }
     });
   }

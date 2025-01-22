@@ -1,21 +1,25 @@
 import { defineConfig } from 'vite';
+import compression from 'vite-plugin-compression';
 
 export default defineConfig({
   build: {
+    outDir: './build',
     lib: {
       entry: 'src/main.js',
       name: 'ARDisplay',
       formats: ['umd', 'es'],
-      fileName: (format) => `ardisplay.${format}.js`
+      fileName: (format) => `ardisplay.${format}.min.js`
     },
+    minify: 'esbuild',
+    sourcemap: false,
     rollupOptions: {
-      // Don't externalize dependencies - bundle everything together
       external: [],
       output: {
         globals: {}
       }
-    },
-    minify: true,
-    sourcemap: true
-  }
+    }
+  },
+  plugins: [
+    compression()
+  ]
 });

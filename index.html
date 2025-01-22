@@ -4,15 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="app">
-      <ardisplay-viewer
-        src="http://localhost:3000/api/3d-model/678ace5136b5948b47b211ec"
-        view-mode="normal"
-      >
-      </ardisplay-viewer>
+      <div style="width:500px; height:500px;">
+        <ardisplay-viewer></ardisplay-viewer>
+        <script type="module" src="./build/ardisplay.umd.min.js"></script>
+      <div>
     </div>
-    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

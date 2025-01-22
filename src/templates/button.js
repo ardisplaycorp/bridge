@@ -74,7 +74,7 @@ export default (
                 </div>
             </div>
             <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
-                <img src="https://cdn.shopify.com/s/files/1/0768/6891/1392/files/1.jpg?v=1735181973" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                <img src="https://cdn.jsdelivr.net/gh/ardisplaycorp/bridge@main/build/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
             </div>
             </div>
         </div>
