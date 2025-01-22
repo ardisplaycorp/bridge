@@ -1,4 +1,4 @@
-import { ModelViewerElement } from "@google/model-viewer";
+import { ModelViewerElement } from "@google/model-viewer/dist/model-viewer-module.min.js";
 import QRCodeStyling from "qr-code-styling";
 import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
@@ -75,8 +75,8 @@ class QrCodeManager {
     }
 
     const qrCodeOptions = {
-      width: parseInt(qrCodeSettings.width) || 240,
-      height: parseInt(qrCodeSettings.width) || 240,
+      width: parseInt(qrCodeSettings.QRsize) || 240,
+      height: parseInt(qrCodeSettings.QRsize) || 240,
       data: url,
       dotsOptions: {
         color: qrCodeSettings.dotColor || "#000000",
@@ -329,6 +329,7 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       .dimensionLine {
+        display: none;
         stroke: #16a5e6;
         stroke-width: 2;
         stroke-dasharray: 2;
@@ -421,6 +422,15 @@ class ARDisplayViewer extends HTMLElement {
         z-index: 10;
       }
 
+      .cart-button-wrapper{
+        display: none;
+      }
+
+      model-viewer[ar-status="session-started"] .cart-button-wrapper,
+      model-viewer[ar-status="object-placed"] .cart-button-wrapper{
+        display: flex;
+      }
+
       .nav-btn {
         background-color: #f0f0f0;
         border: none;
@@ -499,6 +509,7 @@ class ARDisplayViewer extends HTMLElement {
       margin-top: 8px;
       padding: 1rem; /* for some breathing room */
       background-color: transparent;
+      z-index: 100;
     }
 
     .size-buttons-wrapper {
@@ -550,7 +561,6 @@ class ARDisplayViewer extends HTMLElement {
         top: -64px; /* similar to -top-16 from Tailwind */
         left: 0;
         right: 0;
-        display: flex;
         justify-content: center;
       }
       .cart-btn {
@@ -622,7 +632,7 @@ class ARDisplayViewer extends HTMLElement {
         border-top: 1px solid #E5E7EB;
         padding: 16px;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-        z-index: 9;
+        z-index: 100;
       }
       /* ------------------------------------------------------------------ */
     `;
@@ -1421,6 +1431,9 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupDimensions() {
+    this.shadowRoot.querySelectorAll('.dimensionLine').forEach((el) => {
+      el.style.display = 'block'
+    })
     this.debouncedRenderSVG();
     this.debouncedUpdateDimensionHotspots();
   }

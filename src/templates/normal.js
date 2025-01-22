@@ -12,9 +12,8 @@ const modalStyles = {
   ".qr-code-button": {
     all: "unset",
     position: "absolute",
-    top: "50px",
-    right: "50%",
-    transform: "translateX(50%)",
+    top: "0",
+    right: "0",
     background: "white",
     cursor: "pointer",
     padding: "10px",

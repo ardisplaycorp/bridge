@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import compression from 'vite-plugin-compression';
+import { visualizer } from 'rollup-plugin-visualizer';
+import path from 'path';
 
 export default defineConfig({
   build: {
@@ -20,6 +22,12 @@ export default defineConfig({
     }
   },
   plugins: [
-    compression()
-  ]
+    compression(),
+    visualizer()
+  ],
+  resolve: {
+    alias: {
+      three: path.resolve(__dirname, 'node_modules/three/build/three.module.min.js'),
+    },
+  },
 });

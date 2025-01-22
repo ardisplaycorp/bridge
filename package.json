@@ -28,7 +28,6 @@
   "dependencies": {
     "@google/model-viewer": "^4.0.0",
     "lucide": "^0.469.0",
-    "qr-code-styling": "^1.8.4",
-    "three": "^0.169.0"
+    "qr-code-styling": "^1.8.4"
   }
 }
