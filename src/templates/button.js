@@ -74,7 +74,7 @@ export default (
                 </div>
             </div>
             <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
-                <img src="https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.1.0/build/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                <img src="https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.1.1/build/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
             </div>
             </div>
         </div>
