@@ -926,11 +926,11 @@ class ARDisplayViewer extends HTMLElement {
       if (index === 0) {
         slideButton.classList.add("selected");
         if (this.modelViewer && variant.url) {
-          const URL = new URL(variant.url);
+          let VARIANT_URL = new URL(variant.url);
           if(this._isIOSDevice){
-            URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
+            VARIANT_URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
           }
-          this.modelViewer.src = URL
+          this.modelViewer.src = VARIANT_URL.href
           if (variant.image) {
             this.modelViewer.poster = variant.image;
           } else {
@@ -949,11 +949,11 @@ class ARDisplayViewer extends HTMLElement {
         if (!this.modelViewer) return;
 
         if (variant.url) {
-          const URL = new URL(variant.url);
+          let VARIANT_URL = new URL(variant.url);
           if(this._isIOSDevice){
-            URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
+            VARIANT_URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
           }
-          this.modelViewer.src = URL
+          this.modelViewer.src = VARIANT_URL.href
         }
 
         this._updateSizePanel(index);
