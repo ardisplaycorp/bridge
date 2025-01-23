@@ -121,9 +121,16 @@ class ARDisplayViewer extends HTMLElement {
     this.variantSizes = [];
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
 
-    document.querySelector('ardisplay-viewer').style.width = '100%'
-    document.querySelector('ardisplay-viewer').style.height = '100%'
-    document.querySelector('ardisplay-viewer').style.display = 'block'
+    // Check if width and height are not already set via inline styles
+    if (!this.style.width) {
+      this.style.width = '100%';
+    }
+    if (!this.style.height) {
+      this.style.height = '100%';
+    }
+    if(!this.style.display) {
+      this.style.display = 'block';
+    }
 
     // Cache elements
     this.modelViewer = null;
@@ -596,7 +603,7 @@ class ARDisplayViewer extends HTMLElement {
         align-items: center;
         justify-content: space-around;
         position: relative;
-        z-index: 10;
+        z-index: 100;
       }
       .nav-icon-button {
         display: flex;
