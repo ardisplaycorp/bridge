@@ -1,2 +1,2 @@
-export const CDN_URL = 'https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.1.5/build';
-export const BRIDGE_URL = 'http://localhost:5173';
+export const CDN_URL = 'https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.1.6/build';
+export const BRIDGE_URL = 'https://ardisplayer.vercel.app';
