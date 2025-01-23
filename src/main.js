@@ -13,7 +13,7 @@ const encodeBase64 = (text) => {
 };
 
 // Utility for creating and appending elements
-const createElement = (tag, options = {}) => {
+const createDomElement = (tag, options = {}) => {
   const el = document.createElement(tag);
   if (options.classList) {
     options.classList.forEach((cls) => el.classList.add(cls));
@@ -217,7 +217,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // ---------- UI updates for bottom nav and floating cart ----------
     // Bottom area container (relative positioning for floating button)
-    const bottomContainer = createElement("div", {
+    const bottomContainer = createDomElement("div", {
       classList: ["bottom-container"],
     });
     this.modelViewer.appendChild(bottomContainer);
@@ -321,7 +321,7 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _consolidateStyles() {
-    const combinedStyles = createElement("style");
+    const combinedStyles = createDomElement("style");
     combinedStyles.textContent = `
       /* Consolidated Styles */
       model-viewer {
@@ -687,14 +687,14 @@ class ARDisplayViewer extends HTMLElement {
 
     sizePanel.innerHTML = "";
 
-    const sizeButtonsWrapper = createElement("div", {
+    const sizeButtonsWrapper = createDomElement("div", {
       classList: ["size-buttons-wrapper"],
     });
 
     const sizesForVariant = this.variantSizes[variantIndex];
     if (sizesForVariant) {
       Object.entries(sizesForVariant).forEach(([sizeKey, sizeValues]) => {
-        const button = createElement("button", {
+        const button = createDomElement("button", {
           classList: ["size-button"],
           textContent: sizeKey,
           attributes: {
@@ -902,7 +902,7 @@ class ARDisplayViewer extends HTMLElement {
     // Dynamically create or update the <a> element for AR Quick Look
     let linkElement = this.shadowRoot.querySelector("a[rel='ar']");
     if (!linkElement) {
-      linkElement = document.createElement("a");
+      linkElement = document.createDomElement("a");
       linkElement.setAttribute("rel", "ar");
       // Add the link to your component (e.g., inside a container)
       // container.appendChild(linkElement); // Assuming you have a suitable container
@@ -980,11 +980,11 @@ class ARDisplayViewer extends HTMLElement {
   _setupVariantsColors() {
     if (!this.variants || this.variants.length === 0) return null;
 
-    const slider = createElement("div", { classList: ["slider"] });
-    const slidesWrapper = createElement("div", { classList: ["slides"] });
+    const slider = createDomElement("div", { classList: ["slider"] });
+    const slidesWrapper = createDomElement("div", { classList: ["slides"] });
 
     this.variants.forEach((variant, index) => {
-      const slideButton = createElement("button", { classList: ["slide"] });
+      const slideButton = createDomElement("button", { classList: ["slide"] });
 
       if (index === 0) {
         slideButton.classList.add("selected");
@@ -1037,10 +1037,10 @@ class ARDisplayViewer extends HTMLElement {
   // ---------- UI updates for bottom nav and floating cart ----------
   _setupCartButton(container) {
     // Wrapper to position the cart button above the bottom nav
-    const cartWrapper = createElement("div", {
+    const cartWrapper = createDomElement("div", {
       classList: ["cart-button-wrapper"],
     });
-    const cartBtn = createElement("button", { classList: ["cart-btn"] });
+    const cartBtn = createDomElement("button", { classList: ["cart-btn"] });
     cartBtn.innerHTML = `
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1071,21 +1071,21 @@ class ARDisplayViewer extends HTMLElement {
   _setupBottomNavBar(container) {
     // create sub-panels
     // (Size panel)
-    const sizePanel = createElement("div", {
+    const sizePanel = createDomElement("div", {
       classList: ["sub-panel", "hidden"],
     });
     const sizeControls = this._createSizeControls();
     if (sizeControls) sizePanel.appendChild(sizeControls);
 
     // (Variant panel)
-    const variantPanel = createElement("div", {
+    const variantPanel = createDomElement("div", {
       classList: ["sub-panel", "hidden"],
     });
     const variantControls = this._setupVariantsColors();
     if (variantControls) variantPanel.appendChild(variantControls);
 
     // Create the bottom nav container
-    const navBar = createElement("div", { classList: ["bottom-nav"] });
+    const navBar = createDomElement("div", { classList: ["bottom-nav"] });
 
     // Toggle function
     const togglePanel = (panel) => {
@@ -1098,7 +1098,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Size button with icon
-    const sizeBtn = createElement("button", {
+    const sizeBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
     sizeBtn.innerHTML = `
@@ -1123,7 +1123,7 @@ class ARDisplayViewer extends HTMLElement {
     });
 
     // Variant (Color) button with icon
-    const variantBtn = createElement("button", {
+    const variantBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
     variantBtn.innerHTML = `
@@ -1153,7 +1153,7 @@ class ARDisplayViewer extends HTMLElement {
     });
 
     // Share button with icon
-    const shareBtn = createElement("button", {
+    const shareBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
     shareBtn.innerHTML = `
@@ -1452,8 +1452,8 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _createSizeControls() {
-    const sizePanel = createElement("div", { classList: ["size-panel"] });
-    const sizeButtonsWrapper = createElement("div", {
+    const sizePanel = createDomElement("div", { classList: ["size-panel"] });
+    const sizeButtonsWrapper = createDomElement("div", {
       classList: ["size-buttons-wrapper"],
     });
 
