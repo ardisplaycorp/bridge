@@ -406,7 +406,7 @@ class ARDisplayViewer extends HTMLElement {
         position: absolute;
         width: 100%;
         height: 0px;
-        bottom: 4rem;
+        bottom: 64px;
       }
 
       .bottom-nav-bar {
@@ -505,9 +505,9 @@ class ARDisplayViewer extends HTMLElement {
       /* Similar to 'flex flex-wrap gap-2' in Tailwind */
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem; /* ~ Tailwind gap-2 */
+      gap: 8px; /* ~ Tailwind gap-2 */
       margin-top: 8px;
-      padding: 1rem; /* for some breathing room */
+      padding: 16px; /* for some breathing room */
       background-color: transparent;
       z-index: 100;
     }
@@ -516,15 +516,15 @@ class ARDisplayViewer extends HTMLElement {
       /* If you need an extra wrapper, adjust accordingly */
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 8px;
       padding: 0;
     }
 
     .size-button {
       /* Mimicking "border-2 border-gray-300 rounded-lg px-4 py-2" */
       border: 2px solid #ccc;
-      border-radius: 0.5rem; /* ~ Tailwind rounded-lg */
-      padding: 0.5rem 1rem; /* ~ px-4 py-2 in Tailwind */
+      border-radius: 8px; /* ~ Tailwind rounded-lg */
+      padding: 8px 16px; /* ~ px-4 py-2 in Tailwind */
       background-color: rgba(255, 255, 255, 0.8); /* ~ bg-white/80 */
       font-weight: 500;
       cursor: pointer;
@@ -568,12 +568,12 @@ class ARDisplayViewer extends HTMLElement {
         color: #fff;
         border: none;
         border-radius: 9999px; /* fully rounded */
-        padding: 0.75rem 2rem; /* ~py-3 px-8 */
+        padding: 12px 32px; /* ~py-3 px-8 */
         font-weight: 600;
         font-family: sans-serif;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 8px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -582,8 +582,8 @@ class ARDisplayViewer extends HTMLElement {
         background-color: #1D4ED8; /* Tailwind blue-700 */
       }
       .cart-btn svg {
-        height: 1.25rem; /* h-5 in Tailwind ~ 20px */
-        width: 1.25rem;
+        height: 20px; /* h-5 in Tailwind ~ 20px */
+        width: 20px;
       }
 
       /* Bottom Nav Bar (matching the React code style) */
@@ -602,7 +602,7 @@ class ARDisplayViewer extends HTMLElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0.5rem 1rem;
+        padding: 8px 16px;
         color: #4B5563; /* text-gray-600 */
         background: transparent;
         border: none;
@@ -613,12 +613,12 @@ class ARDisplayViewer extends HTMLElement {
         color: #2563EB; /* text-blue-600 */
       }
       .nav-icon-button svg {
-        height: 1.5rem; /* h-6 */
-        width: 1.5rem;
+        height: 24px; /* h-6 */
+        width: 24px;
       }
       .nav-icon-button span {
-        font-size: 0.75rem; /* text-xs ~12px */
-        margin-top: 0.25rem;
+        font-size: 12px; /* text-xs ~12px */
+        margin-top: 4px;
       }
 
       /* Sub-panels (size panel, variant panel) that appear above the nav */
@@ -774,7 +774,7 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupEventListeners() {
-    if (this.getAttribute("view-mode") === "modal") {
+    if (this.modelData.mode === "popup") {
       this._setupModalEventListeners();
     } else {
       this._setupNormalEventListeners();

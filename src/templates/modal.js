@@ -39,8 +39,8 @@ const modalStyles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "calc(100% - 6rem)",
-    height: "calc(100% - 6rem)",
+    width: "calc(100% - 96px)",
+    height: "calc(100% - 96px)",
     display: "none",
     backgroundColor: "white",
     flexDirection: "row",
@@ -62,7 +62,7 @@ const modalStyles = {
   },
   ".overlay": {
     content: '""',
-    position: "absolute",
+    position: "fixed",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
@@ -82,24 +82,24 @@ const modalStyles = {
   "@media only screen and (max-width: 900px)": {
     ".model-viewer-container": {
       width: "100%",
-      height: "calc(100% - 3rem)",
+      height: "calc(100% - 48px)",
       transform: "translate(-50%, 0)",
-      top: "3rem",
+      top: "48px",
     },
     ".details-panel": {
       display: "none",
     },
 
     ".overlay": {
-      top: "-3rem",
+      top: "-48px",
     },
   },
   ".qr-code-button": {
     all: "unset",
     position: "absolute",
     top: "50px",
-    right: "50px",
-    transform: "",
+    right: "50%",
+    transform: "translateX(50%)",
     background: "white",
     cursor: "pointer",
     padding: "10px",
