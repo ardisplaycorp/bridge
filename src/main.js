@@ -98,8 +98,7 @@ class QrCodeManager {
     if (imageUrl) {
       qrCodeOptions.image = imageUrl;
       qrCodeOptions.imageOptions = {
-        margin: parseInt(qrCodeSettings.imgMargin) || 0,
-        hideBackgroundDots: qrCodeSettings.imgBackground || false,
+        margin: parseInt(qrCodeSettings.faviconMargin) || 0,
       };
     }
 
