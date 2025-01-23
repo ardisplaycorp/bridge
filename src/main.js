@@ -121,17 +121,6 @@ class ARDisplayViewer extends HTMLElement {
     this.variantSizes = [];
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
 
-    // Check if width and height are not already set via inline styles
-    if (!this.style.width) {
-      this.style.width = '100%';
-    }
-    if (!this.style.height) {
-      this.style.height = '100%';
-    }
-    if(!this.style.display) {
-      this.style.display = 'block';
-    }
-
     // Cache elements
     this.modelViewer = null;
 
@@ -323,6 +312,12 @@ class ARDisplayViewer extends HTMLElement {
   _consolidateStyles() {
     const combinedStyles = createDomElement("style");
     combinedStyles.textContent = `
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+        
       /* Consolidated Styles */
       model-viewer {
         width: 100%;
