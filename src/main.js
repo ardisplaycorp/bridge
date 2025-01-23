@@ -63,7 +63,7 @@ class QrCodeManager {
     }
 
     const qrCodeSettings = this.modelData?.qrCode;
-    let imageUrl = qrCodeSettings?.image;
+    let imageUrl = qrCodeSettings?.faviconUrl;
 
     if (imageUrl) {
       try {
