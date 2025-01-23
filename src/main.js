@@ -4,6 +4,7 @@ import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
 import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from 'lucide';
+import { BRIDGE_URL } from "./config/config.js";
 
 const NODE_ENV = "production"
 
@@ -264,7 +265,13 @@ class ARDisplayViewer extends HTMLElement {
     console.log(url);
     try {
       // Consider local caching of model data
-      const response = await fetch(`https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`);
+      let response;
+      if (this.getAttribute('src')){
+        response = await fetch(`https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute('src')}`);
+      }
+      else{
+        response = await fetch(`https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`);
+      }
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
@@ -946,12 +953,12 @@ class ARDisplayViewer extends HTMLElement {
           logger.warn("Could not activate AR:", err);
           // AR Fallback Flow
           logger.warn("AR not supported on this device. Displaying QR code.");
-          const currentUrl = window.location.href;
+          const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
           qrCodeManager.updateQrCode(currentUrl);
           qrModal.style.display = "flex";
         }
       } else {
-        const currentUrl = window.location.href;
+        const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
         qrCodeManager.updateQrCode(currentUrl);
         qrModal.style.display = "flex";
       }

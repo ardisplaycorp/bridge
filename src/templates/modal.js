@@ -1,5 +1,6 @@
 import hotspotsTemplate from "./hotspots.js";
 import { styleObjectToString } from "../utils/styleObjectToString.js";
+import { CDN_URL } from "../config/config.js";
 
 const modalStyles = {
   ".custom-model-viewer-container": {
@@ -184,7 +185,7 @@ export default (
                 </div>
             </div>
             <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
-                <img src="https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.1.2/build/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                <img src="${CDN_URL}/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
             </div>
             </div>
         </div>
