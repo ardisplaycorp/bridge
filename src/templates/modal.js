@@ -136,10 +136,7 @@ export default (
             <div class="model-viewer-container">
                 <model-viewer  
                     ar="${ar}"
-                    disable-pan="true"
-                    disable-tap="true"
                     camera-controls="${cameraControls}"
-                    touch-action="${touchAction}"
                     shadow-intensity="${modelData.shadow}"
                     ar-placement="${modelData.placement}"
                     ar-modes="webxr scene-viewer quick-look"

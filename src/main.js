@@ -643,12 +643,16 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _loadTemplate(viewMode) {
-    const template =
+    let template =
       viewMode === "popup"
         ? modalTemplate
         : viewMode === "inpage"
         ? normalTemplate
         : buttonTemplate;
+
+    if (this.getAttribute('src')) {
+      template = normalTemplate
+    }
 
     const attributes = this._getAttributes();
     const templateString = template(
@@ -927,9 +931,6 @@ class ARDisplayViewer extends HTMLElement {
         slideButton.classList.add("selected");
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          if(this._isIOSDevice){
-            VARIANT_URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
-          }
           this.modelViewer.src = VARIANT_URL.href
           if (variant.image) {
             this.modelViewer.poster = variant.image;
@@ -950,9 +951,6 @@ class ARDisplayViewer extends HTMLElement {
 
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          if(this._isIOSDevice){
-            VARIANT_URL.hash = `callToAction=${encodeURIComponent("Add to Cart")}`; 
-          }
           this.modelViewer.src = VARIANT_URL.href
         }
 
