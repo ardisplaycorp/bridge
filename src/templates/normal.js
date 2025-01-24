@@ -46,6 +46,7 @@ export default (
                 shadow-intensity="${modelData.shadow}"
                 ar-placement="${modelData.placement}"
                 ar-modes="webxr scene-viewer quick-look"
+                ar-scale="fixed"
             >
                 ${template}
                 <button class="qr-code-button" style="background-color: ${
