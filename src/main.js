@@ -245,8 +245,7 @@ class ARDisplayViewer extends HTMLElement {
 
   async _getModelData() {
     // get current url
-    const url = window.location.href
-    console.log(url);
+    let url = window.location.href
     try {
       // Consider local caching of model data
       let response;
@@ -254,6 +253,9 @@ class ARDisplayViewer extends HTMLElement {
         response = await fetch(`https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute('src')}`);
       }
       else{
+        if (url && url.endsWith('/')){
+          url = url.slice(0, -1);
+        }
         response = await fetch(`https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`);
       }
       if (!response.ok) {
