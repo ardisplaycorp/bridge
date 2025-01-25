@@ -308,13 +308,18 @@ class ARDisplayViewer extends HTMLElement {
 
   _consolidateStyles() {
     const combinedStyles = createDomElement("style");
-    combinedStyles.textContent = `
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-        
+
+    if (this.modelData.mode !== 'button' && !this.getAttribute('src')) {
+      combinedStyles.textContent = `
+        :host {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      `;
+    }
+    
+    combinedStyles.textContent = `   
       /* Consolidated Styles */
       model-viewer {
         width: 100%;
