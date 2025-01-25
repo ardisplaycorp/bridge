@@ -124,10 +124,6 @@ class ARDisplayViewer extends HTMLElement {
     // Cache elements
     this.modelViewer = null;
 
-    // Bundling external styles and scripts
-    this.styles = this._consolidateStyles();
-    this.shadowRoot.appendChild(this.styles);
-
     // Use requestAnimationFrame for smoother updates
     this.debouncedRenderSVG = this.animationFrameDebounce(this._renderSVG);
     this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
@@ -189,6 +185,10 @@ class ARDisplayViewer extends HTMLElement {
     const attributes = this._getAttributes();
 
     await this._getModelData();
+
+    // Bundling external styles and scripts
+    this.styles = this._consolidateStyles();
+    this.shadowRoot.appendChild(this.styles);
 
     this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
@@ -659,6 +659,7 @@ class ARDisplayViewer extends HTMLElement {
 
     if (this.getAttribute('src')) {
       template = buttonTemplate
+      this.modelData.mode = 'button';
     }
 
     const attributes = this._getAttributes();
