@@ -653,7 +653,7 @@ class ARDisplayViewer extends HTMLElement {
         : buttonTemplate;
 
     if (this.getAttribute('src')) {
-      template = normalTemplate
+      template = buttonTemplate
     }
 
     const attributes = this._getAttributes();
