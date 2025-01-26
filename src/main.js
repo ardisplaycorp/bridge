@@ -1479,33 +1479,25 @@ class ARDisplayViewer extends HTMLElement {
 customElements.define("ardisplay-viewer", ARDisplayViewer);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Only proceed if there's no ardisplay-viewer in the DOM
-  if (!document.querySelector("ardisplay-viewer")) {
-    const placeholders = document.querySelectorAll("div.ardisplay-viewer");
-    placeholders.forEach((placeholder) => {
-      // Create the custom element
-      const newEl = document.createElement("ardisplay-viewer");
-
-      // Copy the style attribute (if any) from the placeholder
-      const styleAttr = placeholder.getAttribute("style");
-      if (styleAttr) {
-        newEl.setAttribute("style", styleAttr);
-      }
-
-      // If you want to copy any other attributes from the placeholder to the new element:
-      for (const { name, value } of placeholder.attributes) {
-        if (name !== "class") {
-          newEl.setAttribute(name, value);
-        }
-      }
-
-      // Move (append) all child nodes from the placeholder into the new element
-      while (placeholder.firstChild) {
-        newEl.appendChild(placeholder.firstChild);
-      }
-
-      // Replace the placeholder with the new ardisplay-viewer element
-      placeholder.parentNode.replaceChild(newEl, placeholder);
-    });
+  // Ensure custom element is defined before replacement
+  if (window.customElements.get('ardisplay-viewer')) {
+    replacePlaceholders();
+  } else {
+    window.customElements.whenDefined('ardisplay-viewer').then(replacePlaceholders);
   }
 });
+
+function replacePlaceholders() {
+  const placeholders = document.querySelectorAll("div.ardisplay-viewer");
+  placeholders.forEach(placeholder => {
+    const newEl = document.createElement("ardisplay-viewer");
+    // Copy attributes and children
+    Array.from(placeholder.attributes).forEach(attr => {
+      newEl.setAttribute(attr.name, attr.value);
+    });
+    while (placeholder.firstChild) {
+      newEl.appendChild(placeholder.firstChild);
+    }
+    placeholder.replaceWith(newEl);
+  });
+}
