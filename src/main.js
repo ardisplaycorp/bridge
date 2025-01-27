@@ -121,6 +121,8 @@ class ARDisplayViewer extends HTMLElement {
     this.variantSizes = [];
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
 
+    this.isModelLoaded = false;
+
     // Cache elements
     this.modelViewer = null;
 
@@ -649,6 +651,17 @@ class ARDisplayViewer extends HTMLElement {
     return combinedStyles;
   }
 
+  async checkWebXRSupport() {
+    try {
+      if ("xr" in navigator) {
+        return await navigator.xr.isSessionSupported("immersive-ar");
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   _loadTemplate(viewMode) {
     let template =
       viewMode === "popup"
@@ -809,6 +822,10 @@ class ARDisplayViewer extends HTMLElement {
       this.debouncedUpdateDimensionHotspots();
     };
     this.boundHandleLoad = () => {
+      this.isModelLoaded = true;
+      if (this.qrCodeButton) {
+        this.qrCodeButton.disabled = false;
+      }
       // If no explicit boundingBox is found for the initially loaded variant,
       // fallback to model-viewer's reported size
       const size = this.modelViewer.getDimensions();
@@ -879,8 +896,21 @@ class ARDisplayViewer extends HTMLElement {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   }
 
-  _setupQRCodeListeners() {
+  async _setupQRCodeListeners() {
     const qrCodeButton = this.shadowRoot.querySelector(".qr-code-button");
+
+    // Check WebXR support first
+    const webXRSupported = await this.checkWebXRSupport();
+    
+    if (!webXRSupported) {
+      // If WebXR isn't supported, enable QR button immediately
+      this.isModelLoaded = true;
+      if (qrCodeButton) qrCodeButton.disabled = false;
+    } else {
+      // For WebXR-supported devices, keep original behavior
+      if (qrCodeButton) qrCodeButton.disabled = true;
+    }
+
     const qrModal = this.shadowRoot.getElementById("qrModal");
     const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
     const qrCodeContainer = this.shadowRoot.getElementById("qr-code");
@@ -888,6 +918,12 @@ class ARDisplayViewer extends HTMLElement {
     const qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
 
     qrCodeButton.addEventListener("click", () => {
+
+      if (!this.isModelLoaded) {
+        logger.warn("Model not loaded. Please wait.");
+        return;
+      }
+
       this._sendShortStatsEvent("Click");
       const isMobile =
         /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
