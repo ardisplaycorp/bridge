@@ -108,6 +108,92 @@ class QrCodeManager {
   }
 }
 
+// Progress modal template
+const progressModalTemplate = document.createElement('template');
+progressModalTemplate.innerHTML = `
+  <div class="progress-modal" id="progressModal" style="display: none;">
+    <div class="progress-content">
+      <button class="progress-close-button">&times;</button>
+      <h3>Loading AR Model...</h3>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+      <button id="activateAR" class="ar-button">
+        View in AR
+      </button>
+    </div>
+  </div>
+  <style>
+    .progress-modal {
+      position: fixed;
+      z-index: 9999;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+    }
+    .progress-content {
+      position: relative;
+      background: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    .progress-bar {
+      width: 100%;
+      background: #f3f3f3;
+      border-radius: 4px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      width: 0;
+      height: 8px;
+      background: #0072f5;
+      transition: width 0.2s linear;
+    }
+    .ar-button {
+      margin-top: 16px;
+      padding: 8px 16px;
+      background: #0072f5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+    }
+    .ar-button:hover {
+      background: #0058bc;
+    }
+    .progress-close-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 30px;
+      height: 30px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+    .progress-close-button:hover {
+      color: #333;
+    }
+  </style>
+`;
+
 class ARDisplayViewer extends HTMLElement {
   constructor() {
     super();
@@ -122,11 +208,16 @@ class ARDisplayViewer extends HTMLElement {
     this.scaleEvent = new Event("scale", { bubbles: true, composed: true });
 
     this.isModelLoaded = false;
+    this.userClickedAR = false;
+    
+    // Initialize QR related properties
+    this.qrCodeManager = null;
+    this.qrModal = null;
 
     // Cache elements
     this.modelViewer = null;
 
-    // Use requestAnimationFrame for smoother updates
+    // Use a requestAnimationFrame for smoother updates
     this.debouncedRenderSVG = this.animationFrameDebounce(this._renderSVG);
     this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
       this._updateDimensionHotspots
@@ -194,6 +285,28 @@ class ARDisplayViewer extends HTMLElement {
 
     this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
+
+    // Add progress modal to shadow DOM
+    this.shadowRoot.appendChild(progressModalTemplate.content.cloneNode(true));
+
+    // Setup progress modal close functionality
+    const progressModal = this.shadowRoot.querySelector('#progressModal');
+    const progressContent = this.shadowRoot.querySelector('.progress-content');
+    const closeButton = this.shadowRoot.querySelector('.progress-close-button');
+
+    if (progressModal && closeButton) {
+      // Close on X button click
+      closeButton.addEventListener('click', () => {
+        progressModal.style.display = 'none';
+      });
+
+      // Close on click outside modal content
+      progressModal.addEventListener('click', (event) => {
+        if (!progressContent.contains(event.target)) {
+          progressModal.style.display = 'none';
+        }
+      });
+    }
 
     this.modelViewer = this.shadowRoot.querySelector("model-viewer");
     this._setupEventListeners();
@@ -309,19 +422,60 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _consolidateStyles() {
-    const combinedStyles = createDomElement("style");
+    const style = document.createElement("style");
 
     if (this.modelData.mode !== 'button' && !this.getAttribute('src')) {
-      combinedStyles.textContent = `
+      console.log('normal');
+      style.textContent = `
         :host {
           display: block;
           width: 100%;
           height: 100%;
         }
       `;
+    } else {
+      console.log('button');
+      style.textContent = `
+        :host {
+          display: block;
+          width: fit-content;
+          height: fit-content;
+        }
+      `;
     }
-    
-    combinedStyles.textContent = `   
+
+    style.textContent += ` 
+      #qrModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .qr-modal-content {
+        background: white;
+        border-radius: 8px;
+        position: relative;
+      }
+      .qr-close-button {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 24px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 5px;
+      }
+      #qr-code {
+        margin: 20px auto;
+      }
+
       /* Consolidated Styles */
       model-viewer {
         width: 100%;
@@ -356,22 +510,6 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       /* QR Modal */
-      .qr-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        background-color: rgba(0,0,0,0.4);
-        backdrop-filter: blur(5px);
-        justify-content: center;
-        align-items: center;
-        font-family: sans-serif;
-      }
 
       .qr-modal-content {
         background-color: #fefefe;
@@ -648,7 +786,7 @@ class ARDisplayViewer extends HTMLElement {
       }
       /* ------------------------------------------------------------------ */
     `;
-    return combinedStyles;
+    return style;
   }
 
   async checkWebXRSupport() {
@@ -889,6 +1027,39 @@ class ARDisplayViewer extends HTMLElement {
     );
     this.modelViewer.addEventListener("load", this.boundHandleLoad);
 
+    this.modelViewer.addEventListener("progress", (event) => {
+      const progress = Math.round(event.detail.totalProgress * 100);
+      const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+      if (fillElem) {
+        fillElem.style.width = `${progress}%`;
+      }
+    });
+
+    this.modelViewer.addEventListener("load", () => {
+      this.isModelLoaded = true;
+
+      // Show AR button if model is loaded
+      const arButton = this.shadowRoot.querySelector("#activateAR");
+      if (arButton) {
+        arButton.addEventListener("click", async (event) => {
+          // Ensure we're handling the click event
+          if (event instanceof MouseEvent) {
+            try {
+              await this.modelViewer.activateAR();
+              // Hide progress modal after AR is activated
+              const progressModal = this.shadowRoot.querySelector("#progressModal");
+              if (progressModal) {
+                progressModal.style.display = "none";
+              }
+            } catch (error) {
+              console.error("Error activating AR:", error);
+            }
+          }
+        });
+        arButton.style.display = "block";
+      }
+    });
+
     this._setupQRCodeListeners();
   }
 
@@ -897,69 +1068,88 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _setupQRCodeListeners() {
+    const qrModal = this.shadowRoot.querySelector("#qrModal");
+    const qrCodeContainer = this.shadowRoot.querySelector("#qr-code");
     const qrCodeButton = this.shadowRoot.querySelector(".qr-code-button");
+    const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
 
-    // Check WebXR support first
-    const webXRSupported = await this.checkWebXRSupport();
-    
-    if (!webXRSupported) {
-      // If WebXR isn't supported, enable QR button immediately
-      this.isModelLoaded = true;
-      if (qrCodeButton) qrCodeButton.disabled = false;
-    } else {
-      // For WebXR-supported devices, keep original behavior
-      if (qrCodeButton) qrCodeButton.disabled = true;
+    if (!qrModal || !qrCodeContainer || !qrCodeButton || !qrCloseButton) {
+      logger.warn("QR code elements not found in the DOM");
+      return;
     }
 
-    const qrModal = this.shadowRoot.getElementById("qrModal");
-    const qrCloseButton = this.shadowRoot.querySelector(".qr-close-button");
-    const qrCodeContainer = this.shadowRoot.getElementById("qr-code");
+    // Store references to QR elements
+    this.qrModal = qrModal;
+    this.qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
 
-    const qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
+    // Check WebXR support
+    const webXRSupported = await this.checkWebXRSupport();
 
-    qrCodeButton.addEventListener("click", () => {
+    qrCodeButton.addEventListener("click", async () => {
+      // Only show progress modal if WebXR is supported and model isn't loaded
+      if (!this.isModelLoaded && webXRSupported) {
+        const progressModal = this.shadowRoot.querySelector("#progressModal");
+        if (progressModal) {
+          // Reset progress bar visually
+          const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+          if (fillElem) fillElem.style.width = "0%";
 
-      if (!this.isModelLoaded) {
-        logger.warn("Model not loaded. Please wait.");
-        return;
-      }
-
-      this._sendShortStatsEvent("Click");
-      const isMobile =
-        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-      if (isMobile && this.modelViewer.canActivateAR) {
-        try {
-          this._sendShortStatsEvent("Try");
-          this.modelViewer.activateAR();
-        } catch (err) {
-          this._sendShortStatsEvent("Failed", err.message);
-          logger.warn("Could not activate AR:", err);
-          // AR Fallback Flow
-          logger.warn("AR not supported on this device. Displaying QR code.");
-          const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
-          qrCodeManager.updateQrCode(currentUrl);
-          qrModal.style.display = "flex";
+          // Show the progress modal
+          progressModal.style.display = "flex";
+          this.userClickedAR = true;
+          return;
         }
-      } else {
-        const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
-        qrCodeManager.updateQrCode(currentUrl);
-        qrModal.style.display = "flex";
       }
+
+      // If WebXR is not supported or model is loaded, proceed with AR/QR logic
+      this.handleActivateAR();
     });
 
     qrCloseButton.addEventListener("click", () => {
       qrModal.style.display = "none";
     });
 
-    this.boundHandleDocumentMouseDown = (event) => {
+    // Close modal when clicking outside
+    qrModal.addEventListener("click", (event) => {
       if (event.target === qrModal) {
         qrModal.style.display = "none";
       }
-    };
+    });
+  }
 
-    window.addEventListener("click", this.boundHandleDocumentMouseDown);
+  handleActivateAR() {
+    this._sendShortStatsEvent("Click");
+
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+    if (isMobile && this.modelViewer.canActivateAR) {
+      try {
+        this._sendShortStatsEvent("Try");
+        this.modelViewer.activateAR();
+      } catch (err) {
+        this._sendShortStatsEvent("Failed", err.message);
+        logger.warn("Could not activate AR:", err);
+        // AR fallback flow
+        logger.warn("AR not supported on this device. Displaying QR code.");
+        const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
+        if (this.qrCodeManager && this.qrModal) {
+          this.qrCodeManager.updateQrCode(currentUrl);
+          this.qrModal.style.display = "flex";
+        } else {
+          logger.error("QR code manager or modal not initialized");
+        }
+      }
+    } else {
+      const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
+      if (this.qrCodeManager && this.qrModal) {
+        this.qrCodeManager.updateQrCode(currentUrl);
+        this.qrModal.style.display = "flex";
+      } else {
+        logger.error("QR code manager or modal not initialized");
+      }
+    }
   }
 
   _setupVariantsColors() {
@@ -1040,8 +1230,8 @@ class ARDisplayViewer extends HTMLElement {
             stroke-linejoin="round"
             stroke-width="2"
             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293
-               2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4
-               2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+               2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0
+               100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
           />
         </svg>
         Add to Cart
@@ -1154,7 +1344,8 @@ class ARDisplayViewer extends HTMLElement {
                    9 12.482 9 12c0-.482-.114-.938-.316-1.342m0
                    2.684a3 3 0 110-2.684m0 2.684l6.632
                    3.316m-6.632-6l6.632-3.316m0 0a3 3 0
-                   105.367-2.684 3 3 0 00-5.367 2.684zm0
+                   105.367-2.684 3 3 0
+                   00-5.367 2.684zm0
                    9.316a3 3 0 105.368 2.684 3 3 0
                    00-5.368-2.684z"
               />
@@ -1268,7 +1459,7 @@ class ARDisplayViewer extends HTMLElement {
       {
         line: dimLines[0],
         start: "hotspot-dot+X-Y+Z",
-        end: "hotspot-dot+X-Y-Z",
+        end: "hotspot-dot+X-Y+Z",
         dimension: "hotspot-dim+X-Y",
       },
       {
