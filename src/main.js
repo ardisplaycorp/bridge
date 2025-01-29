@@ -1,12 +1,12 @@
-import { ModelViewerElement } from "@google/model-viewer/dist/model-viewer-module.min.js";
 import QRCodeStyling from "qr-code-styling";
 import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
-import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from 'lucide';
+import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from "lucide";
 import { BRIDGE_URL } from "./config/config.js";
+import { lazyLoadModelViewerIfNeeded } from "./utils/modelViewerLoader.js";
 
-const NODE_ENV = "production"
+const NODE_ENV = "production";
 
 const encodeBase64 = (text) => {
   return btoa(text);
@@ -109,18 +109,15 @@ class QrCodeManager {
 }
 
 // Progress modal template
-const progressModalTemplate = document.createElement('template');
+const progressModalTemplate = document.createElement("template");
 progressModalTemplate.innerHTML = `
   <div class="progress-modal" id="progressModal" style="display: none;">
     <div class="progress-content">
       <button class="progress-close-button">&times;</button>
-      <h3>Loading AR Model...</h3>
+      <h3 class="progress-text">Loading...</h3>
       <div class="progress-bar">
         <div class="progress-bar-fill" id="progressBarFill"></div>
       </div>
-      <button id="activateAR" class="ar-button">
-        View in AR
-      </button>
     </div>
   </div>
   <style>
@@ -138,16 +135,16 @@ progressModalTemplate.innerHTML = `
     }
     .progress-content {
       position: relative;
-      background: #fff;
-      border-radius: 4px;
-      padding: 20px;
-      width: 250px;
       text-align: center;
       font-family: sans-serif;
     }
+    .progress-text {
+      color:white;
+    }
     .progress-bar {
-      width: 100%;
-      background: #f3f3f3;
+      width: 200px;
+      background: transparent;
+      border: 2px solid white;
       border-radius: 4px;
       margin-top: 16px;
       overflow: hidden;
@@ -155,7 +152,7 @@ progressModalTemplate.innerHTML = `
     .progress-bar-fill {
       width: 0;
       height: 8px;
-      background: #0072f5;
+      background: white;
       transition: width 0.2s linear;
     }
     .ar-button {
@@ -194,6 +191,209 @@ progressModalTemplate.innerHTML = `
   </style>
 `;
 
+const STEPS = [
+  {
+    title: "Scanning",
+    description:
+      "Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.",
+  },
+  {
+    title: "Basics",
+    description:
+      "Wall should be well lit. Crop furnishings from initial view. Step back once picture is mounted.",
+  },
+  {
+    title: "Blank wall space",
+    description:
+      "Mount picture onto another object on the same wall. Hold finger on picture to move with camera into place.",
+  },
+  {
+    title: "Featureless wall",
+    description:
+      "Tape a newspaper or other graphical item to wall. Mount picture then slide it over to cover paper.",
+  },
+  {
+    title: "Ready to view",
+    description: "Get started with AR view",
+  },
+];
+
+// Multi-steps modal template (bottom 60vh, 90vw, dark overlay)
+const stepsModalTemplate = document.createElement("template");
+stepsModalTemplate.innerHTML = `
+  <div class="multi-steps-overlay" style="display: none;">
+    <div class="overlay-bg" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 9998;
+    ">
+      <div class="steps-close-button" style="
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+    </div>
+    <div class="multi-steps-modal" style="
+      position: fixed;
+      bottom: .5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 1rem);
+      height: fit-content;
+      background-color: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      z-index: 9999;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 15px;
+    ">
+      <div class="steps-header" style="padding: 1rem;">
+        <div class="step-indicator active"></div>
+        <div class="step-indicator"></div>
+        <div class="step-indicator"></div>
+        <div class="step-indicator"></div>
+        <div class="step-indicator"></div>
+      </div>
+      <div class="steps-content" style="padding: 1rem; flex: 1;">
+        <img src="/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
+        <h3 class="translate-lang instructions-title">Scanning</h3>
+        <div class="instructions-body translate-lang" data-id="space-info">Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.</div>
+      </div>
+      <div class="steps-footer" style="
+        display: flex; 
+        justify-content: flex-end; 
+        flex-direction:column;
+        gap: 0.5rem; 
+        border-top: 1px solid #ccc; 
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.5;
+        padding: 8px;
+        width: 75%;
+        max-width: 100%;
+        margin: 10px auto;
+      ">
+        <button class="next-button multi-button">Next</button>
+        <button class="skip-button multi-button">Skip</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    /* You can customize these classes as well */
+    .multi-steps-overlay.show {
+      display: block;
+    }
+
+    .steps-gif{
+      width:100%;
+      height:auto;
+    }
+
+    .view-wall-button{
+      width: 100%;
+    }
+
+    .view-wall-button svg{
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      fill: white;
+      stroke: white;
+    }
+
+    .instructions-body {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #272727;
+        margin: 10px 0 10px 0;
+        text-align: left;
+        font-family:sans-serif;
+    }
+
+    h3 {
+        font-size: 20px;
+        font-weight: bold;
+        font-family:sans-serif;
+        line-height: 1.5;
+        margin: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .steps-header{
+      display:flex;
+      flex-direction:row;
+      width:80%;
+      gap:12px;
+      margin:auto;
+    }
+
+    .steps-content{
+      display:flex;
+      flex-direction:column;
+      justify-content: center;
+      align-items: center;
+      overflow:hidden;
+    }
+
+    .step-indicator{
+      height:6px;
+      background:#bbbbbb;
+      flex:1;
+    }
+
+    .step-indicator.active{
+      background:black;
+    }
+
+    .multi-button{
+      padding-block: .5rem;
+      cursor:pointer;
+      height:45px;
+      border-radius:10px;
+      flex-shrink:0;
+      font-weight:bold;
+    }
+
+    .next-button{
+      background:black;
+      color:white;
+    }
+
+    .skip-button{
+      border:none;
+      color:gray;
+      text-decoration:underline;
+    }
+  </style>
+`;
+
 class ARDisplayViewer extends HTMLElement {
   constructor() {
     super();
@@ -209,7 +409,10 @@ class ARDisplayViewer extends HTMLElement {
 
     this.isModelLoaded = false;
     this.userClickedAR = false;
-    
+
+    this.currentStep = 1;
+    this.totalSteps = 5;
+
     // Initialize QR related properties
     this.qrCodeManager = null;
     this.qrModal = null;
@@ -289,21 +492,38 @@ class ARDisplayViewer extends HTMLElement {
     // Add progress modal to shadow DOM
     this.shadowRoot.appendChild(progressModalTemplate.content.cloneNode(true));
 
+    // Add multi-steps modal template to shadow DOM
+    this.shadowRoot.appendChild(stepsModalTemplate.content.cloneNode(true));
+
+    const skipBtn = this.shadowRoot.querySelector(".skip-button");
+    const nextBtn = this.shadowRoot.querySelector(".next-button");
+    const stepsCloseBtn = this.shadowRoot.querySelector(".steps-close-button");
+    skipBtn?.addEventListener("click", () => this._skipToLast());
+    nextBtn?.addEventListener("click", () => this._goToNextStep());
+    stepsCloseBtn?.addEventListener("click", () => {
+      const stepsOverlay = this.shadowRoot.querySelector(
+        ".multi-steps-overlay"
+      );
+      if (stepsOverlay) {
+        stepsOverlay.style.display = "none";
+      }
+    });
+
     // Setup progress modal close functionality
-    const progressModal = this.shadowRoot.querySelector('#progressModal');
-    const progressContent = this.shadowRoot.querySelector('.progress-content');
-    const closeButton = this.shadowRoot.querySelector('.progress-close-button');
+    const progressModal = this.shadowRoot.querySelector("#progressModal");
+    const progressContent = this.shadowRoot.querySelector(".progress-content");
+    const closeButton = this.shadowRoot.querySelector(".progress-close-button");
 
     if (progressModal && closeButton) {
       // Close on X button click
-      closeButton.addEventListener('click', () => {
-        progressModal.style.display = 'none';
+      closeButton.addEventListener("click", () => {
+        progressModal.style.display = "none";
       });
 
       // Close on click outside modal content
-      progressModal.addEventListener('click', (event) => {
+      progressModal.addEventListener("click", (event) => {
         if (!progressContent.contains(event.target)) {
-          progressModal.style.display = 'none';
+          progressModal.style.display = "none";
         }
       });
     }
@@ -327,6 +547,131 @@ class ARDisplayViewer extends HTMLElement {
     // Setup the panels and bottom nav
     this._setupBottomNavBar(bottomContainer);
     // ------------------------------------------------------------------
+  }
+
+  _showStepsModal() {
+    const stepsOverlay = this.shadowRoot.querySelector(".multi-steps-overlay");
+    if (stepsOverlay) {
+      stepsOverlay.style.display = "block";
+    }
+  }
+
+  _skipToLast() {
+    this.currentStep = this.totalSteps;
+    this.shadowRoot.querySelectorAll(".step-indicator").forEach((el, index) => {
+      if (index <= this.currentStep - 1) {
+        el.classList.add("active");
+      }
+    });
+  }
+
+  _goToNextStep() {
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+      this.shadowRoot
+        .querySelectorAll(".step-indicator")
+        .forEach((el, index) => {
+          el.classList.remove("active");
+          if (index <= this.currentStep - 1) {
+            el.classList.add("active");
+          }
+        });
+
+      // Handle last step specially
+      if (this.currentStep === this.totalSteps) {
+        const stepsContent = this.shadowRoot.querySelector(".steps-content");
+        const nextBtn = this.shadowRoot.querySelector(".next-button");
+        const skipBtn = this.shadowRoot.querySelector(".skip-button");
+
+        // Update content for final step
+        stepsContent.innerHTML = `
+          <img src="${this.modelData.options[0].image}" 
+               class="steps-gif" 
+               alt="Product preview"
+               style="width: 100%;">
+          <h3 class="instructions-title">${
+            STEPS[this.currentStep - 1].title
+          }</h3>
+          <div class="instructions-body">${
+            STEPS[this.currentStep - 1].description
+          }</div>
+          <button class="view-wall-button" style="
+            background: black;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            ">
+              <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+              <g>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M33.002,49H44c2.762,0,5-2.239,5-5V32.626"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M1,33v10.999c0,2.763,2.24,5,5,5h11"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M17,1H6C3.238,1,1,3.238,1,6v11"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M49,16.625V6c0-2.762-2.238-5-5-5H33.002"/>
+                <g>
+                  <path d="M39,39c0,1.104-1.116,2-2.22,2L14.89,35C13.785,35,13,34.104,13,33V17c0-1.104,0.676-2,1.78-2l22.11-6
+                    C37.994,9,39,9.896,39,11V39z M23.686,29.171c-0.59,0.588-0.59,1.541,0,2.129c0.293,0.295,0.678,0.441,1.064,0.441
+                    c0.385,0,0.77-0.146,1.064-0.441l4.377-4.376l4.199,4.198c0.588,0.59,1.541,0.59,2.129,0c0.588-0.588,0.588-1.541,0-2.129
+                    l-5.264-5.264c-0.588-0.59-1.541-0.59-2.129,0l-1.697,1.697l-3.76-3.758c-0.586-0.586-1.535-0.586-2.121,0l-6.943,6.943
+                    c-0.586,0.586-0.586,1.535,0,2.121c0.293,0.293,0.676,0.439,1.061,0.439c0.383,0,0.768-0.146,1.061-0.439l5.883-5.883l2.699,2.697
+                    L23.686,29.171z M29.119,19.571c0-0.998-0.809-1.807-1.807-1.807c-0.996,0-1.805,0.809-1.805,1.807
+                    c0,0.996,0.809,1.805,1.805,1.805C28.311,21.376,29.119,20.567,29.119,19.571"/>
+                </g>
+              </g>
+              </svg>
+              View on your wall
+          </button>
+        `;
+
+        // Add click handler for new button
+        stepsContent
+          .querySelector(".view-wall-button")
+          .addEventListener("click", async () => {
+            const stepsOverlay = this.shadowRoot.querySelector(
+              ".multi-steps-overlay"
+            );
+            if (stepsOverlay) {
+              stepsOverlay.style.display = "none";
+              // Activate AR
+              if (this._isMobileDevice()) {
+                try {
+                  await this.handleActivateAR();
+                } catch (err) {
+                  logger.warn("Failed to activate AR:", err);
+                }
+              } else {
+                // For non-WebXR devices, redirect to bridge URL
+                window.location.href = `${BRIDGE_URL}/${this.modelData.modelId}`;
+              }
+            }
+          });
+
+        // Hide next/skip buttons on last step
+        nextBtn.style.display = "none";
+        skipBtn.style.display = "none";
+      } else {
+        // Normal step update
+        this.shadowRoot.querySelector(
+          ".steps-gif"
+        ).src = `/wall-art-instructions-${this.currentStep}-anim.gif`;
+        this.shadowRoot.querySelector(".instructions-title").innerHTML =
+          STEPS[this.currentStep - 1].title;
+        this.shadowRoot.querySelector(".instructions-body").innerHTML =
+          STEPS[this.currentStep - 1].description;
+      }
+    }
   }
 
   disconnectedCallback() {
@@ -360,18 +705,21 @@ class ARDisplayViewer extends HTMLElement {
 
   async _getModelData() {
     // get current url
-    let url = window.location.href
+    let url = window.location.href;
     try {
       // Consider local caching of model data
       let response;
-      if (this.getAttribute('src')){
-        response = await fetch(`https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute('src')}`);
-      }
-      else{
-        if (url && url.endsWith('/')){
+      if (this.getAttribute("src")) {
+        response = await fetch(
+          `https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
+        );
+      } else {
+        if (url && url.endsWith("/")) {
           url = url.slice(0, -1);
         }
-        response = await fetch(`https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`);
+        response = await fetch(
+          `https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
+        );
       }
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
@@ -385,6 +733,10 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       this._setupVariantsSizes();
+
+      if (this.modelData.mode === "inpage") {
+        await lazyLoadModelViewerIfNeeded();
+      }
     } catch (error) {
       logger.error(error.message);
       // Show a fallback UI message
@@ -424,8 +776,7 @@ class ARDisplayViewer extends HTMLElement {
   _consolidateStyles() {
     const style = document.createElement("style");
 
-    if (this.modelData.mode !== 'button' && !this.getAttribute('src')) {
-      console.log('normal');
+    if (this.modelData.mode !== "none") {
       style.textContent = `
         :host {
           display: block;
@@ -434,7 +785,6 @@ class ARDisplayViewer extends HTMLElement {
         }
       `;
     } else {
-      console.log('button');
       style.textContent = `
         :host {
           display: block;
@@ -445,6 +795,12 @@ class ARDisplayViewer extends HTMLElement {
     }
 
     style.textContent += ` 
+      *,*::before,*::after{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       #qrModal {
         position: fixed;
         top: 0;
@@ -498,7 +854,6 @@ class ARDisplayViewer extends HTMLElement {
         display: none;
         stroke: #16a5e6;
         stroke-width: 2;
-        stroke-dasharray: 2;
       }
 
       .hide {
@@ -507,6 +862,14 @@ class ARDisplayViewer extends HTMLElement {
 
       .dot {
         display: none;
+      }
+
+      .dim {
+        display: none;
+        border-radius: 20px;
+        color: #1185bb;
+        padding: 4px 8px;
+        border: 1px solid #1185bb;
       }
 
       /* QR Modal */
@@ -808,11 +1171,6 @@ class ARDisplayViewer extends HTMLElement {
         ? normalTemplate
         : buttonTemplate;
 
-    if (this.getAttribute('src')) {
-      template = buttonTemplate
-      this.modelData.mode = 'button';
-    }
-
     const attributes = this._getAttributes();
     const templateString = template(
       attributes.ar,
@@ -878,43 +1236,49 @@ class ARDisplayViewer extends HTMLElement {
       rotate3d: Rotate3D,
       box: Box,
       fileaxis3d: FileAxis3D,
-      scan: Scan
+      scan: Scan,
     };
-  
+
     const elements = fragment.querySelectorAll("[data-lucide]");
-    
-    elements.forEach(element => {
+
+    elements.forEach((element) => {
       const iconName = element.getAttribute("data-lucide").toLowerCase();
       const icon = iconMap[iconName];
-      
+
       if (icon) {
         const size = element.getAttribute("width") || 24;
-        const color = element.getAttribute("color") || 'currentColor';
-        
+        const color = element.getAttribute("color") || "currentColor";
+
         // Create SVG element
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('width', size);
-        svg.setAttribute('height', size);
-        svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('fill', 'none');
-        svg.setAttribute('stroke', color);
-        svg.setAttribute('stroke-width', '2');
-        svg.setAttribute('stroke-linecap', 'round');
-        svg.setAttribute('stroke-linejoin', 'round');
-  
+        const svg = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        svg.setAttribute("width", size);
+        svg.setAttribute("height", size);
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", color);
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+
         // Process icon children
-        icon[2].forEach(child => {
+        icon[2].forEach((child) => {
           const [tagName, attributes] = child;
-          const element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
-          
+          const element = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            tagName
+          );
+
           // Set attributes
           Object.entries(attributes).forEach(([name, value]) => {
             element.setAttribute(name, value);
           });
-          
+
           svg.appendChild(element);
         });
-  
+
         // Replace original element
         element.parentNode.replaceChild(svg, element);
       } else {
@@ -940,9 +1304,10 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupEventListeners() {
+    console.log(this.modelData.mode);
     if (this.modelData.mode === "popup") {
       this._setupModalEventListeners();
-    } else {
+    } else if (this.modelData.mode === "inpage") {
       this._setupNormalEventListeners();
     }
 
@@ -964,8 +1329,8 @@ class ARDisplayViewer extends HTMLElement {
       if (this.qrCodeButton) {
         this.qrCodeButton.disabled = false;
       }
-      // If no explicit boundingBox is found for the initially loaded variant,
-      // fallback to model-viewer's reported size
+
+      // Get dimensions and set up sizes
       const size = this.modelViewer.getDimensions();
       const scale = this.modelViewer.scale.toString().split(" ").map(Number);
       this.originalSize = { x: 0, y: 0, z: 0 };
@@ -973,41 +1338,45 @@ class ARDisplayViewer extends HTMLElement {
       this.originalSize.y = size.y / scale[1];
       this.originalSize.z = size.z / scale[2];
 
-      // Automatically apply the first size in the selected variant if it exists
+      // Apply initial size if available
       if (this.variantSizes && this.variantSizes[this.selectedIndex]) {
         const sizesForVariant = this.variantSizes[this.selectedIndex];
         const firstSizeKey = Object.keys(sizesForVariant)[0];
         if (firstSizeKey) {
           const firstSizeValues = sizesForVariant[firstSizeKey];
-
-          // Apply the scale computation
           this.calculateAndApplyScale(firstSizeValues);
 
-          // Mark the correct button as "selected" in the UI
           requestAnimationFrame(() => {
             const sizeButtons =
               this.shadowRoot.querySelectorAll(".size-button");
             sizeButtons.forEach((btn) => {
-              if (btn.textContent === firstSizeKey) {
-                btn.classList.add("selected");
-              } else {
-                btn.classList.remove("selected");
-              }
+              btn.classList.toggle(
+                "selected",
+                btn.textContent === firstSizeKey
+              );
             });
           });
         }
       }
 
-      // if not size panel exists, create it
+      // Create size panel if needed
       if (!this.shadowRoot.querySelector(".size-panel button")) {
         this._updateSizePanel(0);
       }
 
-      // Hide the default AR-button slot if desired
+      // Hide default AR button
       const arButtonSlot =
         this.modelViewer.shadowRoot.querySelector(".slot.ar-button");
       if (arButtonSlot) {
         arButtonSlot.style.display = "none";
+      }
+
+      // Handle progress modal and show multi-steps
+      const progressModal = this.shadowRoot.querySelector("#progressModal");
+      if (progressModal && progressModal.style.display !== "none") {
+        progressModal.style.display = "none";
+        // Only show multi-steps modal if we were showing the progress modal
+        this._showStepsModal();
       }
     };
 
@@ -1038,6 +1407,10 @@ class ARDisplayViewer extends HTMLElement {
     this.modelViewer.addEventListener("load", () => {
       this.isModelLoaded = true;
 
+      this.shadowRoot.querySelectorAll(".dim").forEach((dim) => {
+        dim.style.display = "block";
+      });
+
       // Show AR button if model is loaded
       const arButton = this.shadowRoot.querySelector("#activateAR");
       if (arButton) {
@@ -1047,7 +1420,8 @@ class ARDisplayViewer extends HTMLElement {
             try {
               await this.modelViewer.activateAR();
               // Hide progress modal after AR is activated
-              const progressModal = this.shadowRoot.querySelector("#progressModal");
+              const progressModal =
+                this.shadowRoot.querySelector("#progressModal");
               if (progressModal) {
                 progressModal.style.display = "none";
               }
@@ -1067,6 +1441,12 @@ class ARDisplayViewer extends HTMLElement {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   }
 
+  _isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
+
   async _setupQRCodeListeners() {
     const qrModal = this.shadowRoot.querySelector("#qrModal");
     const qrCodeContainer = this.shadowRoot.querySelector("#qr-code");
@@ -1082,27 +1462,44 @@ class ARDisplayViewer extends HTMLElement {
     this.qrModal = qrModal;
     this.qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
 
-    // Check WebXR support
-    const webXRSupported = await this.checkWebXRSupport();
-
     qrCodeButton.addEventListener("click", async () => {
-      // Only show progress modal if WebXR is supported and model isn't loaded
-      if (!this.isModelLoaded && webXRSupported) {
-        const progressModal = this.shadowRoot.querySelector("#progressModal");
-        if (progressModal) {
-          // Reset progress bar visually
-          const fillElem = this.shadowRoot.querySelector("#progressBarFill");
-          if (fillElem) fillElem.style.width = "0%";
-
-          // Show the progress modal
-          progressModal.style.display = "flex";
-          this.userClickedAR = true;
-          return;
-        }
+      if (this.modelData.mode === "none") {
+        await lazyLoadModelViewerIfNeeded();
+      }
+      // If not mobile device, show QR code directly
+      if (!this._isMobileDevice()) {
+        const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
+        this.qrCodeManager.updateQrCode(currentUrl);
+        qrModal.style.display = "flex";
+        return;
       }
 
-      // If WebXR is not supported or model is loaded, proceed with AR/QR logic
-      this.handleActivateAR();
+      // For mobile devices, check WebXR support
+      const hasWebXRSupport = await this.checkWebXRSupport();
+
+      // If mobile device doesn't support WebXR, show multi-steps modal immediately
+      if (!hasWebXRSupport) {
+        this._resetSteps();
+        this._showStepsModal();
+        return;
+      }
+
+      // Continue with WebXR flow
+      if (this.isModelLoaded) {
+        this._resetSteps();
+        this._showStepsModal();
+        return;
+      }
+
+      // Loading flow for WebXR-supported devices
+      await lazyLoadModelViewerIfNeeded();
+      const progressModal = this.shadowRoot.querySelector("#progressModal");
+      if (progressModal) {
+        const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+        if (fillElem) fillElem.style.width = "0%";
+        progressModal.style.display = "flex";
+        this.userClickedAR = true;
+      }
     });
 
     qrCloseButton.addEventListener("click", () => {
@@ -1117,22 +1514,51 @@ class ARDisplayViewer extends HTMLElement {
     });
   }
 
+  _resetSteps() {
+    // Reset steps to initial state
+    this.currentStep = 1;
+    this.shadowRoot.querySelectorAll(".step-indicator").forEach((el, index) => {
+      el.classList.toggle("active", index === 0);
+    });
+
+    // Reset content to first step
+    const stepsContent = this.shadowRoot.querySelector(".steps-content");
+    if (stepsContent) {
+      stepsContent.innerHTML = `
+        <img src="/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
+        <h3 class="instructions-title">${STEPS[0].title}</h3>
+        <div class="instructions-body">${STEPS[0].description}</div>
+      `;
+    }
+
+    // Show next/skip buttons
+    const nextBtn = this.shadowRoot.querySelector(".next-button");
+    const skipBtn = this.shadowRoot.querySelector(".skip-button");
+    if (nextBtn) nextBtn.style.display = "block";
+    if (skipBtn) skipBtn.style.display = "block";
+  }
+
   handleActivateAR() {
     this._sendShortStatsEvent("Click");
 
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
+    // Show QR code directly if not mobile
+    if (!this._isMobileDevice()) {
+      const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
+      if (this.qrCodeManager && this.qrModal) {
+        this.qrCodeManager.updateQrCode(currentUrl);
+        this.qrModal.style.display = "flex";
+      }
+      return;
+    }
 
-    if (isMobile && this.modelViewer.canActivateAR) {
+    // Mobile device flow
+    if (this.modelViewer.canActivateAR) {
       try {
         this._sendShortStatsEvent("Try");
         this.modelViewer.activateAR();
       } catch (err) {
         this._sendShortStatsEvent("Failed", err.message);
         logger.warn("Could not activate AR:", err);
-        // AR fallback flow
-        logger.warn("AR not supported on this device. Displaying QR code.");
         const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
         if (this.qrCodeManager && this.qrModal) {
           this.qrCodeManager.updateQrCode(currentUrl);
@@ -1140,14 +1566,6 @@ class ARDisplayViewer extends HTMLElement {
         } else {
           logger.error("QR code manager or modal not initialized");
         }
-      }
-    } else {
-      const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
-      if (this.qrCodeManager && this.qrModal) {
-        this.qrCodeManager.updateQrCode(currentUrl);
-        this.qrModal.style.display = "flex";
-      } else {
-        logger.error("QR code manager or modal not initialized");
       }
     }
   }
@@ -1165,7 +1583,7 @@ class ARDisplayViewer extends HTMLElement {
         slideButton.classList.add("selected");
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          this.modelViewer.src = VARIANT_URL.href
+          this.modelViewer.src = VARIANT_URL.href;
           if (variant.image) {
             this.modelViewer.poster = variant.image;
           } else {
@@ -1185,7 +1603,7 @@ class ARDisplayViewer extends HTMLElement {
 
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          this.modelViewer.src = VARIANT_URL.href
+          this.modelViewer.src = VARIANT_URL.href;
         }
 
         this._updateSizePanel(index);
@@ -1404,11 +1822,12 @@ class ARDisplayViewer extends HTMLElement {
     const closeButton = this.shadowRoot.querySelector(".close-button");
     const overlay = this.shadowRoot.querySelector(".overlay");
 
-    view3DButton.addEventListener("click", () => {
+    view3DButton.addEventListener("click", async () => {
       previewImage.style.display = "none";
       view3DButton.style.display = "none";
       modelViewerContainer.style.display = "flex";
       overlay.style.display = "block";
+      await lazyLoadModelViewerIfNeeded();
       this._setupDimensions(this.modelViewer);
     });
 
@@ -1622,9 +2041,9 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupDimensions() {
-    this.shadowRoot.querySelectorAll('.dimensionLine').forEach((el) => {
-      el.style.display = 'block'
-    })
+    this.shadowRoot.querySelectorAll(".dimensionLine").forEach((el) => {
+      el.style.display = "block";
+    });
     this.debouncedRenderSVG();
     this.debouncedUpdateDimensionHotspots();
   }
@@ -1707,19 +2126,21 @@ customElements.define("ardisplay-viewer", ARDisplayViewer);
 
 document.addEventListener("DOMContentLoaded", () => {
   // Ensure custom element is defined before replacement
-  if (window.customElements.get('ardisplay-viewer')) {
+  if (window.customElements.get("ardisplay-viewer")) {
     replacePlaceholders();
   } else {
-    window.customElements.whenDefined('ardisplay-viewer').then(replacePlaceholders);
+    window.customElements
+      .whenDefined("ardisplay-viewer")
+      .then(replacePlaceholders);
   }
 });
 
 function replacePlaceholders() {
   const placeholders = document.querySelectorAll("div.ardisplay-viewer");
-  placeholders.forEach(placeholder => {
+  placeholders.forEach((placeholder) => {
     const newEl = document.createElement("ardisplay-viewer");
     // Copy attributes and children
-    Array.from(placeholder.attributes).forEach(attr => {
+    Array.from(placeholder.attributes).forEach((attr) => {
       newEl.setAttribute(attr.name, attr.value);
     });
     while (placeholder.firstChild) {

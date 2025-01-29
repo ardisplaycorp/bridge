@@ -42,11 +42,20 @@ export default (
         <div class="normal-view-container">
             <model-viewer
                 ar="${ar}"
-                camera-controls="${cameraControls}"
                 shadow-intensity="${modelData.shadow}"
                 ar-placement="${modelData.placement}"
                 ar-modes="webxr scene-viewer quick-look"
                 ar-scale="fixed"
+                camera-controls="true"
+                disable-pan="true"
+                disable-tap="true"
+                interaction-prompt="none"
+                interpolation-decay="40"
+                touch-action="none"
+                max-field-of-view="auto"
+                field-of-view="auto"
+                camera-orbit="0deg 75deg 105%"
+                ar-status="not-presenting"
             >
                 ${template}
                 <button class="qr-code-button" style="background-color: ${
@@ -66,7 +75,7 @@ export default (
             <div id="qrModal" class="qr-modal">
                 <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
                 <button class="qr-close-button">×</button>
-                <div style="width: 45%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+                <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
                     <h2>
                         <p id="btn-text" style="margin: 0">${
                           modelData.title
