@@ -669,7 +669,7 @@ class ARDisplayViewer extends HTMLElement {
         // Normal step update
         this.shadowRoot.querySelector(
           ".steps-gif"
-        ).src = `${CDN_URL}${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
+        ).src = `${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
         this.shadowRoot.querySelector(".instructions-title").innerHTML =
           STEPS[this.currentStep - 1].title;
         this.shadowRoot.querySelector(".instructions-body").innerHTML =
