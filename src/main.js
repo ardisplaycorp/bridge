@@ -669,7 +669,7 @@ class ARDisplayViewer extends HTMLElement {
         // Normal step update
         this.shadowRoot.querySelector(
           ".steps-gif"
-        ).src = `${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
+        ).src = `${CDN_URL}${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
         this.shadowRoot.querySelector(".instructions-title").innerHTML =
           STEPS[this.currentStep - 1].title;
         this.shadowRoot.querySelector(".instructions-body").innerHTML =
@@ -1556,7 +1556,7 @@ class ARDisplayViewer extends HTMLElement {
     const stepsContent = this.shadowRoot.querySelector(".steps-content");
     if (stepsContent) {
       stepsContent.innerHTML = `
-        <img src="/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
+        <img src="${CDN_URL}/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
         <h3 class="instructions-title">${STEPS[0].title}</h3>
         <div class="instructions-body">${STEPS[0].description}</div>
       `;
