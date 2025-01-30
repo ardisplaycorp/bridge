@@ -3,7 +3,7 @@ import normalTemplate from "./templates/normal.js";
 import modalTemplate from "./templates/modal.js";
 import buttonTemplate from "./templates/button.js";
 import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from "lucide";
-import { BRIDGE_URL } from "./config/config.js";
+import { BRIDGE_URL, CDN_URL } from "./config/config.js";
 import { lazyLoadModelViewerIfNeeded } from "./utils/modelViewerLoader.js";
 
 const NODE_ENV = "production";
@@ -36,8 +36,12 @@ const logger = {
       console.log(...args);
     }
   },
-  error: (...args) => console.error(...args),
-  warn: (...args) => console.warn(...args),
+  error: (...args) => {
+    // console.error(...args);
+  },
+  warn: (...args) => {
+    // console.warn(...args)
+  },
 };
 
 // QR Code Manager
@@ -279,7 +283,7 @@ stepsModalTemplate.innerHTML = `
         <div class="step-indicator"></div>
       </div>
       <div class="steps-content" style="padding: 1rem; flex: 1;">
-        <img src="/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
+        <img src="${CDN_URL}/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
         <h3 class="translate-lang instructions-title">Scanning</h3>
         <div class="instructions-body translate-lang" data-id="space-info">Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.</div>
       </div>
@@ -1282,7 +1286,7 @@ class ARDisplayViewer extends HTMLElement {
         // Replace original element
         element.parentNode.replaceChild(svg, element);
       } else {
-        console.warn(`Icon "${iconName}" not found`);
+        // console.warn(`Icon "${iconName}" not found`);
       }
     });
   }
@@ -1426,7 +1430,7 @@ class ARDisplayViewer extends HTMLElement {
                 progressModal.style.display = "none";
               }
             } catch (error) {
-              console.error("Error activating AR:", error);
+              // console.error("Error activating AR:", error);
             }
           }
         });
@@ -1463,7 +1467,7 @@ class ARDisplayViewer extends HTMLElement {
     this.qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
 
     qrCodeButton.addEventListener("click", async () => {
-      if (this.modelData.mode === "none") {
+      if (this.modelData.mode === "none" && this._isMobileDevice()) {
         await lazyLoadModelViewerIfNeeded();
       }
       // If not mobile device, show QR code directly
