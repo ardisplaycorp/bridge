@@ -589,7 +589,7 @@ class ARDisplayViewer extends HTMLElement {
 
         // Update content for final step
         stepsContent.innerHTML = `
-          <img src="${this.modelData.options[0].image}" 
+          <img src="${this.modelData.options[0].posterFileUrl}" 
                class="steps-gif" 
                alt="Product preview"
                style="width: 100%;">
@@ -737,10 +737,6 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       this._setupVariantsSizes();
-
-      if (this.modelData.mode === "inpage") {
-        await lazyLoadModelViewerIfNeeded();
-      }
     } catch (error) {
       logger.error(error.message);
       // Show a fallback UI message
@@ -1194,6 +1190,37 @@ class ARDisplayViewer extends HTMLElement {
     this._processLucideIcons(fragment);
 
     this.shadowRoot.appendChild(fragment);
+
+    if (viewMode === "inpage") {
+      const imageOverlay = document.createElement("img");
+      imageOverlay.src = this.modelData.options[0].posterFileUrl;
+      imageOverlay.style.position = "absolute";
+      imageOverlay.style.top = "0";
+      imageOverlay.style.left = "0";
+      imageOverlay.style.width = "100%";
+      imageOverlay.style.height = "100%";
+      imageOverlay.style.objectFit = "contain";
+      imageOverlay.style.zIndex = "10";
+      this.shadowRoot.querySelector("model-viewer").appendChild(imageOverlay);
+
+      console.log(this)
+
+      this.addEventListener("click", async () => {
+        const imageElement = this.shadowRoot.querySelector("model-viewer img");
+        if (imageElement) {
+          this.shadowRoot.querySelector("model-viewer").removeChild(imageElement);
+        }
+        await lazyLoadModelViewerIfNeeded();
+      });
+
+      this.addEventListener("mouseenter", async () => {
+        const imageElement = this.shadowRoot.querySelector("model-viewer img");
+        if (imageElement) {
+          this.shadowRoot.querySelector("model-viewer").removeChild(imageElement);
+        }
+        await lazyLoadModelViewerIfNeeded();
+      });
+    }
   }
 
   _updateSizePanel(variantIndex) {
@@ -2069,9 +2096,7 @@ class ARDisplayViewer extends HTMLElement {
         this.shadowRoot
           .querySelectorAll(".size-button")
           .forEach((btn) => btn.classList.remove("selected"));
-
         event.target.classList.add("selected");
-
         const desiredSize = this.variantSizes[this.selectedIndex][sizeKey];
         this.calculateAndApplyScale(desiredSize);
       }
