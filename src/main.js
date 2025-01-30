@@ -589,7 +589,7 @@ class ARDisplayViewer extends HTMLElement {
 
         // Update content for final step
         stepsContent.innerHTML = `
-          <img src="${this.modelData.options[0].posterFileUrl}" 
+          <img src="${this.modelData.options[0].image}" 
                class="steps-gif" 
                alt="Product preview"
                style="width: 100%;">
@@ -669,7 +669,7 @@ class ARDisplayViewer extends HTMLElement {
         // Normal step update
         this.shadowRoot.querySelector(
           ".steps-gif"
-        ).src = `/wall-art-instructions-${this.currentStep}-anim.gif`;
+        ).src = `${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
         this.shadowRoot.querySelector(".instructions-title").innerHTML =
           STEPS[this.currentStep - 1].title;
         this.shadowRoot.querySelector(".instructions-body").innerHTML =
