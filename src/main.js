@@ -174,23 +174,24 @@ progressModalTemplate.innerHTML = `
       background: #0058bc;
     }
     .progress-close-button {
-      position: absolute;
-      top: 5px;
-      right: 5px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
       width: 30px;
       height: 30px;
       background: none;
       border: none;
       font-size: 24px;
       cursor: pointer;
-      color: #666;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: color 0.2s;
+      z-index: 10000;
     }
     .progress-close-button:hover {
-      color: #333;
+      color: #ccc;
     }
   </style>
 `;
@@ -711,8 +712,16 @@ class ARDisplayViewer extends HTMLElement {
     `;
 
     // Hide next/skip buttons on last step
-    if (nextBtn) nextBtn.style.display = "none";
-    if (skipBtn) skipBtn.style.display = "none";
+    if (nextBtn) {
+      requestAnimationFrame(() => {
+          nextBtn.style.display = "none";
+      });
+    }
+    if (skipBtn) {
+        requestAnimationFrame(() => {
+            skipBtn.style.display = "none";
+        });
+    }
 
     // Add click handler for view wall button
     const viewWallBtn = stepsContent.querySelector(".view-wall-button");
@@ -798,6 +807,18 @@ class ARDisplayViewer extends HTMLElement {
         const gifElement = stepsContent.querySelector(".steps-gif"); // Get the newly created img element
         const currentGifUrl = this.GIF_URLS[this.GIF_URLS.length - 1]; // URL for the last step
 
+        // Hide next/skip buttons on last step
+        if (nextBtn) {
+          requestAnimationFrame(() => {
+              nextBtn.style.display = "none";
+          });
+        }
+        if (skipBtn) {
+            requestAnimationFrame(() => {
+                skipBtn.style.display = "none";
+            });
+        }
+
         try {
           const blobUrl = await this.preloadImage(currentGifUrl);
           gifElement.src = blobUrl;
@@ -806,11 +827,6 @@ class ARDisplayViewer extends HTMLElement {
           gifElement.src = currentGifUrl;
           logger.warn('Failed to use blob URL for last step, falling back to original URL', error);
         }
-
-
-        // Hide next/skip buttons on last step
-        if (nextBtn) nextBtn.style.display = "none";
-        if (skipBtn) skipBtn.style.display = "none";
 
         // Add click handler for view wall button
         const viewWallBtn = stepsContent.querySelector(".view-wall-button");
