@@ -718,7 +718,7 @@ class ARDisplayViewer extends HTMLElement {
     const viewWallBtn = stepsContent.querySelector(".view-wall-button");
     if (viewWallBtn) {
       viewWallBtn.addEventListener("click", () => {
-        this.handleActivateAR();
+        this.modelViewer.activateAR();
         const modal = this.shadowRoot.querySelector(".multi-steps-overlay");
         if (modal) modal.style.display = "none";
       });
@@ -1028,7 +1028,7 @@ class ARDisplayViewer extends HTMLElement {
   _consolidateStyles() {
     const style = document.createElement("style");
 
-    if (this.modelData.mode !== "none") {
+    if (this.modelData.mode !== "none" && !this.getAttribute('src')) {
       style.textContent = `
         :host {
           display: block;
