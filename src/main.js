@@ -440,7 +440,7 @@ class ARDisplayViewer extends HTMLElement {
       `${CDN_URL}/wall-art-instructions-1-anim.gif`,
       `${CDN_URL}/wall-art-instructions-2-anim.gif`,
       `${CDN_URL}/wall-art-instructions-3-anim.gif`,
-      `${CDN_URL}/wall-art-instructions-4-anim.gif`
+      `${CDN_URL}/wall-art-instructions-4-anim.gif`,
     ];
 
     // Cache for blob URLs
@@ -453,7 +453,7 @@ class ARDisplayViewer extends HTMLElement {
       if (this.gifCache[url]) {
         return this.gifCache[url];
       }
-    
+
       // Create and cache the promise immediately.
       const promise = fetch(url)
         .then((response) => response.blob())
@@ -471,25 +471,28 @@ class ARDisplayViewer extends HTMLElement {
           // Return the original URL as a fallback
           return url;
         });
-    
+
       // Temporarily store the promise to avoid duplicate fetches
       this.gifCache[url] = promise;
       return promise;
-    };    
+    };
 
     // Function to setup the preloader for a given step-index
     this.setupPreloaderForStep = (stepIndex, container) => {
       // Only preload if the next gif exists and hasn't been preloaded yet
-      if (stepIndex + 1 < this.GIF_URLS.length && !this.gifCache[this.GIF_URLS[stepIndex + 1]]) {
+      if (
+        stepIndex + 1 < this.GIF_URLS.length &&
+        !this.gifCache[this.GIF_URLS[stepIndex + 1]]
+      ) {
         const nextGifUrl = this.GIF_URLS[stepIndex + 1];
         const currentGif = container.querySelector(".steps-gif");
-        
+
         if (!currentGif) return;
 
         // Immediately preload if element is already visible
         const rect = currentGif.getBoundingClientRect();
         const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-        
+
         if (isVisible) {
           this.preloadImage(nextGifUrl);
           return;
@@ -670,7 +673,9 @@ class ARDisplayViewer extends HTMLElement {
            alt="Product preview"
            style="width: 100%;">
       <h3 class="instructions-title">${STEPS[this.currentStep - 1].title}</h3>
-      <div class="instructions-body">${STEPS[this.currentStep - 1].description}</div>
+      <div class="instructions-body">${
+        STEPS[this.currentStep - 1].description
+      }</div>
       <button class="view-wall-button" style="
         background: black;
         color: white;
@@ -714,13 +719,13 @@ class ARDisplayViewer extends HTMLElement {
     // Hide next/skip buttons on last step
     if (nextBtn) {
       requestAnimationFrame(() => {
-          nextBtn.style.display = "none";
+        nextBtn.style.display = "none";
       });
     }
     if (skipBtn) {
-        requestAnimationFrame(() => {
-            skipBtn.style.display = "none";
-        });
+      requestAnimationFrame(() => {
+        skipBtn.style.display = "none";
+      });
     }
 
     // Add click handler for view wall button
@@ -810,13 +815,13 @@ class ARDisplayViewer extends HTMLElement {
         // Hide next/skip buttons on last step
         if (nextBtn) {
           requestAnimationFrame(() => {
-              nextBtn.style.display = "none";
+            nextBtn.style.display = "none";
           });
         }
         if (skipBtn) {
-            requestAnimationFrame(() => {
-                skipBtn.style.display = "none";
-            });
+          requestAnimationFrame(() => {
+            skipBtn.style.display = "none";
+          });
         }
 
         try {
@@ -825,7 +830,10 @@ class ARDisplayViewer extends HTMLElement {
           gifElement.setAttribute("loading", "eager");
         } catch (error) {
           gifElement.src = currentGifUrl;
-          logger.warn('Failed to use blob URL for last step, falling back to original URL', error);
+          logger.warn(
+            "Failed to use blob URL for last step, falling back to original URL",
+            error
+          );
         }
 
         // Add click handler for view wall button
@@ -850,7 +858,10 @@ class ARDisplayViewer extends HTMLElement {
         } catch (error) {
           // Fallback to original URL if blob creation fails
           gifElement.src = currentGifUrl;
-          logger.warn('Failed to use blob URL, falling back to original URL', error);
+          logger.warn(
+            "Failed to use blob URL, falling back to original URL",
+            error
+          );
         }
 
         this.shadowRoot.querySelector(".instructions-title").innerHTML =
@@ -868,34 +879,45 @@ class ARDisplayViewer extends HTMLElement {
     if (this.currentStep > 1) {
       this.currentStep--;
       // Update the step indicators
-      this.shadowRoot.querySelectorAll(".step-indicator").forEach((el, index) => {
-        el.classList.toggle("active", index < this.currentStep);
-      });
+      this.shadowRoot
+        .querySelectorAll(".step-indicator")
+        .forEach((el, index) => {
+          el.classList.toggle("active", index < this.currentStep);
+        });
 
       const stepsContent = this.shadowRoot.querySelector(".steps-content");
       const gifElement = this.shadowRoot.querySelector(".steps-gif");
       const nextBtn = this.shadowRoot.querySelector(".next-button");
       const skipBtn = this.shadowRoot.querySelector(".skip-button");
-      
+
       // Show next/skip buttons when going back from last step
       if (nextBtn) nextBtn.style.display = "block";
       if (skipBtn) skipBtn.style.display = "block";
 
       // Update content
       stepsContent.innerHTML = `
-        <img src="${this.GIF_URLS[this.currentStep - 1]}" class="steps-gif" alt="Instructions animation">
+        <img src="${
+          this.GIF_URLS[this.currentStep - 1]
+        }" class="steps-gif" alt="Instructions animation">
         <h3 class="instructions-title">${STEPS[this.currentStep - 1].title}</h3>
-        <div class="instructions-body">${STEPS[this.currentStep - 1].description}</div>
+        <div class="instructions-body">${
+          STEPS[this.currentStep - 1].description
+        }</div>
       `;
 
       const newGifElement = stepsContent.querySelector(".steps-gif");
       if (newGifElement) {
         try {
-          const blobUrl = await this.preloadImage(this.GIF_URLS[this.currentStep - 1]);
+          const blobUrl = await this.preloadImage(
+            this.GIF_URLS[this.currentStep - 1]
+          );
           newGifElement.src = blobUrl;
           newGifElement.setAttribute("loading", "eager");
         } catch (error) {
-          logger.warn('Failed to use blob URL, falling back to original URL', error);
+          logger.warn(
+            "Failed to use blob URL, falling back to original URL",
+            error
+          );
         }
       }
 
@@ -928,7 +950,7 @@ class ARDisplayViewer extends HTMLElement {
     this._swipeHandlers = {
       start: touchStartHandler,
       end: touchEndHandler,
-      element: stepsContent
+      element: stepsContent,
     };
   }
 
@@ -1054,7 +1076,7 @@ class ARDisplayViewer extends HTMLElement {
   _consolidateStyles() {
     const style = document.createElement("style");
 
-    if (this.modelData.mode !== "none" && !this.getAttribute('src')) {
+    if (this.modelData.mode !== "none" && !this.getAttribute("src")) {
       style.textContent = `
         :host {
           display: block;
@@ -1449,7 +1471,7 @@ class ARDisplayViewer extends HTMLElement {
         ? normalTemplate
         : buttonTemplate;
 
-    if (this.getAttribute('src')) {
+    if (this.getAttribute("src")) {
       template = buttonTemplate;
     }
 
@@ -1473,7 +1495,7 @@ class ARDisplayViewer extends HTMLElement {
 
     this.shadowRoot.appendChild(fragment);
 
-    if (viewMode === "inpage" && !this.getAttribute('src')) {
+    if (viewMode === "inpage" && !this.getAttribute("src")) {
       const imageOverlay = document.createElement("img");
       imageOverlay.src = this.modelData.options[0].posterFileUrl;
       imageOverlay.style.position = "absolute";
@@ -1485,12 +1507,14 @@ class ARDisplayViewer extends HTMLElement {
       imageOverlay.style.zIndex = "10";
       this.shadowRoot.querySelector("model-viewer").appendChild(imageOverlay);
 
-      console.log(this)
+      console.log(this);
 
       this.addEventListener("click", async () => {
         const imageElement = this.shadowRoot.querySelector("model-viewer img");
         if (imageElement) {
-          this.shadowRoot.querySelector("model-viewer").removeChild(imageElement);
+          this.shadowRoot
+            .querySelector("model-viewer")
+            .removeChild(imageElement);
         }
         await lazyLoadModelViewerIfNeeded();
       });
@@ -1498,7 +1522,9 @@ class ARDisplayViewer extends HTMLElement {
       this.addEventListener("mouseenter", async () => {
         const imageElement = this.shadowRoot.querySelector("model-viewer img");
         if (imageElement) {
-          this.shadowRoot.querySelector("model-viewer").removeChild(imageElement);
+          this.shadowRoot
+            .querySelector("model-viewer")
+            .removeChild(imageElement);
         }
         await lazyLoadModelViewerIfNeeded();
       });
@@ -1782,41 +1808,76 @@ class ARDisplayViewer extends HTMLElement {
 
     qrCodeButton.addEventListener("click", async () => {
       if (this.modelData.mode === "none" && this._isMobileDevice()) {
-        await lazyLoadModelViewerIfNeeded();
-      }
-      // If not mobile device, show QR code directly
-      if (!this._isMobileDevice()) {
+        // Show progress modal immediately!
+        const progressModal = this.shadowRoot.querySelector("#progressModal");
+        if (progressModal) {
+          const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+          if (fillElem) fillElem.style.width = "0%"; // Reset progress bar
+          progressModal.style.display = "flex"; // Show the modal
+          this.userClickedAR = true; // Keep track of user click
+        }
+
+        await lazyLoadModelViewerIfNeeded(); // Start loading model-viewer
+
+        // Now that model-viewer is loaded, get the element and attach event listener
+        this.modelViewer = this.shadowRoot.querySelector("model-viewer"); // Re-fetch modelViewer after lazy load
+        if (this.modelViewer) {
+          this.modelViewer.addEventListener("progress", (event) => {
+            const progress = Math.round(event.detail.totalProgress * 100);
+            const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+            if (fillElem) {
+              fillElem.style.width = `${progress}%`;
+            }
+          });
+        }
+
+        // Continue with the rest of your logic (steps modal, etc.)
+        const hasWebXRSupport = await this.checkWebXRSupport();
+        if (!hasWebXRSupport) {
+          this._resetSteps();
+          this._showStepsModal();
+          return;
+        }
+
+        if (this.isModelLoaded) {
+          this._resetSteps();
+          this._showStepsModal();
+          return;
+        }
+      } else if (!this._isMobileDevice()) {
+        // If not mobile device, show QR code directly
         const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
         this.qrCodeManager.updateQrCode(currentUrl);
         qrModal.style.display = "flex";
         return;
-      }
+      } else {
+        // Mobile device, but not mode "none" (likely inpage or popup)
+        // For mobile devices, check WebXR support
+        const hasWebXRSupport = await this.checkWebXRSupport();
 
-      // For mobile devices, check WebXR support
-      const hasWebXRSupport = await this.checkWebXRSupport();
+        // If mobile device doesn't support WebXR, show multi-steps modal immediately
+        if (!hasWebXRSupport) {
+          this._resetSteps();
+          this._showStepsModal();
+          return;
+        }
 
-      // If mobile device doesn't support WebXR, show multi-steps modal immediately
-      if (!hasWebXRSupport) {
-        this._resetSteps();
-        this._showStepsModal();
-        return;
-      }
+        // Continue with WebXR flow
+        if (this.isModelLoaded) {
+          this._resetSteps();
+          this._showStepsModal();
+          return;
+        }
 
-      // Continue with WebXR flow
-      if (this.isModelLoaded) {
-        this._resetSteps();
-        this._showStepsModal();
-        return;
-      }
-
-      // Loading flow for WebXR-supported devices
-      await lazyLoadModelViewerIfNeeded();
-      const progressModal = this.shadowRoot.querySelector("#progressModal");
-      if (progressModal) {
-        const fillElem = this.shadowRoot.querySelector("#progressBarFill");
-        if (fillElem) fillElem.style.width = "0%";
-        progressModal.style.display = "flex";
-        this.userClickedAR = true;
+        // Loading flow for WebXR-supported devices
+        await lazyLoadModelViewerIfNeeded();
+        const progressModal = this.shadowRoot.querySelector("#progressModal");
+        if (progressModal) {
+          const fillElem = this.shadowRoot.querySelector("#progressBarFill");
+          if (fillElem) fillElem.style.width = "0%";
+          progressModal.style.display = "flex";
+          this.userClickedAR = true;
+        }
       }
     });
 
@@ -1984,7 +2045,9 @@ class ARDisplayViewer extends HTMLElement {
   _setupBottomNavBar(container) {
     // create sub-panels
     // (Size panel)
-    const sizePanel = createDomElement("div", { classList: ["sub-panel", "hidden"] });
+    const sizePanel = createDomElement("div", {
+      classList: ["sub-panel", "hidden"],
+    });
     const sizeControls = this._createSizeControls();
     if (sizeControls) sizePanel.appendChild(sizeControls);
 
@@ -2436,7 +2499,7 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   cleanupBlobUrls() {
-    Object.values(this.gifCache).forEach(blobUrl => {
+    Object.values(this.gifCache).forEach((blobUrl) => {
       URL.revokeObjectURL(blobUrl);
     });
     this.gifCache = {};
