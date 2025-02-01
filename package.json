@@ -18,7 +18,7 @@
     "dev": "vite --port 3000 --host",
     "build": "vite build",
     "build:cdn": "vite build --config vite.config.cdn.js",
-    "preview": "vite preview"
+    "preview": "vite preview --host"
   },
   "devDependencies": {
     "rollup-plugin-visualizer": "^5.14.0",

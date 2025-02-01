@@ -264,7 +264,8 @@ stepsModalTemplate.innerHTML = `
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 1rem);
-      height: fit-content;
+      height: auto;
+      max-height: 70vh;
       background-color: rgba(255, 255, 255, 0.85);
       -webkit-backdrop-filter: blur(15px);
       backdrop-filter: blur(15px);
@@ -330,6 +331,9 @@ stepsModalTemplate.innerHTML = `
     }
 
     .instructions-body {
+        height:72px;
+        display:flex;
+        align-items:center;
         font-size: 16px;
         line-height: 1.5;
         color: #272727;
@@ -429,6 +433,84 @@ class ARDisplayViewer extends HTMLElement {
     this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
       this._updateDimensionHotspots
     );
+
+    // Array of GIF URLs for each step
+    this.GIF_URLS = [
+      `${CDN_URL}/wall-art-instructions-1-anim.gif`,
+      `${CDN_URL}/wall-art-instructions-2-anim.gif`,
+      `${CDN_URL}/wall-art-instructions-3-anim.gif`,
+      `${CDN_URL}/wall-art-instructions-4-anim.gif`
+    ];
+
+    // Cache for blob URLs
+    this.gifCache = {};
+
+    // Simple preloader function with blob URL caching
+    this.preloadImage = async (url) => {
+      // If we already have something in cache, return it.
+      // It could be a promise or the final blob URL.
+      if (this.gifCache[url]) {
+        return this.gifCache[url];
+      }
+    
+      // Create and cache the promise immediately.
+      const promise = fetch(url)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const blobUrl = URL.createObjectURL(blob);
+          // Replace the promise with the final blob URL.
+          this.gifCache[url] = blobUrl;
+          logger.debug(`Created blob URL for: ${url}`);
+          return blobUrl;
+        })
+        .catch((error) => {
+          logger.warn(`Failed to preload: ${url}`, error);
+          // Remove the failed promise so future attempts can try again
+          delete this.gifCache[url];
+          // Return the original URL as a fallback
+          return url;
+        });
+    
+      // Temporarily store the promise to avoid duplicate fetches
+      this.gifCache[url] = promise;
+      return promise;
+    };    
+
+    // Function to setup the preloader for a given step-index
+    this.setupPreloaderForStep = (stepIndex, container) => {
+      // Only preload if the next gif exists and hasn't been preloaded yet
+      if (stepIndex + 1 < this.GIF_URLS.length && !this.gifCache[this.GIF_URLS[stepIndex + 1]]) {
+        const nextGifUrl = this.GIF_URLS[stepIndex + 1];
+        const currentGif = container.querySelector(".steps-gif");
+        
+        if (!currentGif) return;
+
+        // Immediately preload if element is already visible
+        const rect = currentGif.getBoundingClientRect();
+        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        
+        if (isVisible) {
+          this.preloadImage(nextGifUrl);
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries, observerInstance) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                this.preloadImage(nextGifUrl);
+                observerInstance.disconnect();
+              }
+            });
+          },
+          {
+            threshold: 0.5,
+          }
+        );
+
+        observer.observe(currentGif);
+      }
+    };
   }
 
   // Debounce using requestAnimationFrame
@@ -485,6 +567,8 @@ class ARDisplayViewer extends HTMLElement {
     const attributes = this._getAttributes();
 
     await this._getModelData();
+
+    this.GIF_URLS.push(this.modelData.options[0].image);
 
     // Bundling external styles and scripts
     this.styles = this._consolidateStyles();
@@ -554,22 +638,94 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _showStepsModal() {
-    const stepsOverlay = this.shadowRoot.querySelector(".multi-steps-overlay");
-    if (stepsOverlay) {
-      stepsOverlay.style.display = "block";
+    const modal = this.shadowRoot.querySelector(".multi-steps-overlay");
+    if (modal) {
+      modal.style.display = "block";
+      // Preload the first GIF immediately since it's visible
+      const firstGifUrl = this.GIF_URLS[0];
+      this.preloadImage(firstGifUrl);
+      // Setup preloading for the second GIF
+      this.setupPreloaderForStep(0, this.shadowRoot);
+      // Initialize swipe listeners
+      this._setupSwipeListeners();
     }
   }
 
   _skipToLast() {
     this.currentStep = this.totalSteps;
+    const stepsContent = this.shadowRoot.querySelector(".steps-content");
+    const nextBtn = this.shadowRoot.querySelector(".next-button");
+    const skipBtn = this.shadowRoot.querySelector(".skip-button");
+
+    // Update step indicators
     this.shadowRoot.querySelectorAll(".step-indicator").forEach((el, index) => {
-      if (index <= this.currentStep - 1) {
-        el.classList.add("active");
-      }
+      el.classList.toggle("active", index < this.currentStep);
     });
+
+    // Update content for final step
+    stepsContent.innerHTML = `
+      <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}" 
+           class="steps-gif" 
+           alt="Product preview"
+           style="width: 100%;">
+      <h3 class="instructions-title">${STEPS[this.currentStep - 1].title}</h3>
+      <div class="instructions-body">${STEPS[this.currentStep - 1].description}</div>
+      <button class="view-wall-button" style="
+        background: black;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        ">
+        <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+        <g>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M33.002,49H44c2.762,0,5-2.239,5-5V32.626"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M1,33v10.999c0,2.763,2.24,5,5,5h11"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M17,1H6C3.238,1,1,3.238,1,6v11"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M49,16.625V6c0-2.762-2.238-5-5-5H33.002"/>
+          <g>
+            <path d="M39,39c0,1.104-1.116,2-2.22,2L14.89,35C13.785,35,13,34.104,13,33V17c0-1.104,0.676-2,1.78-2l22.11-6
+              C37.994,9,39,9.896,39,11V39z M23.686,29.171c-0.59,0.588-0.59,1.541,0,2.129c0.293,0.295,0.678,0.441,1.064,0.441
+              c0.385,0,0.77-0.146,1.064-0.441l4.377-4.376l4.199,4.198c0.588,0.59,1.541,0.59,2.129,0c0.588-0.588,0.588-1.541,0-2.129
+              l-5.264-5.264c-0.588-0.59-1.541-0.59-2.129,0l-1.697,1.697l-3.76-3.758c-0.586-0.586-1.535-0.586-2.121,0l-6.943,6.943
+              c-0.586,0.586-0.586,1.535,0,2.121c0.293,0.293,0.676,0.439,1.061,0.439c0.383,0,0.768-0.146,1.061-0.439l5.883-5.883l2.699,2.697
+              L23.686,29.171z M29.119,19.571c0-0.998-0.809-1.807-1.807-1.807c-0.996,0-1.805,0.809-1.805,1.807
+              c0,0.996,0.809,1.805,1.805,1.805C28.311,21.376,29.119,20.567,29.119,19.571"/>
+          </g>
+        </g>
+        </svg>
+        View on your wall
+      </button>
+    `;
+
+    // Hide next/skip buttons on last step
+    if (nextBtn) nextBtn.style.display = "none";
+    if (skipBtn) skipBtn.style.display = "none";
+
+    // Add click handler for view wall button
+    const viewWallBtn = stepsContent.querySelector(".view-wall-button");
+    if (viewWallBtn) {
+      viewWallBtn.addEventListener("click", () => {
+        this.handleActivateAR();
+        const modal = this.shadowRoot.querySelector(".multi-steps-overlay");
+        if (modal) modal.style.display = "none";
+      });
+    }
   }
 
-  _goToNextStep() {
+  async _goToNextStep() {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
       this.shadowRoot
@@ -589,8 +745,8 @@ class ARDisplayViewer extends HTMLElement {
 
         // Update content for final step
         stepsContent.innerHTML = `
-          <img src="${this.modelData.options[0].image}" 
-               class="steps-gif" 
+          <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
+               class="steps-gif"
                alt="Product preview"
                style="width: 100%;">
           <h3 class="instructions-title">${
@@ -639,41 +795,126 @@ class ARDisplayViewer extends HTMLElement {
           </button>
         `;
 
-        // Add click handler for new button
-        stepsContent
-          .querySelector(".view-wall-button")
-          .addEventListener("click", async () => {
-            const stepsOverlay = this.shadowRoot.querySelector(
-              ".multi-steps-overlay"
-            );
-            if (stepsOverlay) {
-              stepsOverlay.style.display = "none";
-              // Activate AR
-              if (this._isMobileDevice()) {
-                try {
-                  await this.handleActivateAR();
-                } catch (err) {
-                  logger.warn("Failed to activate AR:", err);
-                }
-              } else {
-                // For non-WebXR devices, redirect to bridge URL
-                window.location.href = `${BRIDGE_URL}/${this.modelData.modelId}`;
-              }
-            }
-          });
+        const gifElement = stepsContent.querySelector(".steps-gif"); // Get the newly created img element
+        const currentGifUrl = this.GIF_URLS[this.GIF_URLS.length - 1]; // URL for the last step
+
+        try {
+          const blobUrl = await this.preloadImage(currentGifUrl);
+          gifElement.src = blobUrl;
+          gifElement.setAttribute("loading", "eager");
+        } catch (error) {
+          gifElement.src = currentGifUrl;
+          logger.warn('Failed to use blob URL for last step, falling back to original URL', error);
+        }
+
 
         // Hide next/skip buttons on last step
-        nextBtn.style.display = "none";
-        skipBtn.style.display = "none";
+        if (nextBtn) nextBtn.style.display = "none";
+        if (skipBtn) skipBtn.style.display = "none";
       } else {
         // Normal step update
-        this.shadowRoot.querySelector(
-          ".steps-gif"
-        ).src = `${CDN_URL}/wall-art-instructions-${this.currentStep}-anim.gif`;
+        const gifElement = this.shadowRoot.querySelector(".steps-gif");
+        const currentGifUrl = this.GIF_URLS[this.currentStep - 1];
+
+        try {
+          // Get or create blob URL for the current GIF
+          const blobUrl = await this.preloadImage(currentGifUrl);
+          gifElement.src = blobUrl;
+          gifElement.setAttribute("loading", "eager");
+        } catch (error) {
+          // Fallback to original URL if blob creation fails
+          gifElement.src = currentGifUrl;
+          logger.warn('Failed to use blob URL, falling back to original URL', error);
+        }
+
         this.shadowRoot.querySelector(".instructions-title").innerHTML =
           STEPS[this.currentStep - 1].title;
         this.shadowRoot.querySelector(".instructions-body").innerHTML =
           STEPS[this.currentStep - 1].description;
+
+        // Setup preloading for the next step's gif
+        this.setupPreloaderForStep(this.currentStep - 1, this.shadowRoot);
+      }
+    }
+  }
+
+  async _goToPreviousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      // Update the step indicators
+      this.shadowRoot.querySelectorAll(".step-indicator").forEach((el, index) => {
+        el.classList.toggle("active", index < this.currentStep);
+      });
+
+      const stepsContent = this.shadowRoot.querySelector(".steps-content");
+      const gifElement = this.shadowRoot.querySelector(".steps-gif");
+      const nextBtn = this.shadowRoot.querySelector(".next-button");
+      const skipBtn = this.shadowRoot.querySelector(".skip-button");
+      
+      // Show next/skip buttons when going back from last step
+      if (nextBtn) nextBtn.style.display = "block";
+      if (skipBtn) skipBtn.style.display = "block";
+
+      // Update content
+      stepsContent.innerHTML = `
+        <img src="${this.GIF_URLS[this.currentStep - 1]}" class="steps-gif" alt="Instructions animation">
+        <h3 class="instructions-title">${STEPS[this.currentStep - 1].title}</h3>
+        <div class="instructions-body">${STEPS[this.currentStep - 1].description}</div>
+      `;
+
+      const newGifElement = stepsContent.querySelector(".steps-gif");
+      if (newGifElement) {
+        try {
+          const blobUrl = await this.preloadImage(this.GIF_URLS[this.currentStep - 1]);
+          newGifElement.src = blobUrl;
+          newGifElement.setAttribute("loading", "eager");
+        } catch (error) {
+          logger.warn('Failed to use blob URL, falling back to original URL', error);
+        }
+      }
+
+      // Setup preloading for the next step's gif
+      this.setupPreloaderForStep(this.currentStep - 1, this.shadowRoot);
+    }
+  }
+
+  _setupSwipeListeners() {
+    const stepsContent = this.shadowRoot.querySelector(".steps-content");
+    if (!stepsContent) return;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 50; // minimum px needed for a valid swipe
+
+    const touchStartHandler = (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    };
+
+    const touchEndHandler = (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      this._handleSwipeGesture(touchStartX, touchEndX, swipeThreshold);
+    };
+
+    stepsContent.addEventListener("touchstart", touchStartHandler);
+    stepsContent.addEventListener("touchend", touchEndHandler);
+
+    // Store handlers for cleanup
+    this._swipeHandlers = {
+      start: touchStartHandler,
+      end: touchEndHandler,
+      element: stepsContent
+    };
+  }
+
+  _handleSwipeGesture(startX, endX, threshold) {
+    const diffX = endX - startX;
+    if (Math.abs(diffX) > threshold) {
+      if (diffX < 0) {
+        // Swipe left: go to next step
+        this._goToNextStep();
+      } else {
+        // Swipe right: go to previous step
+        this._goToPreviousStep();
       }
     }
   }
@@ -704,6 +945,17 @@ class ARDisplayViewer extends HTMLElement {
         this.boundHandleSceneGraphReady
       );
       this.modelViewer.removeEventListener("load", this.boundHandleLoad);
+    }
+
+    // Cleanup blob URLs when component is destroyed
+    this.cleanupBlobUrls();
+
+    // Clean up swipe listeners if they exist
+    if (this._swipeHandlers) {
+      const { start, end, element } = this._swipeHandlers;
+      element.removeEventListener("touchstart", start);
+      element.removeEventListener("touchend", end);
+      this._swipeHandlers = null;
     }
   }
 
@@ -1246,11 +1498,16 @@ class ARDisplayViewer extends HTMLElement {
         });
 
         button.addEventListener("click", (event) => {
-          this.shadowRoot
-            .querySelectorAll(".size-button")
-            .forEach((btn) => btn.classList.remove("selected"));
-          event.target.classList.add("selected");
-          this.calculateAndApplyScale(sizeValues);
+          if (!this.modelViewer) return;
+
+          if (variantIndex === 0) {
+            this.shadowRoot
+              .querySelectorAll(".size-button")
+              .forEach((btn) => btn.classList.remove("selected"));
+            event.target.classList.add("selected");
+            const desiredSize = this.variantSizes[variantIndex][sizeKey];
+            this.calculateAndApplyScale(desiredSize);
+          }
         });
 
         sizeButtonsWrapper.appendChild(button);
@@ -1556,7 +1813,7 @@ class ARDisplayViewer extends HTMLElement {
     const stepsContent = this.shadowRoot.querySelector(".steps-content");
     if (stepsContent) {
       stepsContent.innerHTML = `
-        <img src="${CDN_URL}/wall-art-instructions-1-anim.gif" class="steps-gif" alt="Computer man">
+        <img src="${this.GIF_URLS[0]}" class="steps-gif" alt="Computer man">
         <h3 class="instructions-title">${STEPS[0].title}</h3>
         <div class="instructions-body">${STEPS[0].description}</div>
       `;
@@ -1615,8 +1872,8 @@ class ARDisplayViewer extends HTMLElement {
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
           this.modelViewer.src = VARIANT_URL.href;
-          if (variant.image) {
-            this.modelViewer.poster = variant.image;
+          if (variant.posterFileUrl) {
+            this.modelViewer.poster = variant.posterFileUrl;
           } else {
             this.modelViewer.removeAttribute("poster");
           }
@@ -1639,8 +1896,8 @@ class ARDisplayViewer extends HTMLElement {
 
         this._updateSizePanel(index);
 
-        if (variant.image) {
-          this.modelViewer.poster = variant.image;
+        if (variant.posterFileUrl) {
+          this.modelViewer.poster = variant.posterFileUrl;
         } else {
           this.modelViewer.removeAttribute("poster");
         }
@@ -1697,9 +1954,7 @@ class ARDisplayViewer extends HTMLElement {
   _setupBottomNavBar(container) {
     // create sub-panels
     // (Size panel)
-    const sizePanel = createDomElement("div", {
-      classList: ["sub-panel", "hidden"],
-    });
+    const sizePanel = createDomElement("div", { classList: ["sub-panel", "hidden"] });
     const sizeControls = this._createSizeControls();
     if (sizeControls) sizePanel.appendChild(sizeControls);
 
@@ -2148,6 +2403,13 @@ class ARDisplayViewer extends HTMLElement {
     const scaleZ = desiredDepth / originalDepth;
 
     return { scaleX, scaleY, scaleZ };
+  }
+
+  cleanupBlobUrls() {
+    Object.values(this.gifCache).forEach(blobUrl => {
+      URL.revokeObjectURL(blobUrl);
+    });
+    this.gifCache = {};
   }
 }
 
