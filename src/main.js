@@ -718,7 +718,7 @@ class ARDisplayViewer extends HTMLElement {
     const viewWallBtn = stepsContent.querySelector(".view-wall-button");
     if (viewWallBtn) {
       viewWallBtn.addEventListener("click", () => {
-        this.modelViewer.activateAR();
+        this.handleActivateAR();
         const modal = this.shadowRoot.querySelector(".multi-steps-overlay");
         if (modal) modal.style.display = "none";
       });
@@ -811,6 +811,16 @@ class ARDisplayViewer extends HTMLElement {
         // Hide next/skip buttons on last step
         if (nextBtn) nextBtn.style.display = "none";
         if (skipBtn) skipBtn.style.display = "none";
+
+        // Add click handler for view wall button
+        const viewWallBtn = stepsContent.querySelector(".view-wall-button");
+        if (viewWallBtn) {
+          viewWallBtn.addEventListener("click", () => {
+            this.handleActivateAR();
+            const modal = this.shadowRoot.querySelector(".multi-steps-overlay");
+            if (modal) modal.style.display = "none";
+          });
+        }
       } else {
         // Normal step update
         const gifElement = this.shadowRoot.querySelector(".steps-gif");
@@ -1422,6 +1432,10 @@ class ARDisplayViewer extends HTMLElement {
         : viewMode === "inpage"
         ? normalTemplate
         : buttonTemplate;
+
+    if (this.getAttribute('src')) {
+      template = buttonTemplate;
+    }
 
     const attributes = this._getAttributes();
     const templateString = template(
