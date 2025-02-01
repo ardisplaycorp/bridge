@@ -1443,7 +1443,7 @@ class ARDisplayViewer extends HTMLElement {
 
     this.shadowRoot.appendChild(fragment);
 
-    if (viewMode === "inpage") {
+    if (viewMode === "inpage" && !this.getAttribute('src')) {
       const imageOverlay = document.createElement("img");
       imageOverlay.src = this.modelData.options[0].posterFileUrl;
       imageOverlay.style.position = "absolute";
