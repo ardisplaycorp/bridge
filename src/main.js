@@ -266,7 +266,7 @@ stepsModalTemplate.innerHTML = `
       transform: translateX(-50%);
       width: calc(100% - 1rem);
       height: auto;
-      max-height: 70vh;
+      max-height: 90vh;
       background-color: rgba(255, 255, 255, 0.85);
       -webkit-backdrop-filter: blur(15px);
       backdrop-filter: blur(15px);
@@ -572,7 +572,7 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
-    this.GIF_URLS.push(this.modelData.options[0].image);
+    this.GIF_URLS.push(this.modelData.options[0].posterFileUrl);
 
     // Bundling external styles and scripts
     this.styles = this._consolidateStyles();
@@ -1832,12 +1832,12 @@ class ARDisplayViewer extends HTMLElement {
         }
 
         // Continue with the rest of your logic (steps modal, etc.)
-        const hasWebXRSupport = await this.checkWebXRSupport();
-        if (!hasWebXRSupport) {
-          this._resetSteps();
-          this._showStepsModal();
-          return;
-        }
+        // const hasWebXRSupport = await this.checkWebXRSupport();
+        // if (!hasWebXRSupport) {
+        //   this._resetSteps();
+        //   this._showStepsModal();
+        //   return;
+        // }
 
         if (this.isModelLoaded) {
           this._resetSteps();
@@ -1856,11 +1856,11 @@ class ARDisplayViewer extends HTMLElement {
         const hasWebXRSupport = await this.checkWebXRSupport();
 
         // If mobile device doesn't support WebXR, show multi-steps modal immediately
-        if (!hasWebXRSupport) {
-          this._resetSteps();
-          this._showStepsModal();
-          return;
-        }
+        // if (!hasWebXRSupport) {
+        //   this._resetSteps();
+        //   this._showStepsModal();
+        //   return;
+        // }
 
         // Continue with WebXR flow
         if (this.isModelLoaded) {
@@ -1870,7 +1870,6 @@ class ARDisplayViewer extends HTMLElement {
         }
 
         // Loading flow for WebXR-supported devices
-        await lazyLoadModelViewerIfNeeded();
         const progressModal = this.shadowRoot.querySelector("#progressModal");
         if (progressModal) {
           const fillElem = this.shadowRoot.querySelector("#progressBarFill");
@@ -1878,6 +1877,7 @@ class ARDisplayViewer extends HTMLElement {
           progressModal.style.display = "flex";
           this.userClickedAR = true;
         }
+        await lazyLoadModelViewerIfNeeded();
       }
     });
 
