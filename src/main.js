@@ -820,7 +820,7 @@ class ARDisplayViewer extends HTMLElement {
                       this.modelData.arBtn.btnBgColor
                     };color: ${this.modelData.arBtn.btnTextColor};border-radius: ${
       this.modelData.arBtn.cornerRadius
-    }px;font-size: ${this.modelData.arBtn.btnSize - 6}px;">
+    }px;font-size: ${this.modelData.arBtn.btnSize - 6}px;text-wrap: nowrap;">
                         ${
                           this.modelData.arBtn.btnIcon
                             ? `<i data-lucide="${this.modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`

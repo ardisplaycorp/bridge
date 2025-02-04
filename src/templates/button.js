@@ -39,7 +39,7 @@ export default (
           modelData.arBtn.btnBgColor
         };color: ${modelData.arBtn.btnTextColor};border-radius: ${
     modelData.arBtn.cornerRadius
-  }px;font-size: ${modelData.arBtn.btnSize - 6}px;">
+  }px;font-size: ${modelData.arBtn.btnSize - 6}px;text-wrap: nowrap;">
             ${
               modelData.arBtn.btnIcon
                 ? `<i data-lucide="${modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`
