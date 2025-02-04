@@ -95,13 +95,12 @@ class QrCodeManager {
   }
 
   async updateQrCode(url) {
-    while (this.container.firstChild) {
-      this.container.removeChild(this.container.firstChild);
-    }
-
+    // Clear all existing content inside the container
+    this.container.innerHTML = "";
+  
     const qrCodeSettings = this.modelData?.qrCode;
     let imageUrl = qrCodeSettings?.faviconUrl;
-
+  
     if (imageUrl) {
       try {
         await this.loadImage(imageUrl);
@@ -110,7 +109,7 @@ class QrCodeManager {
         imageUrl = null;
       }
     }
-
+  
     const qrCodeOptions = {
       width: parseInt(qrCodeSettings.QRsize) || 240,
       height: parseInt(qrCodeSettings.QRsize) || 240,
@@ -131,14 +130,14 @@ class QrCodeManager {
         color: qrCodeSettings.backgroundColor || "#ffffff",
       },
     };
-
+  
     if (imageUrl) {
       qrCodeOptions.image = imageUrl;
       qrCodeOptions.imageOptions = {
         margin: parseInt(qrCodeSettings.faviconMargin) || 0,
       };
     }
-
+  
     this.qrCode = new QRCodeStyling(qrCodeOptions);
     this.qrCode.append(this.container);
   }
