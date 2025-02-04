@@ -51,28 +51,27 @@ const logger = {
 };
 
 async function PosterWithCache(posterUrl, cache) {
-  // If we've already loaded the poster, use the cached blob URL.
   if (cache[posterUrl]) {
-    // If the cache value is a promise, wait for it.
-    let blobUrl = await Promise.resolve(cache[posterUrl]);
-    return blobUrl
+    return cache[posterUrl];
   } else {
-    // Start fetching and immediately cache the promise.
-    cache[posterUrl] = fetch(posterUrl)
-      .then(response => response.blob())
-      .then(blob => {
-        const blobUrl = URL.createObjectURL(blob);
-        // Save the final blob URL in case other parts need it directly.
-        cache[posterUrl] = blobUrl;
-        return blobUrl;
-      })
-      .catch(error => {
-        // Remove from cache if error occurred so future attempts can retry.
-        delete cache[posterUrl];
-        console.warn("Failed to load poster file:", error);
-        // Return original URL as a fallback.
-        return posterUrl;
-      });
+    try {
+      const fetchPromise = fetch(posterUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.blob();
+        })
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          cache[posterUrl] = blobUrl;
+          return blobUrl;
+        });
+      cache[posterUrl] = fetchPromise;
+      return await fetchPromise;
+    } catch (error) {
+      console.error('Failed to load poster:', error);
+      delete cache[posterUrl];
+      return posterUrl; // Fallback to original URL
+    }
   }
 }
 
@@ -150,7 +149,9 @@ const progressModalTemplate = document.createElement("template");
 progressModalTemplate.innerHTML = `
   <div class="ardisplay-progress-modal" id="ardisplayProgressModal" style="display: none;">
     <div class="ardisplay-progress-content">
-      <button class="ardisplay-progress-close-button">&times;</button>
+      <button class="ardisplay-progress-close-button"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg></button>
       <h3 class="ardisplay-progress-text">Loading...</h3>
       <div class="ardisplay-progress-bar">
         <div class="ardisplay-progress-bar-fill" id="ardisplayProgressBarFill"></div>
@@ -168,7 +169,9 @@ progressModalTemplate.innerHTML = `
       display: flex;
       justify-content: center;
       align-items: center;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .ardisplay-progress-content {
       position: relative;
@@ -208,13 +211,14 @@ progressModalTemplate.innerHTML = `
     }
     .ardisplay-progress-close-button {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 10px;
+      right: 10px;
       width: 30px;
       height: 30px;
       background: none;
       border: none;
       font-size: 24px;
+      font-weight: bold;
       cursor: pointer;
       color: white;
       display: flex;
@@ -848,7 +852,7 @@ class ARDisplayViewer extends HTMLElement {
     this.shadowRoot.appendChild(this.styles);
 
     // Load template first
-    this._loadTemplate(this.modelData.mode);
+    await this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
 
     // Add progress modal to shadow DOM
@@ -1078,7 +1082,7 @@ class ARDisplayViewer extends HTMLElement {
           <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
                class="ardisplay-steps-gif"
                alt="Product preview"
-               style="object-fit: cover;width: 100%;aspect-ratio: 16 / 9;">
+               style="object-fit: cover;width: 100%;">
           <h3 class="ardisplay-instructions-title">${
             STEPS[this.currentStep - 1].title
           }</h3>
