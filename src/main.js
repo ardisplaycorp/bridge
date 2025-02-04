@@ -95,7 +95,7 @@ class QrCodeManager {
   }
 
   async updateQrCode(url) {
-    if (this.container.firstChild) {
+    while (this.container.firstChild) {
       this.container.removeChild(this.container.firstChild);
     }
 
