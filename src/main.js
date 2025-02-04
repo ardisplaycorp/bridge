@@ -50,6 +50,33 @@ const logger = {
   },
 };
 
+async function PosterWithCache(posterUrl, cache) {
+  // If we've already loaded the poster, use the cached blob URL.
+  if (cache[posterUrl]) {
+    // If the cache value is a promise, wait for it.
+    let blobUrl = await Promise.resolve(cache[posterUrl]);
+    return blobUrl
+  } else {
+    // Start fetching and immediately cache the promise.
+    cache[posterUrl] = fetch(posterUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        // Save the final blob URL in case other parts need it directly.
+        cache[posterUrl] = blobUrl;
+        return blobUrl;
+      })
+      .catch(error => {
+        // Remove from cache if error occurred so future attempts can retry.
+        delete cache[posterUrl];
+        console.warn("Failed to load poster file:", error);
+        // Return original URL as a fallback.
+        return posterUrl;
+      });
+  }
+}
+
+
 // QR Code Manager
 class QrCodeManager {
   constructor(container, modelData) {
@@ -431,6 +458,8 @@ class ARDisplayViewer extends HTMLElement {
     // Initialize QR related properties
     this.qrCodeManager = null;
     this.qrModal = null;
+    
+    this.posters = {}
 
     // Cache elements
     this.modelViewer = null;
@@ -759,6 +788,7 @@ class ARDisplayViewer extends HTMLElement {
         align-items: center;
         justify-content: center;
         gap: 10px;
+        text-wrap: nowrap;
       }
       .ardisplay-show{
         display:flex!important;
@@ -820,8 +850,6 @@ class ARDisplayViewer extends HTMLElement {
     // Load template first
     this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
-
-    this.GIF_URLS.push(this.modelData.options[0].posterFileUrl);
 
     // Add progress modal to shadow DOM
     createPortal(progressModalTemplate.content.cloneNode(true));
@@ -1684,7 +1712,7 @@ class ARDisplayViewer extends HTMLElement {
     }
   }
 
-  _loadTemplate(viewMode) {
+  async _loadTemplate(viewMode) {
     let template =
       viewMode === "popup"
         ? modalTemplate
@@ -1718,7 +1746,7 @@ class ARDisplayViewer extends HTMLElement {
 
     if (viewMode === "inpage" && !this.getAttribute("src")) {
       const imageOverlay = document.createElement("img");
-      imageOverlay.src = this.modelData.options[0].posterFileUrl;
+      imageOverlay.src = await PosterWithCache(this.modelData.options[0].posterFileUrl, this.posters);
       imageOverlay.style.position = "absolute";
       imageOverlay.style.top = "0";
       imageOverlay.style.left = "0";
@@ -2042,7 +2070,7 @@ class ARDisplayViewer extends HTMLElement {
     }
 
     qrCodeButton.addEventListener("click", async () => {
-      console.log('click')
+      this.GIF_URLS.push(await PosterWithCache(this.modelData.options[0].posterFileUrl,this.posters));
       if (this.modelData.mode === "none" && this._isMobileDevice()) {
         // Show progress modal immediately!
         const progressModal = document.querySelector("#ardisplayProgressModal");
@@ -2193,7 +2221,7 @@ class ARDisplayViewer extends HTMLElement {
     const slider = createDomElement("div", { classList: ["slider"] });
     const slidesWrapper = createDomElement("div", { classList: ["slides"] });
 
-    this.variants.forEach((variant, index) => {
+    this.variants.forEach(async (variant, index) => {
       const slideButton = createDomElement("button", { classList: ["slide"] });
 
       if (index === 0) {
@@ -2202,7 +2230,7 @@ class ARDisplayViewer extends HTMLElement {
           let VARIANT_URL = new URL(variant.url);
           this.modelViewer.src = VARIANT_URL.href;
           if (variant.posterFileUrl) {
-            this.modelViewer.poster = variant.posterFileUrl;
+            this.modelViewer.poster = await PosterWithCache(variant.posterFileUrl,this.posters)
           } else {
             this.modelViewer.removeAttribute("poster");
           }
