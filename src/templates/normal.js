@@ -10,7 +10,7 @@ const modalStyles = {
     fontFamily: "sans-serif",
     position: "relative",
   },
-  ".qr-code-button": {
+  ".ardisplay-qr-code-button": {
     all: "unset",
     position: "absolute",
     top: "10px",
@@ -59,11 +59,11 @@ export default (
                 ar-status="not-presenting"
             >
                 ${template}
-                <button class="qr-code-button" style="background-color: ${
+                <button class="ardisplay-qr-code-button" style="background-color: ${
                   modelData.arBtn.btnBgColor
                 };color: ${modelData.arBtn.btnTextColor};border-radius: ${
     modelData.arBtn.cornerRadius
-  }px;font-size: ${modelData.arBtn.btnSize}px;">
+  }px;font-size: ${modelData.arBtn.btnSize - 6}px;">
                     ${
                       modelData.arBtn.btnIcon
                         ? `<i data-lucide="${modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`
@@ -72,28 +72,6 @@ export default (
                     ${modelData.arBtn.btnText}
                 </button>
             </model-viewer>
-            <!-- QR Code Modal -->
-            <div id="qrModal" class="qr-modal">
-                <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
-                <button class="qr-close-button">×</button>
-                <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-                    <h2>
-                        <p id="btn-text" style="margin: 0">${
-                          modelData.title
-                        }</p>
-                    </h2>
-                    <p data-id="qrcode-info" class="translate-lang" style="margin:0">${
-                      modelData.description
-                    }</p>
-                    <div class="qr-code-container">
-                        <div id="qr-code"></div>
-                    </div>
-                </div>
-                <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
-                    <img src="${CDN_URL}/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
-                </div>
-                </div>
-            </div>
         </div>
     `;
 };
