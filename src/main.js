@@ -2044,8 +2044,6 @@ class ARDisplayViewer extends HTMLElement {
         arButton.style.display = "block";
       }
     });
-
-    this._setupQRCodeListeners();
   }
 
   _isIOSDevice() {
