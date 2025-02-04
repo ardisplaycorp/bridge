@@ -2007,6 +2007,7 @@ class ARDisplayViewer extends HTMLElement {
       const fillElem = document.querySelector("#ardisplayProgressBarFill");
       if (fillElem) {
         fillElem.style.width = `${progress}%`;
+        fillElem.style.display = 'block'
       }
     });
 
@@ -2077,7 +2078,10 @@ class ARDisplayViewer extends HTMLElement {
         const progressModal = document.querySelector("#ardisplayProgressModal");
         if (progressModal) {
           const fillElem = document.querySelector("#ardisplayProgressBarFill");
-          if (fillElem) fillElem.style.width = "0%"; // Reset progress bar
+          if (fillElem) {
+            fillElem.style.width = "0%"; // Reset progress bar
+            fillElem.style.display = "block"
+          }
           progressModal.style.display = "flex"; // Show the modal
           this.userClickedAR = true; // Keep track of user click
         }
@@ -2092,6 +2096,7 @@ class ARDisplayViewer extends HTMLElement {
             const fillElem = document.querySelector("#ardisplayProgressBarFill");
             if (fillElem) {
               fillElem.style.width = `${progress}%`;
+              fillElem.style.display = `block`;
             }
           });
         }
@@ -2140,7 +2145,10 @@ class ARDisplayViewer extends HTMLElement {
         console.log(progressModal)
         if (progressModal) {
           const fillElem = document.querySelector("#ardisplayProgressBarFill");
-          if (fillElem) fillElem.style.width = "0%";
+          if (fillElem) {
+            fillElem.style.width = "0%";
+            fillElem.style.display = "block";
+          }
           progressModal.style.display = "flex";
           this.userClickedAR = true;
         }
