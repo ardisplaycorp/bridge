@@ -134,8 +134,8 @@ progressModalTemplate.innerHTML = `
     .ardisplay-progress-modal {
       position: fixed;
       z-index: 9999;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       top: 0;
       left: 0;
       display: flex;
@@ -237,8 +237,8 @@ stepsModalTemplate.innerHTML = `
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: rgba(0,0,0,0.6);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -309,8 +309,8 @@ stepsModalTemplate.innerHTML = `
         max-width: 100%;
         margin: 10px auto;
       ">
-        <button class="ardisplay-next-button multi-button">Next</button>
-        <button class="ardisplay-skip-button multi-button">Skip</button>
+        <button class="ardisplay-next-button ardisplay-multi-button">Next</button>
+        <button class="ardisplay-skip-button ardisplay-multi-button">Skip</button>
       </div>
     </div>
   </div>
@@ -709,8 +709,8 @@ class ARDisplayViewer extends HTMLElement {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 1;
         display: none;
@@ -875,13 +875,13 @@ class ARDisplayViewer extends HTMLElement {
       }
     }
 
-    const skipBtn = this.shadowRoot.querySelector(".ardisplay-skip-button");
-    const nextBtn = this.shadowRoot.querySelector(".ardisplay-next-button");
-    const stepsCloseBtn = this.shadowRoot.querySelector(".ardisplay-steps-close-button");
+    const skipBtn = document.querySelector(".ardisplay-skip-button");
+    const nextBtn = document.querySelector(".ardisplay-next-button");
+    const stepsCloseBtn = document.querySelector(".ardisplay-steps-close-button");
     skipBtn?.addEventListener("click", () => this._skipToLast());
     nextBtn?.addEventListener("click", () => this._goToNextStep());
     stepsCloseBtn?.addEventListener("click", () => {
-      const stepsOverlay = this.shadowRoot.querySelector(
+      const stepsOverlay = document.querySelector(
         ".ardisplay-multi-steps-overlay"
       );
       if (stepsOverlay) {
@@ -890,9 +890,9 @@ class ARDisplayViewer extends HTMLElement {
     });
 
     // Setup progress modal close functionality
-    const progressModal = this.shadowRoot.querySelector("#ardisplayProgressModal");
-    const progressContent = this.shadowRoot.querySelector(".ardisplay-progress-content");
-    const closeButton = this.shadowRoot.querySelector(".ardisplay-progress-close-button");
+    const progressModal = document.querySelector("#ardisplayProgressModal");
+    const progressContent = document.querySelector(".ardisplay-progress-content");
+    const closeButton = document.querySelector(".ardisplay-progress-close-button");
 
     if (progressModal && closeButton) {
       // Close on X button click
@@ -930,14 +930,14 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _showStepsModal() {
-    const modal = this.shadowRoot.querySelector(".ardisplay-multi-steps-overlay");
+    const modal = document.querySelector(".ardisplay-multi-steps-overlay");
     if (modal) {
       modal.style.display = "block";
       // Preload the first GIF immediately since it's visible
       const firstGifUrl = this.GIF_URLS[0];
       this.preloadImage(firstGifUrl);
       // Setup preloading for the second GIF
-      this.setupPreloaderForStep(0, this.shadowRoot);
+      this.setupPreloaderForStep(0, document);
       // Initialize swipe listeners
       this._setupSwipeListeners();
     }
@@ -945,12 +945,12 @@ class ARDisplayViewer extends HTMLElement {
 
   _skipToLast() {
     this.currentStep = this.totalSteps;
-    const stepsContent = this.shadowRoot.querySelector(".ardisplay-steps-content");
-    const nextBtn = this.shadowRoot.querySelector(".ardisplay-next-button");
-    const skipBtn = this.shadowRoot.querySelector(".ardisplay-skip-button");
+    const stepsContent = document.querySelector(".ardisplay-steps-content");
+    const nextBtn = document.querySelector(".ardisplay-next-button");
+    const skipBtn = document.querySelector(".ardisplay-skip-button");
 
     // Update step indicators
-    this.shadowRoot.querySelectorAll(".ardisplay-step-indicator").forEach((el, index) => {
+    document.querySelectorAll(".ardisplay-step-indicator").forEach((el, index) => {
       el.classList.toggle("active", index < this.currentStep);
     });
 
@@ -1021,7 +1021,7 @@ class ARDisplayViewer extends HTMLElement {
     if (viewWallBtn) {
       viewWallBtn.addEventListener("click", () => {
         this.handleActivateAR();
-        const modal = this.shadowRoot.querySelector(".ardisplay-multi-steps-overlay");
+        const modal = document.querySelector(".ardisplay-multi-steps-overlay");
         if (modal) modal.style.display = "none";
       });
     }
@@ -1030,7 +1030,7 @@ class ARDisplayViewer extends HTMLElement {
   async _goToNextStep() {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
-      this.shadowRoot
+      document
         .querySelectorAll(".ardisplay-step-indicator")
         .forEach((el, index) => {
           el.classList.remove("active");
@@ -1041,16 +1041,16 @@ class ARDisplayViewer extends HTMLElement {
 
       // Handle last step specially
       if (this.currentStep === this.totalSteps) {
-        const stepsContent = this.shadowRoot.querySelector(".ardisplay-steps-content");
-        const nextBtn = this.shadowRoot.querySelector(".ardisplay-next-button");
-        const skipBtn = this.shadowRoot.querySelector(".ardisplay-skip-button");
+        const stepsContent = document.querySelector(".ardisplay-steps-content");
+        const nextBtn = document.querySelector(".ardisplay-next-button");
+        const skipBtn = document.querySelector(".ardisplay-skip-button");
 
         // Update content for final step
         stepsContent.innerHTML = `
           <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
                class="ardisplay-steps-gif"
                alt="Product preview"
-               style="width: 100%;">
+               style="object-fit: cover;width: 100%;aspect-ratio: 16 / 9;">
           <h3 class="ardisplay-instructions-title">${
             STEPS[this.currentStep - 1].title
           }</h3>
@@ -1129,13 +1129,13 @@ class ARDisplayViewer extends HTMLElement {
         if (viewWallBtn) {
           viewWallBtn.addEventListener("click", () => {
             this.handleActivateAR();
-            const modal = this.shadowRoot.querySelector(".ardisplay-multi-steps-overlay");
+            const modal = document.querySelector(".ardisplay-multi-steps-overlay");
             if (modal) modal.style.display = "none";
           });
         }
       } else {
         // Normal step update
-        const gifElement = this.shadowRoot.querySelector(".ardisplay-steps-gif");
+        const gifElement = document.querySelector(".ardisplay-steps-gif");
         const currentGifUrl = this.GIF_URLS[this.currentStep - 1];
 
         try {
@@ -1152,13 +1152,13 @@ class ARDisplayViewer extends HTMLElement {
           );
         }
 
-        this.shadowRoot.querySelector(".ardisplay-instructions-title").innerHTML =
+        document.querySelector(".ardisplay-instructions-title").innerHTML =
           STEPS[this.currentStep - 1].title;
-        this.shadowRoot.querySelector(".ardisplay-instructions-body").innerHTML =
+        document.querySelector(".ardisplay-instructions-body").innerHTML =
           STEPS[this.currentStep - 1].description;
 
         // Setup preloading for the next step's gif
-        this.setupPreloaderForStep(this.currentStep - 1, this.shadowRoot);
+        this.setupPreloaderForStep(this.currentStep - 1, document);
       }
     }
   }
@@ -1167,16 +1167,16 @@ class ARDisplayViewer extends HTMLElement {
     if (this.currentStep > 1) {
       this.currentStep--;
       // Update the step indicators
-      this.shadowRoot
+      document
         .querySelectorAll(".ardisplay-step-indicator")
         .forEach((el, index) => {
           el.classList.toggle("active", index < this.currentStep);
         });
 
-      const stepsContent = this.shadowRoot.querySelector(".ardisplay-steps-content");
-      const gifElement = this.shadowRoot.querySelector(".ardisplay-steps-gif");
-      const nextBtn = this.shadowRoot.querySelector(".ardisplay-next-button");
-      const skipBtn = this.shadowRoot.querySelector(".ardisplay-skip-button");
+      const stepsContent = document.querySelector(".ardisplay-steps-content");
+      const gifElement = document.querySelector(".ardisplay-steps-gif");
+      const nextBtn = document.querySelector(".ardisplay-next-button");
+      const skipBtn = document.querySelector(".ardisplay-skip-button");
 
       // Show next/skip buttons when going back from last step
       if (nextBtn) nextBtn.style.display = "block";
@@ -1210,12 +1210,12 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       // Setup preloading for the next step's gif
-      this.setupPreloaderForStep(this.currentStep - 1, this.shadowRoot);
+      this.setupPreloaderForStep(this.currentStep - 1, document);
     }
   }
 
   _setupSwipeListeners() {
-    const stepsContent = this.shadowRoot.querySelector(".ardisplay-steps-content");
+    const stepsContent = document.querySelector(".ardisplay-steps-content");
     if (!stepsContent) return;
 
     let touchStartX = 0;
@@ -2031,14 +2031,10 @@ class ARDisplayViewer extends HTMLElement {
     const qrModal = document.querySelector("#qrModal");
     const qrCodeContainer = document.querySelector("#qr-code");
     const qrCodeButton = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".ardisplay-qr-code-button") : document.querySelector(".ardisplay-qr-code-button");
+    console.log(qrCodeButton)
     const qrCloseButton = document.querySelector(".qr-close-button");
 
     console.log(qrCodeButton)
-
-    if (!qrModal || !qrCodeContainer || !qrCodeButton || !qrCloseButton) {
-      logger.warn("QR code elements not found in the DOM");
-      return;
-    }
 
     // Initialize QR code manager if not already initialized
     if (!this.qrCodeManager) {
@@ -2046,6 +2042,7 @@ class ARDisplayViewer extends HTMLElement {
     }
 
     qrCodeButton.addEventListener("click", async () => {
+      console.log('click')
       if (this.modelData.mode === "none" && this._isMobileDevice()) {
         // Show progress modal immediately!
         const progressModal = document.querySelector("#ardisplayProgressModal");
@@ -2090,6 +2087,7 @@ class ARDisplayViewer extends HTMLElement {
         qrModal.style.display = "flex";
         return;
       } else {
+        console.log('else')
         // Mobile device, but not mode "none" (likely inpage or popup)
         // For mobile devices, check WebXR support
         const hasWebXRSupport = await this.checkWebXRSupport();
@@ -2110,6 +2108,7 @@ class ARDisplayViewer extends HTMLElement {
 
         // Loading flow for WebXR-supported devices
         const progressModal = document.querySelector("#ardisplayProgressModal");
+        console.log(progressModal)
         if (progressModal) {
           const fillElem = document.querySelector("#ardisplayProgressBarFill");
           if (fillElem) fillElem.style.width = "0%";
