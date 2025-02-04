@@ -1319,6 +1319,10 @@ class ARDisplayViewer extends HTMLElement {
       const data = await response.json();
       this.modelData = data;
 
+      if(this.getAttribute('src')){
+        this.modelData.mode = "none"
+      }
+
       // Handle missing data gracefully
       if (!this.modelData?.options) {
         logger.warn("Missing model options. Skipping variant initialization.");
@@ -2454,7 +2458,7 @@ class ARDisplayViewer extends HTMLElement {
     const overlay = document.querySelector(".ardisplay-model-viewer-overlay");
 
     if (view3DButton && modelViewerContainer) {
-      view3DButton.addEventListener("click", async () => {
+      view3DButton.addEventListener("click", async() => {
         await lazyLoadModelViewerIfNeeded();
         modelViewerContainer.style.display = "flex";
         overlay.style.display = "block";
