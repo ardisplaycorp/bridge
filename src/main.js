@@ -791,7 +791,7 @@ class ARDisplayViewer extends HTMLElement {
         align-items: center;
         justify-content: center;
         gap: 10px;
-        text-wrap: nowrap;
+        white-space: nowrap;
       }
       .ardisplay-show{
         display:flex!important;
