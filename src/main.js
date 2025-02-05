@@ -1337,9 +1337,11 @@ class ARDisplayViewer extends HTMLElement {
           `https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
         );
       } else {
+        if(url && url.endsWith("preview")){
+          url = url.replace('preview','')
+        }
         if (url && url.endsWith("/")) {
           url = url.slice(0, -1);
-          url = url.replace('preview','')
         }
         response = await fetch(
           `https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
