@@ -865,7 +865,11 @@ class ARDisplayViewer extends HTMLElement {
       createPortal(qrModalTemplate.content.cloneNode(true));
     }
 
-    createPortal(modalModeTemplate.content.cloneNode(true));
+    if(this.modelData.mode === "popup"){
+      createPortal(modalModeTemplate.content.cloneNode(true));
+    }
+
+    this.modelViewer = this.modelData.mode === "popup" ? document.querySelector("model-viewer") : this.shadowRoot.querySelector("model-viewer");
 
     const showQRButton = document.querySelector('#showQRButton');
   if (showQRButton) {
@@ -938,11 +942,6 @@ class ARDisplayViewer extends HTMLElement {
         }
       });
     }
-
-    this.modelViewer = this.modelData.mode === "popup" ? document.querySelector("model-viewer") : this.shadowRoot.querySelector("model-viewer");
-    const style = document.createElement("style");
-    style.textContent = `.container { direction: ltr; }`;
-    this.modelViewer.shadowRoot.appendChild(style);
 
     this._setupEventListeners();
     // this._setupBottomNavBar(this.modelViewer);
@@ -1776,6 +1775,9 @@ class ARDisplayViewer extends HTMLElement {
             .removeChild(imageElement);
         }
         await lazyLoadModelViewerIfNeeded();
+        const style = document.createElement("style");
+        style.textContent = `.container { direction: ltr; }`;
+        this.modelViewer.shadowRoot.appendChild(style);
       });
 
       this.addEventListener("mouseenter", async () => {
@@ -1786,6 +1788,9 @@ class ARDisplayViewer extends HTMLElement {
             .removeChild(imageElement);
         }
         await lazyLoadModelViewerIfNeeded();
+        const style = document.createElement("style");
+        style.textContent = `.container { direction: ltr; }`;
+        this.modelViewer.shadowRoot.appendChild(style);
       });
     }
   }
@@ -2093,10 +2098,11 @@ class ARDisplayViewer extends HTMLElement {
           this.userClickedAR = true; // Keep track of user click
         }
 
-        await lazyLoadModelViewerIfNeeded(); // Start loading model-viewer
+        await lazyLoadModelViewerIfNeeded();
+        const style = document.createElement("style");
+        style.textContent = `.container { direction: ltr; }`;
+        this.modelViewer.shadowRoot.appendChild(style); // Start loading model-viewer
 
-        // Now that model-viewer is loaded, get the element and attach event listener
-        this.modelViewer = this.modelData.mode === "popup" ? this.modelViewer : this.shadowRoot.querySelector("model-viewer");; // Re-fetch modelViewer after lazy load
         if (this.modelViewer) {
           this.modelViewer.addEventListener("progress", (event) => {
             const progress = Math.round(event.detail.totalProgress * 100);
@@ -2160,6 +2166,9 @@ class ARDisplayViewer extends HTMLElement {
           this.userClickedAR = true;
         }
         await lazyLoadModelViewerIfNeeded();
+        const style = document.createElement("style");
+        style.textContent = `.container { direction: ltr; }`;
+        this.modelViewer.shadowRoot.appendChild(style);
       }
     });
 
@@ -2503,6 +2512,9 @@ class ARDisplayViewer extends HTMLElement {
     if (view3DButton && modelViewerContainer) {
       view3DButton.addEventListener("click", async() => {
         await lazyLoadModelViewerIfNeeded();
+        const style = document.createElement("style");
+        style.textContent = `.container { direction: ltr; }`;
+        this.modelViewer.shadowRoot.appendChild(style);
         modelViewerContainer.style.display = "flex";
         overlay.style.display = "block";
       });
