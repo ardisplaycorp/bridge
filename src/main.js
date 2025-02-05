@@ -427,7 +427,7 @@ stepsModalTemplate.innerHTML = `
     }
 
     .ardisplay-next-button{
-      background:black;
+      background:black!important;
       color:white;
     }
 
