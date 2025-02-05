@@ -940,6 +940,10 @@ class ARDisplayViewer extends HTMLElement {
     }
 
     this.modelViewer = this.modelData.mode === "popup" ? document.querySelector("model-viewer") : this.shadowRoot.querySelector("model-viewer");
+    const style = document.createElement("style");
+    style.textContent = `.container { direction: ltr; }`;
+    this.modelViewer.shadowRoot.appendChild(style);
+
     this._setupEventListeners();
     // this._setupBottomNavBar(this.modelViewer);
 
