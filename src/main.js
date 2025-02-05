@@ -146,7 +146,7 @@ class QrCodeManager {
 // Progress modal template
 const progressModalTemplate = document.createElement("template");
 progressModalTemplate.innerHTML = `
-  <div class="ardisplay-progress-modal" id="ardisplayProgressModal" style="display: none;">
+  <div class="ardisplay-progress-modal" id="ardisplayProgressModal" style="display: none;direction: ltr;">
     <div class="ardisplay-progress-content">
       <button class="ardisplay-progress-close-button"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -262,7 +262,7 @@ const STEPS = [
 // Multi-steps modal template (bottom 60vh, 90vw, dark overlay)
 const stepsModalTemplate = document.createElement("template");
 stepsModalTemplate.innerHTML = `
-  <div class="ardisplay-multi-steps-overlay" style="display: none;">
+  <div class="ardisplay-multi-steps-overlay" style="display: none;direction: ltr;">
     <div class="ardisplay-overlay-bg" style="
       position: fixed;
       top: 0;
@@ -676,7 +676,7 @@ class ARDisplayViewer extends HTMLElement {
           margin: 20px auto;
         }
       </style>
-      <div id="qrModal" class="qr-modal">
+      <div id="qrModal" class="qr-modal" style="direction: ltr;">
           <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
           <button class="qr-close-button">×</button>
           <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
@@ -797,7 +797,7 @@ class ARDisplayViewer extends HTMLElement {
         display:flex!important;
       }
       </style>
-      <div class="model-viewer-container">
+      <div class="model-viewer-container" style="direction: ltr;">
                 <model-viewer  
                     ar
                     shadow-intensity="${this.modelData.shadow}"
@@ -953,6 +953,7 @@ class ARDisplayViewer extends HTMLElement {
     const bottomContainer = createDomElement("div", {
       classList: ["bottom-container"],
     });
+    bottomContainer.style.direction = "ltr"
     this.modelViewer.appendChild(bottomContainer);
 
     // Setup the floating cart button

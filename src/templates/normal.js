@@ -40,7 +40,7 @@ export default (
   return `
         <!-- Template for modal view -->
         <style>${styles}</style>
-        <div class="normal-view-container">
+        <div class="normal-view-container" style="direction: ltr;">
             <model-viewer
                 ar="${ar}"
                 shadow-intensity="${modelData.shadow}"

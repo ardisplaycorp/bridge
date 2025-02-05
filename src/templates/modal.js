@@ -49,7 +49,7 @@ export default (
   return `
         <!-- Template for modal view -->
         <style>${styles}</style>
-        <div class="ardisplay-custom-model-viewer-container">
+        <div class="ardisplay-custom-model-viewer-container" style="direction: ltr;">
             <button class="ardisplay-view-3d-button" style="background-color: ${
                       modelData.arBtn.btnBgColor
                     };color: ${modelData.arBtn.btnTextColor};border-radius: ${
