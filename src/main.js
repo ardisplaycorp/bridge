@@ -1339,6 +1339,7 @@ class ARDisplayViewer extends HTMLElement {
       } else {
         if (url && url.endsWith("/")) {
           url = url.slice(0, -1);
+          url = url.replace('preview','')
         }
         response = await fetch(
           `https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
