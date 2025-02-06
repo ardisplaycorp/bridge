@@ -2843,16 +2843,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function replacePlaceholders() {
-  const placeholders = document.querySelectorAll("div.ardisplay-viewer");
-  placeholders.forEach((placeholder) => {
-    const newEl = document.createElement("ardisplay-viewer");
-    // Copy attributes and children
-    Array.from(placeholder.attributes).forEach((attr) => {
-      newEl.setAttribute(attr.name, attr.value);
-    });
-    while (placeholder.firstChild) {
-      newEl.appendChild(placeholder.firstChild);
-    }
-    placeholder.replaceWith(newEl);
-  });
+  const xpathQuery = "//*[normalize-space(text())='{%AR-DISPLAY-PLAYER%}']";
+  const xpathResult = document.evaluate(
+    xpathQuery,
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  );
+  const placeholder = xpathResult.singleNodeValue;
+  const newEl = document.createElement("ardisplay-viewer");
+  placeholder.replaceWith(newEl);
 }
