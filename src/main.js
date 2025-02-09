@@ -223,6 +223,8 @@ progressModalTemplate.innerHTML = `
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 0;
+        background: transparent;
     }
     .ardisplay-progress-close-button:hover {
       color: #ccc;
