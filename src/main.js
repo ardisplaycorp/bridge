@@ -210,21 +210,19 @@ progressModalTemplate.innerHTML = `
     }
     .ardisplay-progress-close-button {
       position: fixed;
-      top: 10px;
-      right: 10px;
-      width: 30px;
-      height: 30px;
-      background: none;
-      border: none;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
-      z-index: 10000;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     .ardisplay-progress-close-button:hover {
       color: #ccc;
