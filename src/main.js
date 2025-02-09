@@ -1439,6 +1439,7 @@ class ARDisplayViewer extends HTMLElement {
         height: 100%;
         --min-hotspot-opacity: 0;
         position: relative;
+        display: block;
       }
 
       model-viewer[ar-status="session-started"] .ardisplay-qr-code-button,
