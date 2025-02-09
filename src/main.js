@@ -1412,6 +1412,7 @@ class ARDisplayViewer extends HTMLElement {
           display: block;
           width: 100%;
           height: 600px;
+          transform: scale(1);
         }
       `;
     } else {
@@ -1420,6 +1421,7 @@ class ARDisplayViewer extends HTMLElement {
           display: block;
           width: fit-content;
           height: fit-content;
+          transform: scale(1);
         }
       `;
     }
