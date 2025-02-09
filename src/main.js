@@ -275,7 +275,7 @@ stepsModalTemplate.innerHTML = `
       z-index: 9998;
     ">
       <div class="ardisplay-steps-close-button" style="
-        position: absolute;
+        position: fixed;
         top: 10px;
         right: 10px;
         width: 30px;
