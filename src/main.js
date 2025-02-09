@@ -229,6 +229,10 @@ progressModalTemplate.innerHTML = `
     .ardisplay-progress-close-button:hover {
       color: #ccc;
     }
+    .ardisplay-progress-close-button svg{
+      width:30px;
+      height:30px;
+    }
   </style>
 `;
 
@@ -290,7 +294,7 @@ stepsModalTemplate.innerHTML = `
         justify-content: center;
         align-items: center;
       ">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:30px;height:30px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </div>
