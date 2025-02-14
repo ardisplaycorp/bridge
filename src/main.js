@@ -725,7 +725,7 @@ class ARDisplayViewer extends HTMLElement {
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1;
+        z-index: 10;
         display: none;
       }
       .ardisplay-details-panel{
@@ -819,7 +819,7 @@ class ARDisplayViewer extends HTMLElement {
                     </svg>
                 </button>
                 <div class="ardisplay-details-panel" style="flex-direction:column;">
-                    <div class="ar-display-custom-panel" style="flex:1;"></div>
+                    <div class="ar-display-custom-panel" style="flex:1;display:block;"></div>
                     <button id="showQRButton" style="margin-top: 16px; margin-right: 16px; padding: 8px 16px; color: black; border: none; border-radius: 4px; cursor: pointer;display:flex;flex-direction:row;align-items:center;gap:16px;font-weight:700;">
                       <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="rotera-svg-icon"><path d="M2 2h7v2H4v5H2V2zm18 2h-5V2h7v7h-2V4zM4 15H2v7h7v-2H4v-5zm18 0h-2v5h-5v2h7v-7z"></path><path d="M11 6h2v5h5v7h-7v-5H6v-2h5V6z"></path><path d="M9 6H6v3h3V6zm6 0h3v3h-3V6zm-6 9H6v3h3v-3z"></path></svg>
                       Try it in your home
@@ -846,9 +846,7 @@ class ARDisplayViewer extends HTMLElement {
 
     const gifFile =
       this.modelData.placement === "wall" ? "wall.webp" : "floor.gif";
-    console.log(gifFile);
     const instructionGif = document.querySelector("#instructionGif");
-    console.log(instructionGif);
     if (instructionGif) {
       instructionGif.src = `${CDN_URL}/${gifFile}`;
     }
@@ -1084,7 +1082,6 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _goToNextStep() {
-    console.log(this.currentStep, this.totalSteps);
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
       document
@@ -1786,8 +1783,6 @@ class ARDisplayViewer extends HTMLElement {
       imageOverlay.style.zIndex = "10";
       this.shadowRoot.querySelector("model-viewer").appendChild(imageOverlay);
 
-      console.log(this);
-
       this.addEventListener("click", async () => {
         const imageElement = this.shadowRoot.querySelector("model-viewer img");
         if (imageElement) {
@@ -1948,7 +1943,6 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupEventListeners() {
-    console.log(this.modelData.mode);
     if (this.modelData.mode === "popup") {
       this._setupModalEventListeners();
     } else if (this.modelData.mode === "inpage") {
@@ -2002,7 +1996,6 @@ class ARDisplayViewer extends HTMLElement {
                 btn.classList.remove("selected");
               }
             });
-            console.log(sizeButtons);
           });
         }
       }
@@ -2108,10 +2101,7 @@ class ARDisplayViewer extends HTMLElement {
       this.modelData.mode !== "popup"
         ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
         : document.querySelector(".ardisplay-qr-code-button");
-    console.log(qrCodeButton);
     const qrCloseButton = document.querySelector(".qr-close-button");
-
-    console.log(qrCodeButton);
 
     // Initialize QR code manager if not already initialized
     if (!this.qrCodeManager) {
@@ -2176,7 +2166,6 @@ class ARDisplayViewer extends HTMLElement {
         qrModal.style.display = "flex";
         return;
       } else {
-        console.log("else");
         // Mobile device, but not mode "none" (likely inpage or popup)
         // For mobile devices, check WebXR support
         const hasWebXRSupport = await this.checkWebXRSupport();
@@ -2197,7 +2186,6 @@ class ARDisplayViewer extends HTMLElement {
 
         // Loading flow for WebXR-supported devices
         const progressModal = document.querySelector("#ardisplayProgressModal");
-        console.log(progressModal);
         if (progressModal) {
           const fillElem = document.querySelector("#ardisplayProgressBarFill");
           if (fillElem) {
@@ -2290,8 +2278,6 @@ class ARDisplayViewer extends HTMLElement {
     const slider = createDomElement("div", { classList: ["slider"] });
     const slidesWrapper = createDomElement("div", { classList: ["slides"] });
 
-    console.log(this.variants);
-
     this.variants.forEach(async (variant, index) => {
       const slideButton = createDomElement("button", { classList: ["slide"] });
 
@@ -2337,6 +2323,7 @@ class ARDisplayViewer extends HTMLElement {
         slideButton.classList.add("selected");
 
         this.selectedIndex = index;
+        this._updateNavButtonsVisibility();
       };
 
       slidesWrapper.appendChild(slideButton);
@@ -2488,7 +2475,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // Create the Size nav button (only show if there are multiple size options)
     const sizeBtn = createDomElement("button", {
-      classList: ["nav-icon-button"],
+      classList: ["nav-icon-button", "size-btn"],
     });
     // For example, add an icon (using an SVG or text) and label:
     sizeBtn.innerHTML = `
@@ -2510,7 +2497,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // Create the Variant nav button (only if there are multiple variants)
     const variantBtn = createDomElement("button", {
-      classList: ["nav-icon-button"],
+      classList: ["nav-icon-button", "variant-btn"],
     });
     variantBtn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" style="height:24px;width:24px;">
@@ -2526,6 +2513,17 @@ class ARDisplayViewer extends HTMLElement {
       );
       sizeBtn.classList.remove("active");
     });
+
+    if (this.variants.length === 1 && variantBtn) {
+      variantBtn.style.display = "none";
+    }
+
+    if (this.variants.length > 0) {
+      const defaultVariantSizes = this.variants[0].sizes;
+      if (defaultVariantSizes && defaultVariantSizes.length === 1 && sizeBtn) {
+        sizeBtn.style.display = "none";
+      }
+    }
 
     // You can add a Share button or any additional buttons, if needed.
     const shareBtn = createDomElement("button", {
@@ -2577,6 +2575,30 @@ class ARDisplayViewer extends HTMLElement {
     container.appendChild(navBar);
     container.appendChild(sizePanel);
     container.appendChild(variantPanel);
+  }
+
+  _updateNavButtonsVisibility() {
+    const sizeBtn = this.shadowRoot.querySelector(".bottom-nav .size-btn");
+    const variantBtn = this.shadowRoot.querySelector(
+      ".bottom-nav .variant-btn"
+    );
+
+    // Hide the variant button if there is only one variant
+    if (this.variants.length === 1 && variantBtn) {
+      variantBtn.style.display = "none";
+    } else if (variantBtn) {
+      variantBtn.style.display = "flex";
+    }
+
+    // Get the currently selected variant (default to index 0 if not set)
+    const selectedIndex =
+      typeof this.selectedIndex === "number" ? this.selectedIndex : 0;
+    const currentVariantSizes = this.variants[selectedIndex]?.sizes;
+    if (currentVariantSizes && currentVariantSizes.length === 1 && sizeBtn) {
+      sizeBtn.style.display = "none";
+    } else if (sizeBtn) {
+      sizeBtn.style.display = "flex";
+    }
   }
   // ------------------------------------------------------------------
 
