@@ -1459,8 +1459,8 @@ class ARDisplayViewer extends HTMLElement {
 
 
 
-      model-viewer[ar-status="session-started"] .nav-icon-button:last-child,
-      model-viewer[ar-status="object-placed"] .nav-icon-button:last-child {
+      model-viewer[ar-status="session-started"] .ardisplay-nav-icon-button:last-child,
+      model-viewer[ar-status="object-placed"] .ardisplay-nav-icon-button:last-child {
         display: flex;
       }
 
@@ -1474,7 +1474,7 @@ class ARDisplayViewer extends HTMLElement {
         display: none!important;
       }
 
-      .nav-icon-button:last-child {
+      .ardisplay-nav-icon-button:last-child {
         display: none;
       }
 
@@ -1513,7 +1513,7 @@ class ARDisplayViewer extends HTMLElement {
         height: auto;
       }
 
-      .bottom-nav-bar {
+      .ardisplay-bottom-nav-bar {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -1669,7 +1669,7 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       /* Bottom Nav Bar (matching the React code style) */
-      .bottom-nav {
+      .ardisplay-bottom-nav {
         height: fit-content; /* h-16 in Tailwind */
         display: flex;
         align-items: center;
@@ -1679,7 +1679,7 @@ class ARDisplayViewer extends HTMLElement {
         z-index: 100;
         margin-bottom: 16px;
       }
-      .nav-icon-button {
+      .ardisplay-nav-icon-button {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -1694,11 +1694,11 @@ class ARDisplayViewer extends HTMLElement {
         cursor: pointer;
         transition: color 0.2s ease;
       }
-      .nav-icon-button svg {
+      .ardisplay-nav-icon-button svg {
         height: 24px; /* h-6 */
         width: 24px;
       }
-      .nav-icon-button span {
+      .ardisplay-nav-icon-button span {
         font-size: 12px; /* text-xs ~12px */
         font-weight: bold;
       }
@@ -2317,10 +2317,17 @@ class ARDisplayViewer extends HTMLElement {
           this.modelViewer.removeAttribute("poster");
         }
 
-        this.shadowRoot
-          .querySelectorAll(".slide")
-          .forEach((s) => s.classList.remove("selected"));
-        slideButton.classList.add("selected");
+        if (!this.modelData.mode === "popup") {
+          this.shadowRoot
+            .querySelectorAll(".slide")
+            .forEach((s) => s.classList.remove("selected"));
+          slideButton.classList.add("selected");
+        } else {
+          document
+            .querySelectorAll(".slide")
+            .forEach((s) => s.classList.remove("selected"));
+          slideButton.classList.add("selected");
+        }
 
         this.selectedIndex = index;
         this._updateNavButtonsVisibility();
@@ -2461,7 +2468,9 @@ class ARDisplayViewer extends HTMLElement {
     if (variantControls) variantPanel.appendChild(variantControls);
 
     // Create the bottom nav container
-    const navBar = createDomElement("div", { classList: ["bottom-nav"] });
+    const navBar = createDomElement("div", {
+      classList: ["ardisplay-bottom-nav"],
+    });
 
     // Toggle function for showing/hiding a given panel
     const togglePanel = (panel) => {
@@ -2475,7 +2484,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // Create the Size nav button (only show if there are multiple size options)
     const sizeBtn = createDomElement("button", {
-      classList: ["nav-icon-button", "size-btn"],
+      classList: ["ardisplay-nav-icon-button", "ardisplay-size-btn"],
     });
     // For example, add an icon (using an SVG or text) and label:
     sizeBtn.innerHTML = `
@@ -2497,7 +2506,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // Create the Variant nav button (only if there are multiple variants)
     const variantBtn = createDomElement("button", {
-      classList: ["nav-icon-button", "variant-btn"],
+      classList: ["ardisplay-nav-icon-button", "ardisplay-variant-btn"],
     });
     variantBtn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" style="height:24px;width:24px;">
@@ -2527,7 +2536,7 @@ class ARDisplayViewer extends HTMLElement {
 
     // You can add a Share button or any additional buttons, if needed.
     const shareBtn = createDomElement("button", {
-      classList: ["nav-icon-button"],
+      classList: ["ardisplay-nav-icon-button"],
     });
     shareBtn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2578,10 +2587,20 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _updateNavButtonsVisibility() {
-    const sizeBtn = this.shadowRoot.querySelector(".bottom-nav .size-btn");
-    const variantBtn = this.shadowRoot.querySelector(
-      ".bottom-nav .variant-btn"
-    );
+    const sizeBtn =
+      this.modelData.mode !== "popup"
+        ? this.shadowRoot.querySelector(
+            ".ardisplay-bottom-nav .ardisplay-size-btn"
+          )
+        : document.querySelector(".ardisplay-bottom-nav .ardisplay-size-btn");
+    const variantBtn =
+      this.modelData.mode !== "popup"
+        ? this.shadowRoot.querySelector(
+            ".ardisplay-bottom-nav .ardisplay-variant-btn"
+          )
+        : document.querySelector(
+            ".ardisplay-bottom-nav .ardisplay-variant-btn"
+          );
 
     // Hide the variant button if there is only one variant
     if (this.variants.length === 1 && variantBtn) {
@@ -2593,6 +2612,8 @@ class ARDisplayViewer extends HTMLElement {
     // Get the currently selected variant (default to index 0 if not set)
     const selectedIndex =
       typeof this.selectedIndex === "number" ? this.selectedIndex : 0;
+    console.log(selectedIndex);
+    console.log(sizeBtn);
     const currentVariantSizes = this.variants[selectedIndex]?.sizes;
     if (currentVariantSizes && currentVariantSizes.length === 1 && sizeBtn) {
       sizeBtn.style.display = "none";
