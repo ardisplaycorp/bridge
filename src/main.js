@@ -591,8 +591,6 @@ class ARDisplayViewer extends HTMLElement {
       this.GIF_URLS.push(`${CDN_URL}/floor.gif`);
     }
 
-    this.modelData.mode = "none";
-
     // Bundling external styles and scripts
     this.styles = this._consolidateStyles();
     if (this.modelData.mode !== "popup") {
