@@ -301,9 +301,9 @@ stepsModalTemplate.innerHTML = `
       overflow: hidden;
       padding: 15px;
     ">
-      <div class="ardisplay-steps-content" style="padding: 1rem; flex: 1;">
-        <img src="${CDN_URL}/wall-art-instructions-1-anim.gif" class="ardisplay-steps-gif" alt="Computer man">
+      <div class="ardisplay-steps-content" style="padding: 1rem; flex: 1;padding-top: 0;">
         <h3 class="ardisplay-translate-lang instructions-title">Scanning</h3>
+        <img id="instructionGif" src="" class="ardisplay-steps-gif" alt="Computer man">
         <div class="ardisplay-instructions-body translate-lang" data-id="space-info">Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.</div>
       </div>
       <div class="ardisplay-steps-footer" style="
@@ -333,6 +333,7 @@ stepsModalTemplate.innerHTML = `
     .ardisplay-steps-gif{
       width:100%;
       height:auto;
+      border-radius: 20px;
     }
 
     .ardisplay-view-wall-button{
@@ -348,14 +349,13 @@ stepsModalTemplate.innerHTML = `
     }
 
     .ardisplay-instructions-body {
-        height:72px;
         display:flex;
         align-items:center;
         font-size: 16px;
         line-height: 1.5;
         color: #272727;
         margin: 10px 0 10px 0;
-        text-align: left;
+        text-align: justify;
         font-family:sans-serif;
     }
 
@@ -454,7 +454,7 @@ class ARDisplayViewer extends HTMLElement {
     );
 
     // Array of GIF URLs for each step
-    this.GIF_URLS = [`${CDN_URL}/wall-art-instructions-1-anim.gif`];
+    this.GIF_URLS = [];
 
     // Cache for blob URLs
     this.gifCache = {};
@@ -585,6 +585,14 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
+    if (this.modelData.placement === "wall") {
+      this.GIF_URLS.push(`${CDN_URL}/wall.webp`);
+    } else {
+      this.GIF_URLS.push(`${CDN_URL}/floor.gif`);
+    }
+
+    this.modelData.mode = "none";
+
     // Bundling external styles and scripts
     this.styles = this._consolidateStyles();
     if (this.modelData.mode !== "popup") {
@@ -664,7 +672,7 @@ class ARDisplayViewer extends HTMLElement {
               </div>
           </div>
           <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
-              <img src="${CDN_URL}/1.webp" alt="Artwork" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+              <img src="${this.modelData.options[0].posterFileUrl}" alt="Artwork" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
           </div>
           </div>
       </div>
@@ -729,6 +737,7 @@ class ARDisplayViewer extends HTMLElement {
         display: flex;
         flex-direction: column;
         padding-block: 1rem;
+        padding-top: 50px; // added padding
       }
       @media only screen and (max-width: 900px){
         .model-viewer-container{
@@ -836,6 +845,21 @@ class ARDisplayViewer extends HTMLElement {
 
     // Add multi-steps modal template using portal
     createPortal(stepsModalTemplate.content.cloneNode(true));
+
+    const gifFile =
+      this.modelData.placement === "wall" ? "wall.webp" : "floor.gif";
+    console.log(gifFile);
+    const instructionGif = document.querySelector("#instructionGif");
+    console.log(instructionGif);
+    if (instructionGif) {
+      instructionGif.src = `${CDN_URL}/${gifFile}`;
+    }
+
+    const contentBody = this.modelData.placement === "wall" ? "wall" : "floor";
+    const instructionBody = document.querySelector(
+      ".ardisplay-instructions-body"
+    );
+    instructionBody.innerHTML = `Stand several feet back. With camera facing ${contentBody}, make sweeping motion side to side, up and down.`;
 
     if (this.modelData.mode !== "popup") {
       // Add QR modal template using portal
@@ -986,13 +1010,13 @@ class ARDisplayViewer extends HTMLElement {
 
     // Update content for final step
     stepsContent.innerHTML = `
+      <h3 class="ardisplay-instructions-title">${
+        STEPS[this.currentStep - 1].title
+      }</h3>
       <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
            class="ardisplay-steps-gif"
            alt="Product preview"
            style="width: 100%;">
-      <h3 class="ardisplay-instructions-title">${
-        STEPS[this.currentStep - 1].title
-      }</h3>
       <div class="ardisplay-instructions-body">${
         STEPS[this.currentStep - 1].description
       }</div>
@@ -1039,7 +1063,7 @@ class ARDisplayViewer extends HTMLElement {
     // Hide next/skip buttons on last step
     if (nextBtn) {
       requestAnimationFrame(() => {
-        nextBtn.style.display = "none";
+        nextBtn.parentElement.style.display = "none";
       });
     }
     if (skipBtn) {
@@ -1082,13 +1106,13 @@ class ARDisplayViewer extends HTMLElement {
 
         // Update content for final step
         stepsContent.innerHTML = `
+          <h3 class="ardisplay-instructions-title">${
+            STEPS[this.currentStep - 1].title
+          }</h3>
           <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
                class="ardisplay-steps-gif"
                alt="Product preview"
                style="object-fit: cover;width: 100%;">
-          <h3 class="ardisplay-instructions-title">${
-            STEPS[this.currentStep - 1].title
-          }</h3>
           <div class="ardisplay-instructions-body">${
             STEPS[this.currentStep - 1].description
           }</div>
@@ -1138,7 +1162,7 @@ class ARDisplayViewer extends HTMLElement {
         // Hide next/skip buttons on last step
         if (nextBtn) {
           requestAnimationFrame(() => {
-            nextBtn.style.display = "none";
+            nextBtn.parentElement.style.display = "none";
           });
         }
         if (skipBtn) {
@@ -1205,53 +1229,37 @@ class ARDisplayViewer extends HTMLElement {
   async _goToPreviousStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
-      // Update the step indicators
       document
         .querySelectorAll(".ardisplay-step-indicator")
         .forEach((el, index) => {
-          el.classList.toggle("active", index < this.currentStep);
+          el.classList.remove("active");
+          if (index < this.currentStep) {
+            el.classList.add("active");
+          }
         });
 
+      // Update content for the previous slide using this.modelData.placement
       const stepsContent = document.querySelector(".ardisplay-steps-content");
-      const gifElement = document.querySelector(".ardisplay-steps-gif");
-      const nextBtn = document.querySelector(".ardisplay-next-button");
-      const skipBtn = document.querySelector(".ardisplay-skip-button");
-
-      // Show next/skip buttons when going back from last step
-      if (nextBtn) nextBtn.style.display = "block";
-      if (skipBtn) skipBtn.style.display = "block";
-
-      // Update content
       stepsContent.innerHTML = `
-        <img src="${
-          this.GIF_URLS[this.currentStep - 1]
-        }" class="ardisplay-steps-gif" alt="Instructions animation">
         <h3 class="ardisplay-instructions-title">${
           STEPS[this.currentStep - 1].title
         }</h3>
-        <div class="ardisplay-instructions-body">${
-          STEPS[this.currentStep - 1].description
-        }</div>
+        <img src="${this.GIF_URLS[this.currentStep - 1]}"
+             class="ardisplay-steps-gif"
+             alt="Product preview"
+             style="width: 100%;">
+        <div class="ardisplay-instructions-body">
+          Stand several feet back. With camera facing ${
+            this.modelData.placement
+          }, make sweeping motion side to side, up and down.
+        </div>
       `;
 
-      const newGifElement = stepsContent.querySelector(".ardisplay-steps-gif");
-      if (newGifElement) {
-        try {
-          const blobUrl = await this.preloadImage(
-            this.GIF_URLS[this.currentStep - 1]
-          );
-          newGifElement.src = blobUrl;
-          newGifElement.setAttribute("loading", "eager");
-        } catch (error) {
-          logger.warn(
-            "Failed to use blob URL, falling back to original URL",
-            error
-          );
-        }
+      // Restore next button container to flex (in case it was hidden on the final slide)
+      const nextBtn = document.querySelector(".ardisplay-next-button");
+      if (nextBtn && nextBtn.parentElement) {
+        nextBtn.parentElement.style.display = "flex";
       }
-
-      // Setup preloading for the next step's gif
-      this.setupPreloaderForStep(this.currentStep - 1, document);
     }
   }
 
@@ -1347,9 +1355,6 @@ class ARDisplayViewer extends HTMLElement {
           `https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
         );
       } else {
-        if (url && url.endsWith("preview")) {
-          url = url.replace("preview", "");
-        }
         if (url && url.endsWith("/")) {
           url = url.slice(0, -1);
         }
@@ -1464,6 +1469,16 @@ class ARDisplayViewer extends HTMLElement {
         display: flex;
       }
 
+      model-viewer[ar-status="session-started"] .dim,
+      model-viewer[ar-status="object-placed"] .dim{
+        display: none!important;
+      }
+
+      model-viewer[ar-status="session-started"] #dimLines,
+      model-viewer[ar-status="object-placed"] #dimLines{
+        display: none!important;
+      }
+
       .nav-icon-button:last-child {
         display: none;
       }
@@ -1499,8 +1514,8 @@ class ARDisplayViewer extends HTMLElement {
       .bottom-container{
         position: absolute;
         width: 100%;
-        height: 0px;
-        bottom: 64px;
+        bottom: 0px;
+        height: auto;
       }
 
       .bottom-nav-bar {
@@ -1542,15 +1557,6 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       /* Sub-panels */
-      .sub-panel {
-        position: absolute;
-        bottom: 0; /* ensure it sits over the nav bar */
-        left: 0;
-        width: 100%;
-        background-color: transparent;
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-        padding: 16px 0;
-      }
       .hidden {
         display: none;
       }
@@ -1564,11 +1570,9 @@ class ARDisplayViewer extends HTMLElement {
       }
       .slides {
         display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        padding: 0 10px;
+        justify-content: center;
+        padding: 10px;
+        flex-direction: row-reverse;
         gap: 10px; /* spacing between slides */
       }
       .slide {
@@ -1586,10 +1590,6 @@ class ARDisplayViewer extends HTMLElement {
         outline: none;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      .slide:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      }
       .slide.selected {
         border-color: #4285f4;
         box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
@@ -1600,8 +1600,8 @@ class ARDisplayViewer extends HTMLElement {
       display: flex;
       flex-wrap: wrap;
       gap: 8px; /* ~ Tailwind gap-2 */
-      margin-top: 8px;
       padding: 16px; /* for some breathing room */
+      padding-top: 0;
       background-color: transparent;
       z-index: 100;
     }
@@ -1609,8 +1609,9 @@ class ARDisplayViewer extends HTMLElement {
     .size-buttons-wrapper {
       /* If you need an extra wrapper, adjust accordingly */
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 8px;
+      flex: 1;
       padding: 0;
     }
 
@@ -1675,27 +1676,28 @@ class ARDisplayViewer extends HTMLElement {
       /* Bottom Nav Bar (matching the React code style) */
       .bottom-nav {
         height: fit-content; /* h-16 in Tailwind */
-        background-color: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(8px);
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: center;
+        gap: 16px;
         position: relative;
         z-index: 100;
+        margin-bottom: 16px;
       }
       .nav-icon-button {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
+        justify-content: center;
+        width: 120px;
         padding: 8px 16px;
         color: black; /* text-gray-600 */
-        background: transparent;
+        background: #ccc;
+        border-radius:40px;
+        gap:10px;
         border: none;
         cursor: pointer;
         transition: color 0.2s ease;
-      }
-      .nav-icon-button.active {
-        color: #2563EB; /* text-blue-600 */
       }
       .nav-icon-button svg {
         height: 24px; /* h-6 */
@@ -1703,23 +1705,27 @@ class ARDisplayViewer extends HTMLElement {
       }
       .nav-icon-button span {
         font-size: 12px; /* text-xs ~12px */
-        margin-top: 4px;
-      }
-
-      /* Sub-panels (size panel, variant panel) that appear above the nav */
-      .sub-panel {
-        position: absolute;
-        bottom: 0; /* sits just above nav (which is 64px tall) */
-        left: 0;
-        right: 0;
-        background-color: rgba(255,255,255,0.95);
-        backdrop-filter: blur(8px);
-        border-top: 1px solid #E5E7EB;
-        padding: 16px;
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-        z-index: 100;
+        font-weight: bold;
       }
       /* ------------------------------------------------------------------ */
+      .sub-panel{
+      position: absolute;
+      bottom: 0; /* ensure it sits over the nav bar */
+      height: auto;
+      width: 100%;
+      z-index: 10000;
+      background: white;
+      padding-top: 50px; // added padding for close button
+    }
+      .sub-panel .sub-panel-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
     `;
     return style;
   }
@@ -1830,30 +1836,36 @@ class ARDisplayViewer extends HTMLElement {
       Object.entries(sizesForVariant).forEach(([sizeKey, sizeValues]) => {
         const button = createDomElement("button", {
           classList: ["size-button"],
-          textContent: sizeKey,
           attributes: {
             "data-size-key": sizeKey,
           },
           disabled: false,
         });
 
+        button.innerHTML = `
+          <span class="size-label">${sizeKey}</span>
+          <span class="size-description">
+            (${sizeValues.width} X ${sizeValues.height} X ${
+          sizeValues.depth ? sizeValues.depth + "" : ""
+        })
+          </span>
+        `;
+
         button.addEventListener("click", (event) => {
           if (!this.modelViewer) return;
 
-          if (variantIndex === 0) {
-            if (this.modelData.mode === "popup") {
-              document
-                .querySelectorAll(".size-button")
-                .forEach((btn) => btn.classList.remove("selected"));
-            } else {
-              this.shadowRoot
-                .querySelectorAll(".size-button")
-                .forEach((btn) => btn.classList.remove("selected"));
-            }
-            event.target.classList.add("selected");
-            const desiredSize = this.variantSizes[variantIndex][sizeKey];
-            this.calculateAndApplyScale(desiredSize);
+          if (this.modelData.mode === "popup") {
+            document
+              .querySelectorAll(".size-button")
+              .forEach((btn) => btn.classList.remove("selected"));
+          } else {
+            this.shadowRoot
+              .querySelectorAll(".size-button")
+              .forEach((btn) => btn.classList.remove("selected"));
           }
+          event.currentTarget.classList.add("selected");
+          const desiredSize = this.variantSizes[variantIndex][sizeKey];
+          this.calculateAndApplyScale(desiredSize);
         });
 
         sizeButtonsWrapper.appendChild(button);
@@ -1985,12 +1997,14 @@ class ARDisplayViewer extends HTMLElement {
               this.modelData.mode !== "popup"
                 ? this.shadowRoot.querySelectorAll(".size-button")
                 : document.querySelectorAll(".size-button");
-            sizeButtons.forEach((btn) => {
-              btn.classList.toggle(
-                "selected",
-                btn.textContent === firstSizeKey
-              );
+            sizeButtons.forEach((btn, index) => {
+              if (index === 0) {
+                btn.classList.add("selected");
+              } else {
+                btn.classList.remove("selected");
+              }
             });
+            console.log(sizeButtons);
           });
         }
       }
@@ -2227,16 +2241,16 @@ class ARDisplayViewer extends HTMLElement {
     const stepsContent = document.querySelector(".ardisplay-steps-content");
     if (stepsContent) {
       stepsContent.innerHTML = `
-        <img src="${this.GIF_URLS[0]}" class="ardisplay-steps-gif" alt="Computer man">
         <h3 class="ardisplay-instructions-title">Scanning</h3>
-        <div class="ardisplay-instructions-body">Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.</div>
+        <img src="${this.GIF_URLS[0]}" class="ardisplay-steps-gif" alt="Computer man">
+        <div class="ardisplay-instructions-body">Stand several feet back. With camera facing ${this.modelData.placement}, make sweeping motion side to side, up and down.</div>
       `;
     }
 
     // Show next/skip buttons
     const nextBtn = document.querySelector(".ardisplay-next-button");
     const skipBtn = document.querySelector(".ardisplay-skip-button");
-    if (nextBtn) nextBtn.style.display = "block";
+    if (nextBtn) nextBtn.parentElement.style.display = "flex";
     if (skipBtn) skipBtn.style.display = "block";
   }
 
@@ -2278,6 +2292,8 @@ class ARDisplayViewer extends HTMLElement {
     const slider = createDomElement("div", { classList: ["slider"] });
     const slidesWrapper = createDomElement("div", { classList: ["slides"] });
 
+    console.log(this.variants);
+
     this.variants.forEach(async (variant, index) => {
       const slideButton = createDomElement("button", { classList: ["slide"] });
 
@@ -2297,10 +2313,8 @@ class ARDisplayViewer extends HTMLElement {
         }
       }
 
-      if (variant.image) {
-        slideButton.style.backgroundImage = `url('${variant.image}')`;
-      } else {
-        slideButton.style.backgroundColor = variant.color || "#ccc";
+      if (variant.posterFileUrl) {
+        slideButton.style.backgroundImage = `url('${variant.posterFileUrl}')`;
       }
 
       slideButton.onclick = () => {
@@ -2369,130 +2383,163 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _setupBottomNavBar(container) {
-    // create sub-panels
-    // (Size panel)
+    // Create the size sub-panel
     const sizePanel = createDomElement("div", {
       classList: ["sub-panel", "hidden"],
     });
+
+    // Create a close button and add it to the sizePanel
+    const sizePanelCloseBtn = createDomElement("button", {
+      classList: ["sub-panel-close-button"],
+      textContent: "×", // or use an icon if you prefer
+    });
+    // Style the close button (you can move these styles to your CSS)
+    sizePanelCloseBtn.style.position = "absolute";
+    sizePanelCloseBtn.style.top = "0px";
+    sizePanelCloseBtn.style.right = "10px";
+    sizePanelCloseBtn.style.background = "transparent";
+    sizePanelCloseBtn.style.height = "50px";
+    sizePanelCloseBtn.style.border = "none";
+    sizePanelCloseBtn.style.fontSize = "32px";
+    sizePanelCloseBtn.style.cursor = "pointer";
+    // When clicked, hide the panel (and optionally remove the active state from the related nav button)
+    sizePanelCloseBtn.addEventListener("click", () => {
+      sizePanel.classList.add("hidden");
+      // If you have a reference to the size nav button, you can remove its "active" class, e.g.:
+      // sizeNavBtn.classList.remove("active");
+    });
+    // Append the close button to the panel
+    sizePanel.appendChild(sizePanelCloseBtn);
+
+    const sizePanelLabel = createDomElement("div", {
+      classList: ["sub-panel-label"],
+      textContent: "Size",
+    });
+    sizePanelLabel.style.fontSize = "16px";
+    sizePanelLabel.style.position = "absolute";
+    sizePanelLabel.style.top = "0";
+    sizePanelLabel.style.left = "50%";
+    sizePanelLabel.style.height = "50px";
+    sizePanelLabel.style.display = "flex";
+    sizePanelLabel.style.alignItems = "center";
+    sizePanelLabel.style.justifyContent = "center";
+    sizePanelLabel.style.transform = "translateX(-50%)";
+    sizePanel.appendChild(sizePanelLabel);
+    // Then add the size controls to the sizePanel
     const sizeControls = this._createSizeControls();
     if (sizeControls) sizePanel.appendChild(sizeControls);
 
-    // (Variant panel)
+    // Create the variant sub-panel
     const variantPanel = createDomElement("div", {
       classList: ["sub-panel", "hidden"],
     });
+
+    // Create a close button for the variant panel
+    const variantPanelCloseBtn = createDomElement("button", {
+      classList: ["sub-panel-close-button"],
+      textContent: "×", // or use an SVG icon here if preferred
+    });
+    // Apply similar styling for the variant close button
+    variantPanelCloseBtn.style.position = "absolute";
+    variantPanelCloseBtn.style.top = "0px";
+    variantPanelCloseBtn.style.right = "10px";
+    variantPanelCloseBtn.style.background = "transparent";
+    variantPanelCloseBtn.style.border = "none";
+    variantPanelCloseBtn.style.fontSize = "32px";
+    variantPanelCloseBtn.style.height = "50px";
+    variantPanelCloseBtn.style.cursor = "pointer";
+    variantPanelCloseBtn.addEventListener("click", () => {
+      variantPanel.classList.add("hidden");
+      // Optionally remove the "active" class from the variant nav button:
+      // variantNavBtn.classList.remove("active");
+    });
+    // Append the close button to the variant panel
+    variantPanel.appendChild(variantPanelCloseBtn);
+
+    const variantPanelLabel = createDomElement("div", {
+      classList: ["sub-panel-label"],
+      textContent: "Variant",
+    });
+    variantPanelLabel.style.fontSize = "16px";
+    variantPanelLabel.style.position = "absolute";
+    variantPanelLabel.style.top = "0";
+    variantPanelLabel.style.left = "50%";
+    variantPanelLabel.style.height = "50px";
+    variantPanelLabel.style.display = "flex";
+    variantPanelLabel.style.alignItems = "center";
+    variantPanelLabel.style.justifyContent = "center";
+    variantPanelLabel.style.transform = "translateX(-50%)";
+    variantPanel.appendChild(variantPanelLabel);
+
+    // Then add the variant controls (color/variant selection)
     const variantControls = this._setupVariantsColors();
     if (variantControls) variantPanel.appendChild(variantControls);
 
     // Create the bottom nav container
     const navBar = createDomElement("div", { classList: ["bottom-nav"] });
 
-    // Toggle function
+    // Toggle function for showing/hiding a given panel
     const togglePanel = (panel) => {
       const isHidden = panel.classList.contains("hidden");
-      // Hide both
+      // Hide both panels
       sizePanel.classList.add("hidden");
       variantPanel.classList.add("hidden");
-      // Show only if it was hidden
+      // Show only if it was hidden when the button was pressed
       if (isHidden) panel.classList.remove("hidden");
     };
 
-    // Size button with icon
+    // Create the Size nav button (only show if there are multiple size options)
     const sizeBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
+    // For example, add an icon (using an SVG or text) and label:
+    sizeBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="height:28px;width:28px;">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6V4H20V20H12V18H8V16H4V8H8V6H12ZM14 6H18V18H14V6ZM12 8H10V16H12V8ZM8 10V14H6V10H8Z" fill="#000000"/>
+      </svg>
+      <span>Size</span>
+    `;
+    // Add a click listener to toggle the size panel
+    sizeBtn.addEventListener("click", () => {
+      togglePanel(sizePanel);
+      sizeBtn.classList.toggle(
+        "active",
+        !sizePanel.classList.contains("hidden")
+      );
+      // Also remove the variant button's active state
+      variantBtn.classList.remove("active");
+    });
 
-    // Only show size button if there are more than one size variants
-    const currentVariant = this.variants[this.selectedIndex] || {};
-    const hasSizeVariants =
-      currentVariant.sizes && currentVariant.sizes.length > 1;
-
-    if (hasSizeVariants) {
-      sizeBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                 stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-            <span>Size</span>
-          `;
-      sizeBtn.addEventListener("click", () => {
-        togglePanel(sizePanel);
-        sizeBtn.classList.toggle(
-          "active",
-          !sizePanel.classList.contains("hidden")
-        );
-        variantBtn.classList.remove("active");
-      });
-    } else {
-      sizeBtn.style.display = "none";
-    }
-
-    // Variant (Color) button with icon
+    // Create the Variant nav button (only if there are multiple variants)
     const variantBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
+    variantBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" style="height:24px;width:24px;">
+        <path d="M1 9.431l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.474-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892s-0.216-0.711-0.547-0.88l-14.848-7.54c-0.283-0.143-0.617-0.144-0.902-0.002l-15.002 7.54c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895zM16.161 2.134l12.692 6.446-12.843 6.921-12.693-6.912zM31.292 15.01l-2.968-1.507-2.142 1.155 2.5 1.27-12.842 6.921-12.694-6.912 2.666-1.34-2.136-1.164-3.135 1.575c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.474-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892s-0.215-0.711-0.546-0.88zM31.292 22.01l-2.811-1.382-2.142 1.155 2.344 1.145-12.843 6.921-12.694-6.912 2.478-1.121-2.136-1.164-2.947 1.357c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.475-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892-0.005-0.373-0.215-0.712-0.546-0.88z"/>
+      </svg>
+      <span>Variant</span>
+    `;
+    variantBtn.addEventListener("click", () => {
+      togglePanel(variantPanel);
+      variantBtn.classList.toggle(
+        "active",
+        !variantPanel.classList.contains("hidden")
+      );
+      sizeBtn.classList.remove("active");
+    });
 
-    // Only show variant button if there are more than one variants
-    const hasMultipleVariants = this.variants && this.variants.length > 1;
-
-    if (hasMultipleVariants) {
-      variantBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                 stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M7 21a4 4 0 01-4-4V5a2 2 0
-                   012-2h4a2 2 0 012 2v12a4 4 0
-                   01-4 4zm0 0h12a2 2 0 002-2v-4a2
-                   2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2
-                   2 0 012.828 0l2.829 2.829a2 2 0 010
-                   2.828l-8.486 8.485M7 17h.01"
-              />
-            </svg>
-            <span>Variant</span>
-          `;
-      variantBtn.addEventListener("click", () => {
-        togglePanel(variantPanel);
-        variantBtn.classList.toggle(
-          "active",
-          !variantPanel.classList.contains("hidden")
-        );
-        sizeBtn.classList.remove("active");
-      });
-    } else {
-      variantBtn.style.display = "none";
-    }
-
-    // Share button with icon
+    // You can add a Share button or any additional buttons, if needed.
     const shareBtn = createDomElement("button", {
       classList: ["nav-icon-button"],
     });
     shareBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                 stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8.684 13.342C8.886 12.938
-                   9 12.482 9 12c0-.482-.114-.938-.316-1.342m0
-                   2.684a3 3 0 110-2.684m0 2.684l6.632
-                   3.316m-6.632-6l6.632-3.316m0 0a3 3 0
-                   105.367-2.684 3 3 0
-                   00-5.367 2.684zm0
-                   9.316a3 3 0 105.368 2.684 3 3 0
-                   00-5.368-2.684z"
-              />
-            </svg>
-            <span>Share</span>
-          `;
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+      </svg>
+      <span>Share</span>
+    `;
     shareBtn.addEventListener("click", async () => {
       this._sendShortStatsEvent("Share");
       const shareData = {
@@ -2502,18 +2549,17 @@ class ARDisplayViewer extends HTMLElement {
       };
       try {
         await navigator.share(shareData);
-        logger.debug("Content shared successfully");
       } catch (err) {
-        logger.warn("Share failed:", err);
+        console.warn("Share failed:", err);
       }
     });
 
-    // Append nav buttons
+    // Append all nav buttons to the nav bar
     navBar.appendChild(sizeBtn);
     navBar.appendChild(variantBtn);
     navBar.appendChild(shareBtn);
 
-    // Event to close panels when clicking outside
+    // Also close any open panels when clicking outside (optional)
     this.boundHandleDocumentMouseDown = (e) => {
       const path = e.composedPath();
       if (
@@ -2529,10 +2575,10 @@ class ARDisplayViewer extends HTMLElement {
     };
     document.addEventListener("mousedown", this.boundHandleDocumentMouseDown);
 
-    // Add everything to container
+    // Finally, append the navBar and the sub-panels to the container.
+    container.appendChild(navBar);
     container.appendChild(sizePanel);
     container.appendChild(variantPanel);
-    container.appendChild(navBar);
   }
   // ------------------------------------------------------------------
 
