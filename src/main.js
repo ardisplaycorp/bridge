@@ -563,7 +563,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("https://v2.ardisplay.io/api/stats", {
+    fetch("https://www.ardisplay.io/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -898,12 +898,13 @@ class ARDisplayViewer extends HTMLElement {
     }
 
     // Set up QR code listeners after template is loaded
-    const qrCodeButton = this.shadowRoot.querySelector(
-      ".ardisplay-qr-code-button"
-    );
+    const qrCodeButton =
+      this.modelData.mode !== "popup"
+        ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
+        : document.querySelector(".ardisplay-qr-code-button");
     const qrCodeContainer = document.querySelector("#qr-code");
 
-    if (qrCodeButton && qrCodeContainer && this.modelData.mode !== "popup") {
+    if (qrCodeButton) {
       // Initialize QR code manager
       this.qrCodeManager = new QrCodeManager(qrCodeContainer, this.modelData);
       this._setupQRCodeListeners();
@@ -1347,14 +1348,14 @@ class ARDisplayViewer extends HTMLElement {
       let response;
       if (this.getAttribute("src")) {
         response = await fetch(
-          `https://v2.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
+          `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
         );
       } else {
         if (url && url.endsWith("/")) {
           url = url.slice(0, -1);
         }
         response = await fetch(
-          `https://v2.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
+          `https://www.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
         );
       }
       if (!response.ok) {
@@ -2612,8 +2613,6 @@ class ARDisplayViewer extends HTMLElement {
     // Get the currently selected variant (default to index 0 if not set)
     const selectedIndex =
       typeof this.selectedIndex === "number" ? this.selectedIndex : 0;
-    console.log(selectedIndex);
-    console.log(sizeBtn);
     const currentVariantSizes = this.variants[selectedIndex]?.sizes;
     if (currentVariantSizes && currentVariantSizes.length === 1 && sizeBtn) {
       sizeBtn.style.display = "none";
