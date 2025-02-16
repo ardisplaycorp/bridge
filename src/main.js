@@ -789,12 +789,6 @@ class ARDisplayViewer extends HTMLElement {
                     camera-controls="true"
                     disable-pan="true"
                     disable-tap="true"
-                    interaction-prompt="none"
-                    interpolation-decay="40"
-                    touch-action="none"
-                    max-field-of-view="auto"
-                    field-of-view="auto"
-                    camera-orbit="0deg 75deg 105%"
                     ar-status="not-presenting"
                 >
                     ${template}
