@@ -6,7 +6,7 @@ export async function lazyLoadModelViewerIfNeeded() {
   if (!window.customElements.get('model-viewer')) {
     try {
       // Dynamically import model-viewer
-      await import("https://art.nvzn.io/assets/lib/model-viewer/3.4.0/model-viewer.min.js");
+      await import("/model-viewer.min.js");
       return true;
     } catch (error) {
       console.error('Failed to load model-viewer:', error);

@@ -8,8 +8,7 @@ export default defineConfig({
     outDir: "./build",
     lib: {
       entry: "src/main.js",
-      name: "ARDisplay", // This name is used for the UMD build
-      // formats: ["umd", "es"], // Removed because we define formats in rollupOptions.output
+      name: "ARDisplay", // UMD global name
       fileName: (format) => `ardisplay.${format}.min.js`,
     },
     minify: "esbuild",
@@ -18,34 +17,21 @@ export default defineConfig({
       output: [
         {
           format: "es",
-          // dir: './build', // Optional: You can specify different output directories for each format
-          // entryFileNames: 'ardisplay.es.min.js', // Optional: Be more explicit about file names
-          preserveModules: false, // Optional: Set to true to keep the original module structure.
-          preserveModulesRoot: "src", // Optional: This goes with preserveModules to control the output directory structure.
+          preserveModules: false,
+          preserveModulesRoot: "src",
           manualChunks(id) {
-            if (
-              id.includes(
-                "@google/model-viewer/dist/model-viewer-module.min.js"
-              )
-            ) {
+            if (id.includes("/model-viewer.min.js")) {
               return "model-viewer";
             }
           },
         },
         {
           format: "umd",
-          name: "ARDisplay", // The global variable name for your UMD library
-          // dir: './build',
-          // entryFileNames: 'ardisplay.umd.min.js',
-          globals: {
-            "@google/model-viewer": "ModelViewer",
-          },
+          name: "ARDisplay",
         },
       ],
-      external: (id, importer, isResolved) => {
-        // Externalize for UMD, but only if it's a top-level import (not resolved)
-        return id === "@google/model-viewer" && !isResolved;
-      },
+      external: (id, importer, isResolved) =>
+        id === "/model-viewer.min.js" && !isResolved,
     },
   },
   plugins: [compression(), visualizer()],
