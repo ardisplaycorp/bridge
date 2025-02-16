@@ -2150,10 +2150,14 @@ class ARDisplayViewer extends HTMLElement {
         // }
 
         if (this.isModelLoaded) {
+          const progressModal = document.querySelector("#ardisplayProgressModal");
+          if (progressModal) {
+            progressModal.style.display = "none";
+          }
           this._resetSteps();
           this._showStepsModal();
           return;
-        }
+        }        
       } else if (!this._isMobileDevice()) {
         // If not mobile device, show QR code directly
         const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
@@ -2659,19 +2663,28 @@ class ARDisplayViewer extends HTMLElement {
 
   _handleArStatusChange(event) {
     const isSessionStarted = event.detail.status === "session-started";
+    // Hide progress/loading modal when the session is not started
+    if (!isSessionStarted) {
+      const progressModal = document.querySelector("#ardisplayProgressModal");
+      if (progressModal) {
+        progressModal.style.display = "none";
+      }
+    }
+  
+    // (Existing logic for showing/hiding hotspots/dim elements)
     const dimElements = [
       ...this.modelViewer.querySelectorAll("[data-hotspot]"),
-      this.modelViewer.querySelector("#dimLines"),
+      this.modelViewer.querySelector("#dimLines")
     ].filter(Boolean);
-
+  
     const setVisibility = (visible) => {
       dimElements.forEach((element) => {
         element.classList.toggle("hide", !visible);
       });
     };
-
+  
     setVisibility(!isSessionStarted);
-  }
+  }  
 
   _drawLine(svgLine, startHotspot, endHotspot, dimensionHotspot) {
     if (!svgLine || !startHotspot || !endHotspot) return;
