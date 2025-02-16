@@ -6,7 +6,7 @@ export async function lazyLoadModelViewerIfNeeded() {
   if (!window.customElements.get('model-viewer')) {
     try {
       // Dynamically import model-viewer
-      await import("/model-viewer.min.js");
+      await import("https://cdn.statically.io/gh/ardisplaycorp/bridge/v1.7.1/build/model-viewer.min.js");
       return true;
     } catch (error) {
       console.error('Failed to load model-viewer:', error);
