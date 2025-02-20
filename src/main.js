@@ -585,7 +585,11 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
-    if (this.modelData.placement === "wall") {
+    const initialPlacement =
+      (this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement) ||
+      this.modelData.placement;
+      
+    if (initialPlacement === "wall") {
       this.GIF_URLS.push(`${CDN_URL}/wall.webp`);
     } else {
       this.GIF_URLS.push(`${CDN_URL}/floor.gif`);
@@ -783,7 +787,7 @@ class ARDisplayViewer extends HTMLElement {
                 <model-viewer  
                     ar
                     shadow-intensity="${this.modelData.shadow}"
-                    ar-placement="${this.modelData.placement}"
+                    ar-placement="${(this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement) || this.modelData.placement}"
                     ar-modes="webxr scene-viewer quick-look"
                     ar-scale="fixed"
                     camera-controls="true"
@@ -838,8 +842,7 @@ class ARDisplayViewer extends HTMLElement {
     // Add multi-steps modal template using portal
     createPortal(stepsModalTemplate.content.cloneNode(true));
 
-    const gifFile =
-      this.modelData.placement === "wall" ? "wall.webp" : "floor.gif";
+    const gifFile = initialPlacement === "wall" ? "wall.webp" : "floor.gif";
     const instructionGif = document.querySelector("#instructionGif");
     if (instructionGif) {
       instructionGif.src = `${CDN_URL}/${gifFile}`;
@@ -849,7 +852,11 @@ class ARDisplayViewer extends HTMLElement {
     const instructionBody = document.querySelector(
       ".ardisplay-instructions-body"
     );
-    instructionBody.innerHTML = `Stand several feet back. With camera facing ${contentBody}, make sweeping motion side to side, up and down.`;
+    if (instructionBody) {
+      instructionBody.innerHTML = `Stand several feet back. With camera facing ${
+        initialPlacement === "wall" ? "wall" : "floor"
+      }, make sweeping motion side to side, up and down.`;
+    }
 
     if (this.modelData.mode !== "popup") {
       // Add QR modal template using portal
@@ -1240,7 +1247,7 @@ class ARDisplayViewer extends HTMLElement {
              style="width: 100%;">
         <div class="ardisplay-instructions-body">
           Stand several feet back. With camera facing ${
-            this.modelData.placement
+            (this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement) || this.modelData.placement
           }, make sweeping motion side to side, up and down.
         </div>
       `;
@@ -2284,7 +2291,9 @@ class ARDisplayViewer extends HTMLElement {
         slideButton.classList.add("selected");
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
+          let IOS_VARIANT_URL = new URL(variant.iosUrl);
           this.modelViewer.src = VARIANT_URL.href;
+          this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
           if (variant.posterFileUrl) {
             this.modelViewer.poster = await PosterWithCache(
               variant.posterFileUrl,
@@ -2305,7 +2314,9 @@ class ARDisplayViewer extends HTMLElement {
 
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
+          let IOS_VARIANT_URL = new URL(variant.iosUrl);
           this.modelViewer.src = VARIANT_URL.href;
+          this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
         }
 
         this._updateSizePanel(index);
@@ -2314,6 +2325,12 @@ class ARDisplayViewer extends HTMLElement {
           this.modelViewer.poster = variant.posterFileUrl;
         } else {
           this.modelViewer.removeAttribute("poster");
+        }
+
+        if (variant.placement) {
+          this.modelViewer.setAttribute("ar-placement", variant.placement);
+        } else {
+          this.modelViewer.setAttribute("ar-placement", this.modelData.placement);
         }
 
         if (!this.modelData.mode === "popup") {

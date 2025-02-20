@@ -42,9 +42,9 @@ export default (
         <style>${styles}</style>
         <div class="normal-view-container" style="direction: ltr;">
             <model-viewer
-                ar="${ar}"
+                ar
                 shadow-intensity="${modelData.shadow}"
-                ar-placement="${modelData.placement}"
+                ar-placement="${(modelData.options && modelData.options.length > 0 && modelData.options[0].placement) || modelData.placement}"
                 ar-modes="webxr scene-viewer quick-look"
                 ar-scale="fixed"
                 camera-controls="true"
