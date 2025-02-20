@@ -2350,7 +2350,7 @@ class ARDisplayViewer extends HTMLElement {
           this.modelViewer.setAttribute("ar-placement", this.modelData.placement);
         }
 
-        if (!this.modelData.mode === "popup") {
+        if (this.modelData.mode !== "popup") {
           this.shadowRoot
             .querySelectorAll(".slide")
             .forEach((s) => s.classList.remove("selected"));
