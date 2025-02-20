@@ -1342,44 +1342,61 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _getModelData() {
-    // get current url
-    let url = window.location.href;
-    try {
-      // Consider local caching of model data
-      let response;
-      if (this.getAttribute("src")) {
-        response = await fetch(
-          `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
-        );
-      } else {
-        if (url && url.endsWith("/")) {
-          url = url.slice(0, -1);
+    let attempts = 0;
+    const maxAttempts = 3; // one attempt + two retries
+  
+    while (attempts < maxAttempts) {
+      try {
+        attempts++;
+        let url = window.location.href;
+        let response;
+  
+        if (this.getAttribute("src")) {
+          response = await fetch(
+            `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
+          );
+        } else {
+          if (url && url.endsWith("/")) {
+            url = url.slice(0, -1);
+          }
+          response = await fetch(
+            `https://www.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
+          );
         }
-        response = await fetch(
-          `https://www.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
-        );
+  
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        this.modelData = data;
+  
+        // If using "src" attribute then set the mode to "none"
+        if (this.getAttribute("src")) {
+          this.modelData.mode = "none";
+        }
+  
+        // Handle missing data gracefully
+        if (!this.modelData?.options) {
+          logger.warn("Missing model options. Skipping variant initialization.");
+        }
+  
+        this._setupVariantsSizes();
+        // Successfully loaded data, so break out of the loop.
+        break;
+      } catch (error) {
+        logger.error(`Attempt ${attempts} failed: ${error.message}`);
+        if (attempts < maxAttempts) {
+          // Optionally wait before retrying (here we wait 1 second)
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } else {
+          // All attempts failed – here you might display a fallback UI message.
+          logger.error("Exceeded maximum retry attempts for fetching model data.");
+          // Optionally, insert some fallback behavior here.
+        }
       }
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      const data = await response.json();
-      this.modelData = data;
-
-      if (this.getAttribute("src")) {
-        this.modelData.mode = "none";
-      }
-
-      // Handle missing data gracefully
-      if (!this.modelData?.options) {
-        logger.warn("Missing model options. Skipping variant initialization.");
-      }
-
-      this._setupVariantsSizes();
-    } catch (error) {
-      logger.error(error.message);
-      // Show a fallback UI message
     }
-  }
+  }  
 
   _setupVariantsSizes() {
     this.variants = this.modelData?.options || [];
