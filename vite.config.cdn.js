@@ -25,7 +25,7 @@ export default defineConfig({
           manualChunks(id) {
             if (
               id.includes(
-                "@google/model-viewer"
+                "@google/model-viewer/dist/model-viewer-module.min.js"
               )
             ) {
               return "model-viewer";
