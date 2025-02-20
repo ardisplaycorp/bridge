@@ -2309,7 +2309,7 @@ class ARDisplayViewer extends HTMLElement {
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
           let IOS_VARIANT_URL = new URL(variant.iosUrl);
-          this.modelViewer.src = VARIANT_URL.href;
+          this.modelViewer.setAttribute('src', VARIANT_URL.href);
           this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
           if (variant.posterFileUrl) {
             this.modelViewer.poster = await PosterWithCache(
@@ -2332,7 +2332,7 @@ class ARDisplayViewer extends HTMLElement {
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
           let IOS_VARIANT_URL = new URL(variant.iosUrl);
-          this.modelViewer.src = VARIANT_URL.href;
+          this.modelViewer.setAttribute('src', VARIANT_URL.href);
           this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
         }
 
