@@ -2252,7 +2252,9 @@ class ARDisplayViewer extends HTMLElement {
       stepsContent.innerHTML = `
         <h3 class="ardisplay-instructions-title">Scanning</h3>
         <img src="${this.GIF_URLS[0]}" class="ardisplay-steps-gif" alt="Computer man">
-        <div class="ardisplay-instructions-body">Stand several feet back. With camera facing ${this.modelData.placement}, make sweeping motion side to side, up and down.</div>
+        <div class="ardisplay-instructions-body">Stand several feet back. With camera facing ${
+            (this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement) || this.modelData.placement
+          }, make sweeping motion side to side, up and down.</div>
       `;
     }
 
@@ -2363,6 +2365,21 @@ class ARDisplayViewer extends HTMLElement {
         }
 
         this.selectedIndex = index;
+
+        this.selectedIndex = index;
+        // Update the instruction body right away
+        const placement =
+          (this.variants[index] && this.variants[index].placement) ||
+          this.modelData.placement ||
+          "floor";
+        const instructionBody = document.querySelector(".ardisplay-instructions-body");
+        if (instructionBody) {
+          instructionBody.innerHTML = 
+            `Stand several feet back. With camera facing ${placement.toLowerCase() === "wall" ? "wall" : "floor"}, make sweeping motion side to side, up and down.`;
+        }
+
+        // update GIF image passed on placement
+        this.GIF_URLS[0] = placement.toLowerCase() === "wall" ? `${CDN_URL}/wall.webp` : `${CDN_URL}/floor.gif`;
         this._updateNavButtonsVisibility();
       };
 
