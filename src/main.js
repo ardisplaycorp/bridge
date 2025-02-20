@@ -1740,6 +1740,11 @@ class ARDisplayViewer extends HTMLElement {
   font-size: 24px;
   cursor: pointer;
 }
+
+      model-viewer[ar-status="session-started"] .ardisplay-variant-btn-active,
+      model-viewer[ar-status="object-placed"] .ardisplay-variant-btn-active{
+        display:none!important;
+      }
     `;
     return style;
   }
@@ -2326,6 +2331,27 @@ class ARDisplayViewer extends HTMLElement {
 
       if (variant.posterFileUrl) {
         slideButton.style.backgroundImage = `url('${variant.posterFileUrl}')`;
+      }
+
+      // if all variant placement are not the same hide variantBtn
+      let isTheSame = true
+      this.variants.forEach((variant) => {
+        if (variant.placement !== this.variants[0].placement) {
+          isTheSame = false
+        }
+      })
+
+      console.log(isTheSame);
+
+      if (!isTheSame) {
+        const variantBtn = this.modelData.mode !== "popup"
+          ? this.shadowRoot.querySelector(".ardisplay-variant-btn")
+          : document.querySelector(".ardisplay-variant-btn");
+        console.log(variantBtn);
+        // add active if not exist
+        if (variantBtn && variantBtn.classList && !variantBtn.classList.contains("ardisplay-variant-btn-active")) {
+          variantBtn.classList.add("ardisplay-variant-btn-active");
+        }
       }
 
       slideButton.onclick = () => {
