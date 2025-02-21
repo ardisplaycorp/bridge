@@ -977,6 +977,10 @@ class ARDisplayViewer extends HTMLElement {
     // Setup the panels and bottom nav
     this._setupBottomNavBar(bottomContainer);
     // ------------------------------------------------------------------
+
+    if (this._isIOSDevice() && this.modelViewer) {
+      this.modelViewer.removeAttribute("ar-scale");
+    }    
   }
 
   _showStepsModal() {
