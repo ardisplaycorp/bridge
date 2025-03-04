@@ -13,6 +13,10 @@ const encodeBase64 = (text) => {
   return btoa(text);
 };
 
+const decodeBase64 = (text) => {
+  return atob(text);
+};
+
 // Utility for creating and appending elements
 const createDomElement = (tag, options = {}) => {
   const el = document.createElement(tag);
@@ -580,10 +584,84 @@ class ARDisplayViewer extends HTMLElement {
       });
   }
 
+  static get observedAttributes() {
+    return ["ar-btn-config"];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(`Attribute ${name} has changed.`);
+    if (name === "ar-btn-config" && oldValue !== newValue) {
+      // Update the AR button configuration when the attribute changes.
+      this._updateArBtnConfig(newValue);
+    }
+  }
+
+  _updateArBtnConfig(encodedConfig) {
+    if (encodedConfig) {
+      try {
+        // Decode from base64 and parse the JSON.
+        const decoded = decodeBase64(encodedConfig);
+        const customArBtnConfig = JSON.parse(decoded);
+        // Override the API data with the user-provided configuration.
+        this.modelData.arBtn = customArBtnConfig;
+  
+        const arBtn =
+          this.modelData.mode !== "popup"
+            ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
+            : document.querySelector(".ardisplay-qr-code-button");
+  
+        console.log("arBtn", arBtn);
+  
+        if (arBtn) {
+          arBtn.style.backgroundColor = customArBtnConfig.btnBgColor;
+          arBtn.style.color = customArBtnConfig.btnTextColor;
+          arBtn.style.borderRadius = customArBtnConfig.cornerRadius + "px";
+          arBtn.style.fontSize = customArBtnConfig.btnSize + "px";
+  
+          // Update the button icon and text based on the configuration.
+          // This creates an <i> element with a data-lucide attribute.
+          const iconHTML = customArBtnConfig.btnIcon
+            ? `<i data-lucide="${customArBtnConfig.btnIcon}" style="width: 24px; height: 24px; color: inherit;"></i>`
+            : "";
+          arBtn.innerHTML = `${iconHTML} ${customArBtnConfig.btnText}`;
+  
+          // IMPORTANT: Process the lucide icons within the button so that 
+          // <i data-lucide="..."> gets converted to an SVG.
+          this._processLucideIcons(arBtn);
+        }
+      } catch (error) {
+        console.error(
+          "Invalid AR button configuration provided in ar-btn-config attribute:",
+          error
+        );
+      }
+    }
+  }  
+
   async connectedCallback() {
     const attributes = this._getAttributes();
 
     await this._getModelData();
+
+    // Initialize the AR button configuration based on the current attribute.
+    this._updateArBtnConfig(this.getAttribute("ar-btn-config"));
+
+    // Check if the user passed an override for the AR button configuration
+    const arBtnConfigEncoded = this.getAttribute("ar-btn-config");
+    if (arBtnConfigEncoded) {
+      try {
+        // Decode from base64 and parse the JSON
+        const decoded = decodeBase64(arBtnConfigEncoded);
+        const customArBtnConfig = JSON.parse(decoded);
+        // Override the API data with the user-provided configuration.
+        // This means that later in your code, when you use:
+        //   this.modelData.arBtn.btnBgColor, btnText, etc.
+        // they will come from this custom configuration.
+        this.modelData.arBtn = customArBtnConfig;
+      } catch (error) {
+        console.error("Invalid AR button configuration provided in ar-btn-config attribute:", error);
+      }
+    }
 
     const initialPlacement =
       (this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement) ||
@@ -655,7 +733,6 @@ class ARDisplayViewer extends HTMLElement {
           display: flex;
           justify-content: center;
           align-items: center;
-          margin: 20px 0;
         }
         #qr-code {
           margin: 20px auto;
@@ -665,7 +742,7 @@ class ARDisplayViewer extends HTMLElement {
           <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
           <button class="qr-close-button">×</button>
           <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-              <h2>
+              <h2 style="padding-block: 10px;">
                   <p id="btn-text" style="margin: 0">${this.modelData.title}</p>
               </h2>
               <p data-id="qrcode-info" class="translate-lang" style="margin:0">${this.modelData.description}</p>
@@ -1446,6 +1523,7 @@ class ARDisplayViewer extends HTMLElement {
           width: 100%;
           height: 600px;
           transform: scale(1);
+          font-family: 'Roboto', sans-serif;
         }
       `;
     } else {
@@ -1455,6 +1533,7 @@ class ARDisplayViewer extends HTMLElement {
           width: fit-content;
           height: fit-content;
           transform: scale(1);
+          font-family: 'Roboto', sans-serif;
         }
       `;
     }
