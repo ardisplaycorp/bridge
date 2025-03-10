@@ -604,28 +604,28 @@ class ARDisplayViewer extends HTMLElement {
         const customArBtnConfig = JSON.parse(decoded);
         // Override the API data with the user-provided configuration.
         this.modelData.arBtn = customArBtnConfig;
-  
+
         const arBtn =
           this.modelData.mode !== "popup"
             ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
             : document.querySelector(".ardisplay-qr-code-button");
-  
+
         console.log("arBtn", arBtn);
-  
+
         if (arBtn) {
           arBtn.style.backgroundColor = customArBtnConfig.btnBgColor;
           arBtn.style.color = customArBtnConfig.btnTextColor;
           arBtn.style.borderRadius = customArBtnConfig.cornerRadius + "px";
           arBtn.style.fontSize = customArBtnConfig.btnSize + "px";
-  
+
           // Update the button icon and text based on the configuration.
           // This creates an <i> element with a data-lucide attribute.
           const iconHTML = customArBtnConfig.btnIcon
             ? `<i data-lucide="${customArBtnConfig.btnIcon}" style="width: 24px; height: 24px; color: inherit;"></i>`
             : "";
           arBtn.innerHTML = `${iconHTML} ${customArBtnConfig.btnText}`;
-  
-          // IMPORTANT: Process the lucide icons within the button so that 
+
+          // IMPORTANT: Process the lucide icons within the button so that
           // <i data-lucide="..."> gets converted to an SVG.
           this._processLucideIcons(arBtn);
         }
@@ -636,7 +636,7 @@ class ARDisplayViewer extends HTMLElement {
         );
       }
     }
-  }  
+  }
 
   async connectedCallback() {
     const attributes = this._getAttributes();
@@ -659,14 +659,19 @@ class ARDisplayViewer extends HTMLElement {
         // they will come from this custom configuration.
         this.modelData.arBtn = customArBtnConfig;
       } catch (error) {
-        console.error("Invalid AR button configuration provided in ar-btn-config attribute:", error);
+        console.error(
+          "Invalid AR button configuration provided in ar-btn-config attribute:",
+          error
+        );
       }
     }
 
     const initialPlacement =
-      (this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement) ||
+      (this.modelData.options &&
+        this.modelData.options.length > 0 &&
+        this.modelData.options[0].placement) ||
       this.modelData.placement;
-      
+
     if (initialPlacement === "wall") {
       this.GIF_URLS.push(`${CDN_URL}/wall.webp`);
     } else {
@@ -864,7 +869,12 @@ class ARDisplayViewer extends HTMLElement {
                 <model-viewer  
                     ar
                     shadow-intensity="${this.modelData.shadow}"
-                    ar-placement="${(this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement) || this.modelData.placement}"
+                    ar-placement="${
+                      (this.modelData.options &&
+                        this.modelData.options.length > 0 &&
+                        this.modelData.options[0].placement) ||
+                      this.modelData.placement
+                    }"
                     ar-modes="webxr scene-viewer quick-look"
                     ar-scale="fixed"
                     camera-controls="true"
@@ -1057,7 +1067,7 @@ class ARDisplayViewer extends HTMLElement {
 
     if (this._isIOSDevice() && this.modelViewer) {
       this.modelViewer.removeAttribute("ar-scale");
-    }    
+    }
   }
 
   _showStepsModal() {
@@ -1328,7 +1338,9 @@ class ARDisplayViewer extends HTMLElement {
              style="width: 100%;">
         <div class="ardisplay-instructions-body">
           Stand several feet back. With camera facing ${
-            (this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement) || this.modelData.placement
+            (this.variants[this.selectedIndex] &&
+              this.variants[this.selectedIndex].placement) ||
+            this.modelData.placement
           }, make sweeping motion side to side, up and down.
         </div>
       `;
@@ -1425,16 +1437,18 @@ class ARDisplayViewer extends HTMLElement {
   async _getModelData() {
     let attempts = 0;
     const maxAttempts = 3; // one attempt + two retries
-  
+
     while (attempts < maxAttempts) {
       try {
         attempts++;
         let url = window.location.href;
         let response;
-  
+
         if (this.getAttribute("src")) {
           response = await fetch(
-            `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute("src")}`
+            `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute(
+              "src"
+            )}`
           );
         } else {
           if (url && url.endsWith("/")) {
@@ -1444,24 +1458,26 @@ class ARDisplayViewer extends HTMLElement {
             `https://www.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
           );
         }
-  
+
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
-  
+
         const data = await response.json();
         this.modelData = data;
-  
+
         // If using "src" attribute then set the mode to "none"
-        if (this.getAttribute("src")) {
+        if (this.hasAttribute("ar-button")) {
           this.modelData.mode = "none";
         }
-  
+
         // Handle missing data gracefully
         if (!this.modelData?.options) {
-          logger.warn("Missing model options. Skipping variant initialization.");
+          logger.warn(
+            "Missing model options. Skipping variant initialization."
+          );
         }
-  
+
         this._setupVariantsSizes();
         // Successfully loaded data, so break out of the loop.
         break;
@@ -1472,12 +1488,14 @@ class ARDisplayViewer extends HTMLElement {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         } else {
           // All attempts failed – here you might display a fallback UI message.
-          logger.error("Exceeded maximum retry attempts for fetching model data.");
+          logger.error(
+            "Exceeded maximum retry attempts for fetching model data."
+          );
           // Optionally, insert some fallback behavior here.
         }
       }
     }
-  }  
+  }
 
   _setupVariantsSizes() {
     this.variants = this.modelData?.options || [];
@@ -2262,14 +2280,16 @@ class ARDisplayViewer extends HTMLElement {
         // }
 
         if (this.isModelLoaded) {
-          const progressModal = document.querySelector("#ardisplayProgressModal");
+          const progressModal = document.querySelector(
+            "#ardisplayProgressModal"
+          );
           if (progressModal) {
             progressModal.style.display = "none";
           }
           this._resetSteps();
           this._showStepsModal();
           return;
-        }        
+        }
       } else if (!this._isMobileDevice()) {
         // If not mobile device, show QR code directly
         const currentUrl = `${BRIDGE_URL}/${this.modelData.modelId}`;
@@ -2339,10 +2359,14 @@ class ARDisplayViewer extends HTMLElement {
     if (stepsContent) {
       stepsContent.innerHTML = `
         <h3 class="ardisplay-instructions-title">Scanning</h3>
-        <img src="${this.GIF_URLS[0]}" class="ardisplay-steps-gif" alt="Computer man">
+        <img src="${
+          this.GIF_URLS[0]
+        }" class="ardisplay-steps-gif" alt="Computer man">
         <div class="ardisplay-instructions-body">Stand several feet back. With camera facing ${
-            (this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement) || this.modelData.placement
-          }, make sweeping motion side to side, up and down.</div>
+          (this.variants[this.selectedIndex] &&
+            this.variants[this.selectedIndex].placement) ||
+          this.modelData.placement
+        }, make sweeping motion side to side, up and down.</div>
       `;
     }
 
@@ -2399,8 +2423,8 @@ class ARDisplayViewer extends HTMLElement {
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
           let IOS_VARIANT_URL = new URL(variant.iosUrl);
-          this.modelViewer.setAttribute('src', VARIANT_URL.href);
-          this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
+          this.modelViewer.setAttribute("src", VARIANT_URL.href);
+          this.modelViewer.setAttribute("ios-src", IOS_VARIANT_URL.href);
           if (variant.posterFileUrl) {
             this.modelViewer.poster = await PosterWithCache(
               variant.posterFileUrl,
@@ -2417,22 +2441,27 @@ class ARDisplayViewer extends HTMLElement {
       }
 
       // if all variant placement are not the same hide variantBtn
-      let isTheSame = true
+      let isTheSame = true;
       this.variants.forEach((variant) => {
         if (variant.placement !== this.variants[0].placement) {
-          isTheSame = false
+          isTheSame = false;
         }
-      })
+      });
 
       console.log(isTheSame);
 
       if (!isTheSame) {
-        const variantBtn = this.modelData.mode !== "popup"
-          ? this.shadowRoot.querySelector(".ardisplay-variant-btn")
-          : document.querySelector(".ardisplay-variant-btn");
+        const variantBtn =
+          this.modelData.mode !== "popup"
+            ? this.shadowRoot.querySelector(".ardisplay-variant-btn")
+            : document.querySelector(".ardisplay-variant-btn");
         console.log(variantBtn);
         // add active if not exist
-        if (variantBtn && variantBtn.classList && !variantBtn.classList.contains("ardisplay-variant-btn-active")) {
+        if (
+          variantBtn &&
+          variantBtn.classList &&
+          !variantBtn.classList.contains("ardisplay-variant-btn-active")
+        ) {
           variantBtn.classList.add("ardisplay-variant-btn-active");
         }
       }
@@ -2443,8 +2472,8 @@ class ARDisplayViewer extends HTMLElement {
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
           let IOS_VARIANT_URL = new URL(variant.iosUrl);
-          this.modelViewer.setAttribute('src', VARIANT_URL.href);
-          this.modelViewer.setAttribute('ios-src', IOS_VARIANT_URL.href);
+          this.modelViewer.setAttribute("src", VARIANT_URL.href);
+          this.modelViewer.setAttribute("ios-src", IOS_VARIANT_URL.href);
         }
 
         this._updateSizePanel(index);
@@ -2458,7 +2487,10 @@ class ARDisplayViewer extends HTMLElement {
         if (variant.placement) {
           this.modelViewer.setAttribute("ar-placement", variant.placement);
         } else {
-          this.modelViewer.setAttribute("ar-placement", this.modelData.placement);
+          this.modelViewer.setAttribute(
+            "ar-placement",
+            this.modelData.placement
+          );
         }
 
         if (this.modelData.mode !== "popup") {
@@ -2481,14 +2513,20 @@ class ARDisplayViewer extends HTMLElement {
           (this.variants[index] && this.variants[index].placement) ||
           this.modelData.placement ||
           "floor";
-        const instructionBody = document.querySelector(".ardisplay-instructions-body");
+        const instructionBody = document.querySelector(
+          ".ardisplay-instructions-body"
+        );
         if (instructionBody) {
-          instructionBody.innerHTML = 
-            `Stand several feet back. With camera facing ${placement.toLowerCase() === "wall" ? "wall" : "floor"}, make sweeping motion side to side, up and down.`;
+          instructionBody.innerHTML = `Stand several feet back. With camera facing ${
+            placement.toLowerCase() === "wall" ? "wall" : "floor"
+          }, make sweeping motion side to side, up and down.`;
         }
 
         // update GIF image passed on placement
-        this.GIF_URLS[0] = placement.toLowerCase() === "wall" ? `${CDN_URL}/wall.webp` : `${CDN_URL}/floor.gif`;
+        this.GIF_URLS[0] =
+          placement.toLowerCase() === "wall"
+            ? `${CDN_URL}/wall.webp`
+            : `${CDN_URL}/floor.gif`;
         this._updateNavButtonsVisibility();
       };
 
@@ -2830,21 +2868,21 @@ class ARDisplayViewer extends HTMLElement {
         progressModal.style.display = "none";
       }
     }
-  
+
     // (Existing logic for showing/hiding hotspots/dim elements)
     const dimElements = [
       ...this.modelViewer.querySelectorAll("[data-hotspot]"),
-      this.modelViewer.querySelector("#dimLines")
+      this.modelViewer.querySelector("#dimLines"),
     ].filter(Boolean);
-  
+
     const setVisibility = (visible) => {
       dimElements.forEach((element) => {
         element.classList.toggle("hide", !visible);
       });
     };
-  
+
     setVisibility(!isSessionStarted);
-  }  
+  }
 
   _drawLine(svgLine, startHotspot, endHotspot, dimensionHotspot) {
     if (!svgLine || !startHotspot || !endHotspot) return;
