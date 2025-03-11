@@ -1530,11 +1530,7 @@ class ARDisplayViewer extends HTMLElement {
   _consolidateStyles() {
     const style = document.createElement("style");
 
-    if (
-      this.modelData.mode !== "none" &&
-      !this.getAttribute("src") &&
-      this.modelData.mode !== "popup"
-    ) {
+    if (this.modelData.mode !== "none" && this.modelData.mode !== "popup") {
       style.textContent = `
         :host {
           display: block;
@@ -1869,9 +1865,9 @@ class ARDisplayViewer extends HTMLElement {
         ? normalTemplate
         : buttonTemplate;
 
-    if (this.getAttribute("src")) {
-      template = buttonTemplate;
-    }
+    // if (this.getAttribute("src")) {
+    //   template = buttonTemplate;
+    // }
 
     const attributes = this._getAttributes();
     const templateString = template(
@@ -1893,7 +1889,7 @@ class ARDisplayViewer extends HTMLElement {
 
     this.shadowRoot.appendChild(fragment);
 
-    if (viewMode === "inpage" && !this.getAttribute("src")) {
+    if (viewMode === "inpage") {
       const imageOverlay = document.createElement("img");
       imageOverlay.src = await PosterWithCache(
         this.modelData.options[0].posterFileUrl,
