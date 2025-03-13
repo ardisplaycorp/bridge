@@ -643,6 +643,8 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
+    if (!this.modelData.enabled === false) return;
+
     // Initialize the AR button configuration based on the current attribute.
     this._updateArBtnConfig(this.getAttribute("ar-btn-config"));
 
