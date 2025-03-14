@@ -1454,6 +1454,12 @@ class ARDisplayViewer extends HTMLElement {
               "src"
             )}`
           );
+        } else if (this.getAttribute("shopify-src")) {
+          response = await fetch(
+            `https://ardisplayboilerplate.vercel.app/api/3d-model/shopify?shopifyProductId=${this.getAttribute(
+              "shopify-src"
+            )}`
+          );
         } else {
           if (url && url.endsWith("/")) {
             url = url.slice(0, -1);
