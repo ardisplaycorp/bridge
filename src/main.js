@@ -567,7 +567,7 @@ class ARDisplayViewer extends HTMLElement {
     };
 
     // Use a queue or offline handling for stats if necessary
-    fetch("https://www.ardisplay.io/api/stats", {
+    fetch("https://ardisplayboilerplate.vercel.app/api/stats", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -1448,7 +1448,7 @@ class ARDisplayViewer extends HTMLElement {
 
         if (this.getAttribute("src")) {
           response = await fetch(
-            `https://www.ardisplay.io/api/3d-model?id=${this.getAttribute(
+            `https://ardisplayboilerplate.vercel.app/api/3d-model?id=${this.getAttribute(
               "src"
             )}`
           );
@@ -1457,7 +1457,9 @@ class ARDisplayViewer extends HTMLElement {
             url = url.slice(0, -1);
           }
           response = await fetch(
-            `https://www.ardisplay.io/api/3d-model?url=${encodeBase64(url)}`
+            `https://ardisplayboilerplate.vercel.app/api/3d-model?url=${encodeBase64(
+              url
+            )}`
           );
         }
 
