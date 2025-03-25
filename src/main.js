@@ -1456,7 +1456,7 @@ class ARDisplayViewer extends HTMLElement {
           );
         } else if (this.getAttribute("shopify-src")) {
           response = await fetch(
-            `https://ardisplayboilerplate.vercel.app/api/3d-model/shopify?shopifyProductId=${this.getAttribute(
+            `https://ardisplayboilerplate.vercel.app/api/3d-model/store?storeProductId=${this.getAttribute(
               "shopify-src"
             )}`
           );
