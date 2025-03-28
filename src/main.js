@@ -996,7 +996,7 @@ class ARDisplayViewer extends HTMLElement {
         ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
         : document.querySelector(".ardisplay-qr-code-button");
 
-    if (this.hasAttribute("fullWidth")) {
+    if (this.hasAttribute("fullWidth") && this.modelData.mode === "none") {
       qrCodeButton.style.width = "100%";
     }
     qrCodeButton.style.boxSizing = "border-box";
