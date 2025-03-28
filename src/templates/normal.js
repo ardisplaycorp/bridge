@@ -24,6 +24,7 @@ const modalStyles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "10px",
+    boxSizing: "border-box",
   },
 };
 
@@ -44,7 +45,12 @@ export default (
             <model-viewer
                 ar
                 shadow-intensity="${modelData.shadow}"
-                ar-placement="${(modelData.options && modelData.options.length > 0 && modelData.options[0].placement) || modelData.placement}"
+                ar-placement="${
+                  (modelData.options &&
+                    modelData.options.length > 0 &&
+                    modelData.options[0].placement) ||
+                  modelData.placement
+                }"
                 ar-modes="webxr scene-viewer quick-look"
                 ar-scale="fixed"
                 camera-controls="true"
@@ -63,7 +69,9 @@ export default (
                   modelData.arBtn.btnBgColor
                 };color: ${modelData.arBtn.btnTextColor};border-radius: ${
     modelData.arBtn.cornerRadius
-  }px;font-size: ${modelData.arBtn.btnSize - 6}px;text-wrap: nowrap;">
+  }px;font-size: ${
+    modelData.arBtn.btnSize - 6
+  }px;text-wrap: nowrap;box-sizing: border-box;">
                     ${
                       modelData.arBtn.btnIcon
                         ? `<i data-lucide="${modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`

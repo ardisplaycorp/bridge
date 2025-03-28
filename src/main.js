@@ -617,6 +617,7 @@ class ARDisplayViewer extends HTMLElement {
           arBtn.style.color = customArBtnConfig.btnTextColor;
           arBtn.style.borderRadius = customArBtnConfig.cornerRadius + "px";
           arBtn.style.fontSize = customArBtnConfig.btnSize + "px";
+          arBtn.style.boxSizing = "border-box";
 
           // Update the button icon and text based on the configuration.
           // This creates an <i> element with a data-lucide attribute.
@@ -893,7 +894,7 @@ class ARDisplayViewer extends HTMLElement {
       this.modelData.arBtn.btnTextColor
     };border-radius: ${this.modelData.arBtn.cornerRadius}px;font-size: ${
       this.modelData.arBtn.btnSize - 6
-    }px;text-wrap: nowrap;">
+    }px;text-wrap: nowrap;box-sizing: border-box;">
                         ${
                           this.modelData.arBtn.btnIcon
                             ? `<i data-lucide="${this.modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>`
@@ -994,6 +995,11 @@ class ARDisplayViewer extends HTMLElement {
       this.modelData.mode !== "popup"
         ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
         : document.querySelector(".ardisplay-qr-code-button");
+
+    if (this.hasAttribute("fullWidth")) {
+      qrCodeButton.style.width = "100%";
+    }
+    qrCodeButton.style.boxSizing = "border-box";
     const qrCodeContainer = document.querySelector("#qr-code");
 
     if (qrCodeButton) {
@@ -1556,7 +1562,7 @@ class ARDisplayViewer extends HTMLElement {
       style.textContent = `
         :host {
           display: block;
-          width: fit-content;
+          width: 100%;
           height: fit-content;
           transform: scale(1);
           font-family: 'Roboto', sans-serif;
