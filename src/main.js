@@ -1894,7 +1894,8 @@ class ARDisplayViewer extends HTMLElement {
       attributes.touchAction,
       attributes.modelPoster,
       attributes.arPlacement,
-      this.modelData
+      this.modelData,
+      this.hasAttribute("fullWidth")
     );
 
     // Use a DocumentFragment for better DOM updates

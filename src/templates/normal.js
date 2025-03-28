@@ -34,7 +34,8 @@ export default (
   touchAction,
   modelPoster,
   arPlacement,
-  modelData
+  modelData,
+  fullWidth
 ) => {
   const styles = styleObjectToString(modalStyles);
   const template = hotspotsTemplate();
