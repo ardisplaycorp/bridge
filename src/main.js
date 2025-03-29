@@ -1445,28 +1445,100 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   async _getModelData() {
+    // --- ADD THIS: Define your fallback data ---
+    const FALLBACK_MODEL_DATA = {
+      title: "demo",
+      modelId: "67e796c8294328fd88bfba83", // Example ID, could be different if needed for fallback
+      logo: "",
+      addToCartUrl: "https://www.demo.com/demo/addToCart",
+      url: "https://ardisplay.io", // Fallback URL
+      description:
+        "View this product in your environment by scanning this code with your phone",
+      displayShareBtn: false,
+      shadow: 1,
+      qrCode: {
+        faviconId: "",
+        faviconUrl: "",
+        faviconMargin: "0",
+        QRsize: "200",
+        dotStyle: "square",
+        dotColor: "#000000",
+        cornerStyle: "square",
+        cornerColor: "#000000",
+        cornerDotStyle: "square",
+        cornerDotColor: "#000000",
+        backgroundColor: "#ffffff",
+        imgBackground: false,
+        website: "https://ardisplay.io", // Fallback website for QR
+      },
+      arBtn: {
+        btnText: "View in your space",
+        btnTextColor: "#ffffff",
+        btnBgColor: "#3b37ff",
+        btnIcon: "Eye",
+        cornerRadius: "8",
+        btnSize: "15",
+      },
+      options: [
+        {
+          name: "DemoLives.glb",
+          model: "121", // Example ID
+          url: "https://assetger.ddns.net/storage/documents/d91c18c6-9966-4d25-a443-a68df576f97e-optimized.glb",
+          sizes: [
+            {
+              label: "Default Size",
+              width: "135.6cm",
+              height: "106.0cm",
+              depth: "3.0cm",
+            },
+          ],
+          posterFileUrl:
+            "https://assetger.ddns.net/storage/documents/e995WMUn836jJ5oGVicX5SkYcijE6mhl6opT3Fqg.webp",
+          placement: "wall", // Or 'floor' depending on the demo model
+          iosUrl:
+            "https://assetger.ddns.net/storage/documents/Nq6baT4fkJDk7blTAeZJhZfDzsPdLQQNRVWs3fVI.usdz",
+          androidId: "121", // Example ID
+          iosId: "122", // Example ID
+          posterFileId: "123", // Example ID
+        },
+      ],
+      mode: "popup", // Default mode for fallback, adjust if needed
+      qrcode: "popup", // Default QR mode for fallback, adjust if needed
+      enabled: true, // Ensure fallback is enabled
+      storeProductId: "", // No specific store product ID for fallback
+    };
+    // --- End of Fallback Data Definition ---
+
     let attempts = 0;
     const maxAttempts = 3; // one attempt + two retries
 
-    while (attempts < maxAttempts) {
+    // --- Initialize modelData to null ---
+    this.modelData = null;
+
+    // --- Loop while attempts < maxAttempts AND data hasn't been successfully fetched ---
+    while (attempts < maxAttempts && !this.modelData) {
       try {
         attempts++;
         let url = window.location.href;
         let response;
+        const hasSrc = this.hasAttribute("src");
+        const hasShopifySrc = this.hasAttribute("shopify-src");
 
-        if (this.getAttribute("src")) {
+        // --- Keep your existing fetch logic ---
+        if (hasSrc) {
           response = await fetch(
             `https://ardisplayboilerplate.vercel.app/api/3d-model?id=${this.getAttribute(
               "src"
             )}`
           );
-        } else if (this.getAttribute("shopify-src")) {
+        } else if (hasShopifySrc) {
           response = await fetch(
             `https://ardisplayboilerplate.vercel.app/api/3d-model/store?storeProductId=${this.getAttribute(
               "shopify-src"
             )}`
           );
         } else {
+          // Only try fetching by URL if no src or shopify-src is provided
           if (url && url.endsWith("/")) {
             url = url.slice(0, -1);
           }
@@ -1476,43 +1548,74 @@ class ARDisplayViewer extends HTMLElement {
             )}`
           );
         }
+        // --- End of fetch logic ---
 
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
+        if (!response || !response.ok) {
+          // Check if response exists before checking ok status
+          // Throw error to go to catch block for retry or fallback
+          const status = response ? response.status : "No response";
+          throw new Error(`Response status: ${status}`);
         }
 
         const data = await response.json();
+
+        // --- Basic validation: Ensure data is an object and has options ---
+        if (
+          typeof data !== "object" ||
+          data === null ||
+          !data.options ||
+          data.options.length === 0
+        ) {
+          logger.warn("Received invalid or empty data structure from API.");
+          throw new Error("Invalid data structure received."); // Trigger catch block
+        }
+
+        // --- Assign data if successful and valid ---
         this.modelData = data;
 
-        // If using "src" attribute then set the mode to "none"
+        // If using "ar-button" attribute override mode to "none" (as per original logic)
+        // Do this *after* assigning data from API
         if (this.hasAttribute("ar-button")) {
           this.modelData.mode = "none";
         }
 
-        // Handle missing data gracefully
-        if (!this.modelData?.options) {
-          logger.warn(
-            "Missing model options. Skipping variant initialization."
-          );
-        }
-
-        this._setupVariantsSizes();
-        // Successfully loaded data, so break out of the loop.
-        break;
+        // --- No need for explicit break, the while condition handles success ---
       } catch (error) {
         logger.error(`Attempt ${attempts} failed: ${error.message}`);
-        if (attempts < maxAttempts) {
-          // Optionally wait before retrying (here we wait 1 second)
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        } else {
-          // All attempts failed – here you might display a fallback UI message.
+        if (attempts >= maxAttempts) {
+          // All attempts failed – log final error before potential fallback
           logger.error(
             "Exceeded maximum retry attempts for fetching model data."
           );
-          // Optionally, insert some fallback behavior here.
+          // Optionally break here if you don't want to wait after the last failed attempt
+          // break;
+        } else {
+          // Optionally wait before retrying (already existing logic)
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
       }
+    } // End of while loop
+
+    // --- ADD THIS: Check if data was fetched, if not, use fallback ---
+    if (
+      !this.modelData &&
+      !this.getAttribute("src") &&
+      !this.getAttribute("shopify-src")
+    ) {
+      logger.warn(
+        "Failed to fetch model data from all sources or data was invalid. Using fallback demo data."
+      );
+      this.modelData = FALLBACK_MODEL_DATA;
+      // If the fallback itself should be disabled under certain conditions, add logic here.
+      // For example: if (!this.hasAttribute('src') && !this.hasAttribute('shopify-src')) { this.modelData.enabled = false; }
     }
+    // --- End of Fallback Check ---
+
+    // --- Call setupVariantsSizes *after* modelData is guaranteed to be set (either fetched or fallback) ---
+    this._setupVariantsSizes();
+
+    // Log the final data being used (useful for debugging)
+    logger.debug("Final modelData being used:", this.modelData);
   }
 
   _setupVariantsSizes() {
