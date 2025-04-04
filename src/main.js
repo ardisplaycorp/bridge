@@ -589,7 +589,6 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
     if (name === "ar-btn-config" && oldValue !== newValue) {
       // Update the AR button configuration when the attribute changes.
       this._updateArBtnConfig(newValue);
@@ -597,37 +596,45 @@ class ARDisplayViewer extends HTMLElement {
   }
 
   _updateArBtnConfig(encodedConfig) {
+    if (!this.modelData) {
+      console.warn(
+        "Deferring AR button config update: modelData not ready yet."
+      );
+      return;
+    }
+
     if (encodedConfig) {
       try {
         // Decode from base64 and parse the JSON.
         const decoded = decodeBase64(encodedConfig);
         const customArBtnConfig = JSON.parse(decoded);
-        // Override the API data with the user-provided configuration.
-        this.modelData.arBtn = customArBtnConfig;
+
+        // Instead of completely replacing, merge with any API/default config.
+        let customConfig = {
+          ...this.modelData.arBtn, // the existing/default configuration
+          ...customArBtnConfig, // any properties provided by the user will override the default ones
+        };
 
         const arBtn =
           this.modelData.mode !== "popup"
             ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
             : document.querySelector(".ardisplay-qr-code-button");
 
-        console.log("arBtn", arBtn);
-
         if (arBtn) {
-          arBtn.style.backgroundColor = customArBtnConfig.btnBgColor;
-          arBtn.style.color = customArBtnConfig.btnTextColor;
-          arBtn.style.borderRadius = customArBtnConfig.cornerRadius + "px";
-          arBtn.style.fontSize = customArBtnConfig.btnSize + "px";
+          arBtn.style.backgroundColor = customConfig.btnBgColor;
+          arBtn.style.color = customConfig.btnTextColor;
+          arBtn.style.borderRadius = customConfig.cornerRadius + "px";
+          arBtn.style.fontSize = customConfig.btnSize + "px";
           arBtn.style.boxSizing = "border-box";
 
           // Update the button icon and text based on the configuration.
           // This creates an <i> element with a data-lucide attribute.
-          const iconHTML = customArBtnConfig.btnIcon
-            ? `<i data-lucide="${customArBtnConfig.btnIcon}" style="width: 24px; height: 24px; color: inherit;"></i>`
+          const iconHTML = customConfig.btnIcon
+            ? `<i data-lucide="${customConfig.btnIcon}" style="width: 24px; height: 24px; color: inherit;"></i>`
             : "";
-          arBtn.innerHTML = `${iconHTML} ${customArBtnConfig.btnText}`;
+          arBtn.innerHTML = `${iconHTML} ${customConfig.btnText}`;
 
-          // IMPORTANT: Process the lucide icons within the button so that
-          // <i data-lucide="..."> gets converted to an SVG.
+          // Process the lucide icons within the button so that the <i> element is replaced with an SVG.
           this._processLucideIcons(arBtn);
         }
       } catch (error) {
@@ -644,33 +651,8 @@ class ARDisplayViewer extends HTMLElement {
 
     await this._getModelData();
 
-    console.log(this.modelData);
-
     if (this.modelData.enabled === false && !this.hasAttribute("enabled"))
       return;
-
-    // Initialize the AR button configuration based on the current attribute.
-    this._updateArBtnConfig(this.getAttribute("ar-btn-config"));
-
-    // Check if the user passed an override for the AR button configuration
-    const arBtnConfigEncoded = this.getAttribute("ar-btn-config");
-    if (arBtnConfigEncoded) {
-      try {
-        // Decode from base64 and parse the JSON
-        const decoded = decodeBase64(arBtnConfigEncoded);
-        const customArBtnConfig = JSON.parse(decoded);
-        // Override the API data with the user-provided configuration.
-        // This means that later in your code, when you use:
-        //   this.modelData.arBtn.btnBgColor, btnText, etc.
-        // they will come from this custom configuration.
-        this.modelData.arBtn = customArBtnConfig;
-      } catch (error) {
-        console.error(
-          "Invalid AR button configuration provided in ar-btn-config attribute:",
-          error
-        );
-      }
-    }
 
     const initialPlacement =
       (this.modelData.options &&
@@ -928,6 +910,29 @@ class ARDisplayViewer extends HTMLElement {
     // Load template first
     await this._loadTemplate(this.modelData.mode);
     this._moveSlottedContent();
+
+    // Initialize the AR button configuration based on the current attribute.
+    this._updateArBtnConfig(this.getAttribute("ar-btn-config"));
+
+    // Check if the user passed an override for the AR button configuration
+    const arBtnConfigEncoded = this.getAttribute("ar-btn-config");
+    if (arBtnConfigEncoded) {
+      try {
+        // Decode from base64 and parse the JSON
+        const decoded = decodeBase64(arBtnConfigEncoded);
+        const customArBtnConfig = JSON.parse(decoded);
+        // Override the API data with the user-provided configuration.
+        // This means that later in your code, when you use:
+        //   this.modelData.arBtn.btnBgColor, btnText, etc.
+        // they will come from this custom configuration.
+        this.modelData.arBtn = customArBtnConfig;
+      } catch (error) {
+        console.error(
+          "Invalid AR button configuration provided in ar-btn-config attribute:",
+          error
+        );
+      }
+    }
 
     // Add progress modal to shadow DOM
     createPortal(progressModalTemplate.content.cloneNode(true));
@@ -2567,14 +2572,11 @@ class ARDisplayViewer extends HTMLElement {
         }
       });
 
-      console.log(isTheSame);
-
       if (!isTheSame) {
         const variantBtn =
           this.modelData.mode !== "popup"
             ? this.shadowRoot.querySelector(".ardisplay-variant-btn")
             : document.querySelector(".ardisplay-variant-btn");
-        console.log(variantBtn);
         // add active if not exist
         if (
           variantBtn &&
