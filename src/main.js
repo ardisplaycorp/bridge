@@ -620,6 +620,23 @@ class ARDisplayViewer extends HTMLElement {
             ? this.shadowRoot.querySelector(".ardisplay-qr-code-button")
             : document.querySelector(".ardisplay-qr-code-button");
 
+        const view3DButton = this.shadowRoot.querySelector(
+          ".ardisplay-view-3d-button"
+        );
+
+        if (view3DButton) {
+          view3DButton.style.backgroundColor = customConfig.btnBgColor;
+          view3DButton.style.color = customConfig.btnTextColor;
+          view3DButton.style.borderRadius = customConfig.cornerRadius + "px";
+          view3DButton.style.fontSize = customConfig.btnSize + "px";
+          view3DButton.style.boxSizing = "border-box";
+
+          if (customConfig.modalButtonText) {
+            view3DButton.querySelector("span").innerHTML =
+              customConfig.modalButtonText;
+          }
+        }
+
         if (arBtn) {
           arBtn.style.backgroundColor = customConfig.btnBgColor;
           arBtn.style.color = customConfig.btnTextColor;
