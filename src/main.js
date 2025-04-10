@@ -3243,7 +3243,10 @@ class ARDisplayViewer extends HTMLElement {
 
   applyScale() {
     if (this.calculatedScale && this.modelViewer) {
-      this.modelViewer.scale = `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`;
+      this.modelViewer.setAttribute(
+        "scale",
+        `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`
+      );
       if (typeof this.modelViewer.updateFraming === "function") {
         requestAnimationFrame(() => {
           this.modelViewer.updateFraming();
