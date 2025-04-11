@@ -1,0 +1,6473 @@
+import * as qt from "three";
+import { TrianglesDrawMode as Ta, TriangleFanDrawMode as vt, TriangleStripDrawMode as ta, Loader as aa, LoaderUtils as We, FileLoader as it, Color as me, LinearSRGBColorSpace as ke, SpotLight as Ma, PointLight as La, DirectionalLight as Ca, MeshBasicMaterial as Xe, SRGBColorSpace as Re, MeshPhysicalMaterial as Se, Vector2 as na, Matrix4 as st, Vector3 as ze, Quaternion as ia, InstancedMesh as ja, InstancedBufferAttribute as Fa, Object3D as sa, TextureLoader as qa, ImageBitmapLoader as Da, BufferAttribute as Je, InterleavedBuffer as za, InterleavedBufferAttribute as Oa, LinearFilter as oa, LinearMipmapLinearFilter as ra, RepeatWrapping as yt, PointsMaterial as Pa, Material as lt, LineBasicMaterial as Ha, MeshStandardMaterial as ca, DoubleSide as la, PropertyBinding as Ia, BufferGeometry as da, SkinnedMesh as Ba, Mesh as ha, LineSegments as Ga, Line as Na, LineLoop as $a, Points as Ua, Group as dt, PerspectiveCamera as pa, MathUtils as Ka, OrthographicCamera as Va, Skeleton as Xa, AnimationClip as Wa, Bone as Ja, InterpolateLinear as ua, ColorManagement as xt, NearestFilter as Ya, NearestMipmapNearestFilter as Za, LinearMipmapNearestFilter as Qa, NearestMipmapLinearFilter as en, ClampToEdgeWrapping as tn, MirroredRepeatWrapping as an, InterpolateDiscrete as nn, FrontSide as sn, Texture as Dt, VectorKeyframeTrack as zt, NumberKeyframeTrack as Ot, QuaternionKeyframeTrack as Pt, Box3 as on, Sphere as rn, Interpolant as cn, PlaneGeometry as ln, ShaderMaterial as dn, Uniform as hn, Scene as pn, WebGLRenderer as un, CanvasTexture as bn, NoColorSpace as fn } from "three";
+function gn(o) {
+  return o && o.__esModule && Object.prototype.hasOwnProperty.call(o, "default") ? o.default : o;
+}
+var nt = { exports: {} }, mn = nt.exports, Ht;
+function wn() {
+  return Ht || (Ht = 1, function(o, e) {
+    (function(t, a) {
+      o.exports = a();
+    })(mn, () => (() => {
+      var t = { 873: (s, r) => {
+        var c, d, p = function() {
+          var f = function(l, b) {
+            var u = l, h = C[b], g = null, v = 0, x = null, k = [], E = {}, P = function(A, M) {
+              g = function(S) {
+                for (var L = new Array(S), j = 0; j < S; j += 1) {
+                  L[j] = new Array(S);
+                  for (var G = 0; G < S; G += 1) L[j][G] = null;
+                }
+                return L;
+              }(v = 4 * u + 17), D(0, 0), D(v - 7, 0), D(0, v - 7), $(), O(), I(A, M), u >= 7 && ee(A), x == null && (x = Z(u, h, k)), ie(x, M);
+            }, D = function(A, M) {
+              for (var S = -1; S <= 7; S += 1) if (!(A + S <= -1 || v <= A + S)) for (var L = -1; L <= 7; L += 1) M + L <= -1 || v <= M + L || (g[A + S][M + L] = 0 <= S && S <= 6 && (L == 0 || L == 6) || 0 <= L && L <= 6 && (S == 0 || S == 6) || 2 <= S && S <= 4 && 2 <= L && L <= 4);
+            }, O = function() {
+              for (var A = 8; A < v - 8; A += 1) g[A][6] == null && (g[A][6] = A % 2 == 0);
+              for (var M = 8; M < v - 8; M += 1) g[6][M] == null && (g[6][M] = M % 2 == 0);
+            }, $ = function() {
+              for (var A = R.getPatternPosition(u), M = 0; M < A.length; M += 1) for (var S = 0; S < A.length; S += 1) {
+                var L = A[M], j = A[S];
+                if (g[L][j] == null) for (var G = -2; G <= 2; G += 1) for (var Y = -2; Y <= 2; Y += 1) g[L + G][j + Y] = G == -2 || G == 2 || Y == -2 || Y == 2 || G == 0 && Y == 0;
+              }
+            }, ee = function(A) {
+              for (var M = R.getBCHTypeNumber(u), S = 0; S < 18; S += 1) {
+                var L = !A && (M >> S & 1) == 1;
+                g[Math.floor(S / 3)][S % 3 + v - 8 - 3] = L;
+              }
+              for (S = 0; S < 18; S += 1) L = !A && (M >> S & 1) == 1, g[S % 3 + v - 8 - 3][Math.floor(S / 3)] = L;
+            }, I = function(A, M) {
+              for (var S = h << 3 | M, L = R.getBCHTypeInfo(S), j = 0; j < 15; j += 1) {
+                var G = !A && (L >> j & 1) == 1;
+                j < 6 ? g[j][8] = G : j < 8 ? g[j + 1][8] = G : g[v - 15 + j][8] = G;
+              }
+              for (j = 0; j < 15; j += 1) G = !A && (L >> j & 1) == 1, j < 8 ? g[8][v - j - 1] = G : j < 9 ? g[8][15 - j - 1 + 1] = G : g[8][15 - j - 1] = G;
+              g[v - 8][8] = !A;
+            }, ie = function(A, M) {
+              for (var S = -1, L = v - 1, j = 7, G = 0, Y = R.getMaskFunction(M), X = v - 1; X > 0; X -= 2) for (X == 6 && (X -= 1); ; ) {
+                for (var ne = 0; ne < 2; ne += 1) if (g[L][X - ne] == null) {
+                  var te = !1;
+                  G < A.length && (te = (A[G] >>> j & 1) == 1), Y(L, X - ne) && (te = !te), g[L][X - ne] = te, (j -= 1) == -1 && (G += 1, j = 7);
+                }
+                if ((L += S) < 0 || v <= L) {
+                  L -= S, S = -S;
+                  break;
+                }
+              }
+            }, Z = function(A, M, S) {
+              for (var L = H.getRSBlocks(A, M), j = W(), G = 0; G < S.length; G += 1) {
+                var Y = S[G];
+                j.put(Y.getMode(), 4), j.put(Y.getLength(), R.getLengthInBits(Y.getMode(), A)), Y.write(j);
+              }
+              var X = 0;
+              for (G = 0; G < L.length; G += 1) X += L[G].dataCount;
+              if (j.getLengthInBits() > 8 * X) throw "code length overflow. (" + j.getLengthInBits() + ">" + 8 * X + ")";
+              for (j.getLengthInBits() + 4 <= 8 * X && j.put(0, 4); j.getLengthInBits() % 8 != 0; ) j.putBit(!1);
+              for (; !(j.getLengthInBits() >= 8 * X || (j.put(236, 8), j.getLengthInBits() >= 8 * X)); ) j.put(17, 8);
+              return function(ne, te) {
+                for (var Q = 0, re = 0, ce = 0, he = new Array(te.length), le = new Array(te.length), V = 0; V < te.length; V += 1) {
+                  var Ce = te[V].dataCount, He = te[V].totalCount - Ce;
+                  re = Math.max(re, Ce), ce = Math.max(ce, He), he[V] = new Array(Ce);
+                  for (var oe = 0; oe < he[V].length; oe += 1) he[V][oe] = 255 & ne.getBuffer()[oe + Q];
+                  Q += Ce;
+                  var Ae = R.getErrorCorrectPolynomial(He), ye = q(he[V], Ae.getLength() - 1).mod(Ae);
+                  for (le[V] = new Array(Ae.getLength() - 1), oe = 0; oe < le[V].length; oe += 1) {
+                    var Te = oe + ye.getLength() - le[V].length;
+                    le[V][oe] = Te >= 0 ? ye.getAt(Te) : 0;
+                  }
+                }
+                var Ze = 0;
+                for (oe = 0; oe < te.length; oe += 1) Ze += te[oe].totalCount;
+                var Ie = new Array(Ze), xe = 0;
+                for (oe = 0; oe < re; oe += 1) for (V = 0; V < te.length; V += 1) oe < he[V].length && (Ie[xe] = he[V][oe], xe += 1);
+                for (oe = 0; oe < ce; oe += 1) for (V = 0; V < te.length; V += 1) oe < le[V].length && (Ie[xe] = le[V][oe], xe += 1);
+                return Ie;
+              }(j, L);
+            };
+            E.addData = function(A, M) {
+              var S = null;
+              switch (M = M || "Byte") {
+                case "Numeric":
+                  S = J(A);
+                  break;
+                case "Alphanumeric":
+                  S = K(A);
+                  break;
+                case "Byte":
+                  S = B(A);
+                  break;
+                case "Kanji":
+                  S = se(A);
+                  break;
+                default:
+                  throw "mode:" + M;
+              }
+              k.push(S), x = null;
+            }, E.isDark = function(A, M) {
+              if (A < 0 || v <= A || M < 0 || v <= M) throw A + "," + M;
+              return g[A][M];
+            }, E.getModuleCount = function() {
+              return v;
+            }, E.make = function() {
+              if (u < 1) {
+                for (var A = 1; A < 40; A++) {
+                  for (var M = H.getRSBlocks(A, h), S = W(), L = 0; L < k.length; L++) {
+                    var j = k[L];
+                    S.put(j.getMode(), 4), S.put(j.getLength(), R.getLengthInBits(j.getMode(), A)), j.write(S);
+                  }
+                  var G = 0;
+                  for (L = 0; L < M.length; L++) G += M[L].dataCount;
+                  if (S.getLengthInBits() <= 8 * G) break;
+                }
+                u = A;
+              }
+              P(!1, function() {
+                for (var Y = 0, X = 0, ne = 0; ne < 8; ne += 1) {
+                  P(!0, ne);
+                  var te = R.getLostPoint(E);
+                  (ne == 0 || Y > te) && (Y = te, X = ne);
+                }
+                return X;
+              }());
+            }, E.createTableTag = function(A, M) {
+              A = A || 2;
+              var S = "";
+              S += '<table style="', S += " border-width: 0px; border-style: none;", S += " border-collapse: collapse;", S += " padding: 0px; margin: " + (M = M === void 0 ? 4 * A : M) + "px;", S += '">', S += "<tbody>";
+              for (var L = 0; L < E.getModuleCount(); L += 1) {
+                S += "<tr>";
+                for (var j = 0; j < E.getModuleCount(); j += 1) S += '<td style="', S += " border-width: 0px; border-style: none;", S += " border-collapse: collapse;", S += " padding: 0px; margin: 0px;", S += " width: " + A + "px;", S += " height: " + A + "px;", S += " background-color: ", S += E.isDark(L, j) ? "#000000" : "#ffffff", S += ";", S += '"/>';
+                S += "</tr>";
+              }
+              return (S += "</tbody>") + "</table>";
+            }, E.createSvgTag = function(A, M, S, L) {
+              var j = {};
+              typeof arguments[0] == "object" && (A = (j = arguments[0]).cellSize, M = j.margin, S = j.alt, L = j.title), A = A || 2, M = M === void 0 ? 4 * A : M, (S = typeof S == "string" ? { text: S } : S || {}).text = S.text || null, S.id = S.text ? S.id || "qrcode-description" : null, (L = typeof L == "string" ? { text: L } : L || {}).text = L.text || null, L.id = L.text ? L.id || "qrcode-title" : null;
+              var G, Y, X, ne, te = E.getModuleCount() * A + 2 * M, Q = "";
+              for (ne = "l" + A + ",0 0," + A + " -" + A + ",0 0,-" + A + "z ", Q += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"', Q += j.scalable ? "" : ' width="' + te + 'px" height="' + te + 'px"', Q += ' viewBox="0 0 ' + te + " " + te + '" ', Q += ' preserveAspectRatio="xMinYMin meet"', Q += L.text || S.text ? ' role="img" aria-labelledby="' + U([L.id, S.id].join(" ").trim()) + '"' : "", Q += ">", Q += L.text ? '<title id="' + U(L.id) + '">' + U(L.text) + "</title>" : "", Q += S.text ? '<description id="' + U(S.id) + '">' + U(S.text) + "</description>" : "", Q += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>', Q += '<path d="', Y = 0; Y < E.getModuleCount(); Y += 1) for (X = Y * A + M, G = 0; G < E.getModuleCount(); G += 1) E.isDark(Y, G) && (Q += "M" + (G * A + M) + "," + X + ne);
+              return (Q += '" stroke="transparent" fill="black"/>') + "</svg>";
+            }, E.createDataURL = function(A, M) {
+              A = A || 2, M = M === void 0 ? 4 * A : M;
+              var S = E.getModuleCount() * A + 2 * M, L = M, j = S - M;
+              return m(S, S, function(G, Y) {
+                if (L <= G && G < j && L <= Y && Y < j) {
+                  var X = Math.floor((G - L) / A), ne = Math.floor((Y - L) / A);
+                  return E.isDark(ne, X) ? 0 : 1;
+                }
+                return 1;
+              });
+            }, E.createImgTag = function(A, M, S) {
+              A = A || 2, M = M === void 0 ? 4 * A : M;
+              var L = E.getModuleCount() * A + 2 * M, j = "";
+              return j += "<img", j += ' src="', j += E.createDataURL(A, M), j += '"', j += ' width="', j += L, j += '"', j += ' height="', j += L, j += '"', S && (j += ' alt="', j += U(S), j += '"'), j + "/>";
+            };
+            var U = function(A) {
+              for (var M = "", S = 0; S < A.length; S += 1) {
+                var L = A.charAt(S);
+                switch (L) {
+                  case "<":
+                    M += "&lt;";
+                    break;
+                  case ">":
+                    M += "&gt;";
+                    break;
+                  case "&":
+                    M += "&amp;";
+                    break;
+                  case '"':
+                    M += "&quot;";
+                    break;
+                  default:
+                    M += L;
+                }
+              }
+              return M;
+            };
+            return E.createASCII = function(A, M) {
+              if ((A = A || 1) < 2) return function(he) {
+                he = he === void 0 ? 2 : he;
+                var le, V, Ce, He, oe, Ae = 1 * E.getModuleCount() + 2 * he, ye = he, Te = Ae - he, Ze = { "██": "█", "█ ": "▀", " █": "▄", "  ": " " }, Ie = { "██": "▀", "█ ": "▀", " █": " ", "  ": " " }, xe = "";
+                for (le = 0; le < Ae; le += 2) {
+                  for (Ce = Math.floor((le - ye) / 1), He = Math.floor((le + 1 - ye) / 1), V = 0; V < Ae; V += 1) oe = "█", ye <= V && V < Te && ye <= le && le < Te && E.isDark(Ce, Math.floor((V - ye) / 1)) && (oe = " "), ye <= V && V < Te && ye <= le + 1 && le + 1 < Te && E.isDark(He, Math.floor((V - ye) / 1)) ? oe += " " : oe += "█", xe += he < 1 && le + 1 >= Te ? Ie[oe] : Ze[oe];
+                  xe += `
+`;
+                }
+                return Ae % 2 && he > 0 ? xe.substring(0, xe.length - Ae - 1) + Array(Ae + 1).join("▀") : xe.substring(0, xe.length - 1);
+              }(M);
+              A -= 1, M = M === void 0 ? 2 * A : M;
+              var S, L, j, G, Y = E.getModuleCount() * A + 2 * M, X = M, ne = Y - M, te = Array(A + 1).join("██"), Q = Array(A + 1).join("  "), re = "", ce = "";
+              for (S = 0; S < Y; S += 1) {
+                for (j = Math.floor((S - X) / A), ce = "", L = 0; L < Y; L += 1) G = 1, X <= L && L < ne && X <= S && S < ne && E.isDark(j, Math.floor((L - X) / A)) && (G = 0), ce += G ? te : Q;
+                for (j = 0; j < A; j += 1) re += ce + `
+`;
+              }
+              return re.substring(0, re.length - 1);
+            }, E.renderTo2dContext = function(A, M) {
+              M = M || 2;
+              for (var S = E.getModuleCount(), L = 0; L < S; L++) for (var j = 0; j < S; j++) A.fillStyle = E.isDark(L, j) ? "black" : "white", A.fillRect(L * M, j * M, M, M);
+            }, E;
+          };
+          f.stringToBytes = (f.stringToBytesFuncs = { default: function(l) {
+            for (var b = [], u = 0; u < l.length; u += 1) {
+              var h = l.charCodeAt(u);
+              b.push(255 & h);
+            }
+            return b;
+          } }).default, f.createStringToBytes = function(l, b) {
+            var u = function() {
+              for (var g = N(l), v = function() {
+                var O = g.read();
+                if (O == -1) throw "eof";
+                return O;
+              }, x = 0, k = {}; ; ) {
+                var E = g.read();
+                if (E == -1) break;
+                var P = v(), D = v() << 8 | v();
+                k[String.fromCharCode(E << 8 | P)] = D, x += 1;
+              }
+              if (x != b) throw x + " != " + b;
+              return k;
+            }(), h = 63;
+            return function(g) {
+              for (var v = [], x = 0; x < g.length; x += 1) {
+                var k = g.charCodeAt(x);
+                if (k < 128) v.push(k);
+                else {
+                  var E = u[g.charAt(x)];
+                  typeof E == "number" ? (255 & E) == E ? v.push(E) : (v.push(E >>> 8), v.push(255 & E)) : v.push(h);
+                }
+              }
+              return v;
+            };
+          };
+          var w, y, _, T, F, C = { L: 1, M: 0, Q: 3, H: 2 }, R = (w = [[], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50], [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78], [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102], [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122], [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154], [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]], y = 1335, _ = 7973, F = function(l) {
+            for (var b = 0; l != 0; ) b += 1, l >>>= 1;
+            return b;
+          }, (T = {}).getBCHTypeInfo = function(l) {
+            for (var b = l << 10; F(b) - F(y) >= 0; ) b ^= y << F(b) - F(y);
+            return 21522 ^ (l << 10 | b);
+          }, T.getBCHTypeNumber = function(l) {
+            for (var b = l << 12; F(b) - F(_) >= 0; ) b ^= _ << F(b) - F(_);
+            return l << 12 | b;
+          }, T.getPatternPosition = function(l) {
+            return w[l - 1];
+          }, T.getMaskFunction = function(l) {
+            switch (l) {
+              case 0:
+                return function(b, u) {
+                  return (b + u) % 2 == 0;
+                };
+              case 1:
+                return function(b, u) {
+                  return b % 2 == 0;
+                };
+              case 2:
+                return function(b, u) {
+                  return u % 3 == 0;
+                };
+              case 3:
+                return function(b, u) {
+                  return (b + u) % 3 == 0;
+                };
+              case 4:
+                return function(b, u) {
+                  return (Math.floor(b / 2) + Math.floor(u / 3)) % 2 == 0;
+                };
+              case 5:
+                return function(b, u) {
+                  return b * u % 2 + b * u % 3 == 0;
+                };
+              case 6:
+                return function(b, u) {
+                  return (b * u % 2 + b * u % 3) % 2 == 0;
+                };
+              case 7:
+                return function(b, u) {
+                  return (b * u % 3 + (b + u) % 2) % 2 == 0;
+                };
+              default:
+                throw "bad maskPattern:" + l;
+            }
+          }, T.getErrorCorrectPolynomial = function(l) {
+            for (var b = q([1], 0), u = 0; u < l; u += 1) b = b.multiply(q([1, z.gexp(u)], 0));
+            return b;
+          }, T.getLengthInBits = function(l, b) {
+            if (1 <= b && b < 10) switch (l) {
+              case 1:
+                return 10;
+              case 2:
+                return 9;
+              case 4:
+              case 8:
+                return 8;
+              default:
+                throw "mode:" + l;
+            }
+            else if (b < 27) switch (l) {
+              case 1:
+                return 12;
+              case 2:
+                return 11;
+              case 4:
+                return 16;
+              case 8:
+                return 10;
+              default:
+                throw "mode:" + l;
+            }
+            else {
+              if (!(b < 41)) throw "type:" + b;
+              switch (l) {
+                case 1:
+                  return 14;
+                case 2:
+                  return 13;
+                case 4:
+                  return 16;
+                case 8:
+                  return 12;
+                default:
+                  throw "mode:" + l;
+              }
+            }
+          }, T.getLostPoint = function(l) {
+            for (var b = l.getModuleCount(), u = 0, h = 0; h < b; h += 1) for (var g = 0; g < b; g += 1) {
+              for (var v = 0, x = l.isDark(h, g), k = -1; k <= 1; k += 1) if (!(h + k < 0 || b <= h + k)) for (var E = -1; E <= 1; E += 1) g + E < 0 || b <= g + E || k == 0 && E == 0 || x == l.isDark(h + k, g + E) && (v += 1);
+              v > 5 && (u += 3 + v - 5);
+            }
+            for (h = 0; h < b - 1; h += 1) for (g = 0; g < b - 1; g += 1) {
+              var P = 0;
+              l.isDark(h, g) && (P += 1), l.isDark(h + 1, g) && (P += 1), l.isDark(h, g + 1) && (P += 1), l.isDark(h + 1, g + 1) && (P += 1), P != 0 && P != 4 || (u += 3);
+            }
+            for (h = 0; h < b; h += 1) for (g = 0; g < b - 6; g += 1) l.isDark(h, g) && !l.isDark(h, g + 1) && l.isDark(h, g + 2) && l.isDark(h, g + 3) && l.isDark(h, g + 4) && !l.isDark(h, g + 5) && l.isDark(h, g + 6) && (u += 40);
+            for (g = 0; g < b; g += 1) for (h = 0; h < b - 6; h += 1) l.isDark(h, g) && !l.isDark(h + 1, g) && l.isDark(h + 2, g) && l.isDark(h + 3, g) && l.isDark(h + 4, g) && !l.isDark(h + 5, g) && l.isDark(h + 6, g) && (u += 40);
+            var D = 0;
+            for (g = 0; g < b; g += 1) for (h = 0; h < b; h += 1) l.isDark(h, g) && (D += 1);
+            return u + Math.abs(100 * D / b / b - 50) / 5 * 10;
+          }, T), z = function() {
+            for (var l = new Array(256), b = new Array(256), u = 0; u < 8; u += 1) l[u] = 1 << u;
+            for (u = 8; u < 256; u += 1) l[u] = l[u - 4] ^ l[u - 5] ^ l[u - 6] ^ l[u - 8];
+            for (u = 0; u < 255; u += 1) b[l[u]] = u;
+            return { glog: function(h) {
+              if (h < 1) throw "glog(" + h + ")";
+              return b[h];
+            }, gexp: function(h) {
+              for (; h < 0; ) h += 255;
+              for (; h >= 256; ) h -= 255;
+              return l[h];
+            } };
+          }();
+          function q(l, b) {
+            if (l.length === void 0) throw l.length + "/" + b;
+            var u = function() {
+              for (var g = 0; g < l.length && l[g] == 0; ) g += 1;
+              for (var v = new Array(l.length - g + b), x = 0; x < l.length - g; x += 1) v[x] = l[x + g];
+              return v;
+            }(), h = { getAt: function(g) {
+              return u[g];
+            }, getLength: function() {
+              return u.length;
+            }, multiply: function(g) {
+              for (var v = new Array(h.getLength() + g.getLength() - 1), x = 0; x < h.getLength(); x += 1) for (var k = 0; k < g.getLength(); k += 1) v[x + k] ^= z.gexp(z.glog(h.getAt(x)) + z.glog(g.getAt(k)));
+              return q(v, 0);
+            }, mod: function(g) {
+              if (h.getLength() - g.getLength() < 0) return h;
+              for (var v = z.glog(h.getAt(0)) - z.glog(g.getAt(0)), x = new Array(h.getLength()), k = 0; k < h.getLength(); k += 1) x[k] = h.getAt(k);
+              for (k = 0; k < g.getLength(); k += 1) x[k] ^= z.gexp(z.glog(g.getAt(k)) + v);
+              return q(x, 0).mod(g);
+            } };
+            return h;
+          }
+          var H = /* @__PURE__ */ function() {
+            var l = [[1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9], [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16], [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13], [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9], [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12], [2, 86, 68], [4, 43, 27], [4, 43, 19], [4, 43, 15], [2, 98, 78], [4, 49, 31], [2, 32, 14, 4, 33, 15], [4, 39, 13, 1, 40, 14], [2, 121, 97], [2, 60, 38, 2, 61, 39], [4, 40, 18, 2, 41, 19], [4, 40, 14, 2, 41, 15], [2, 146, 116], [3, 58, 36, 2, 59, 37], [4, 36, 16, 4, 37, 17], [4, 36, 12, 4, 37, 13], [2, 86, 68, 2, 87, 69], [4, 69, 43, 1, 70, 44], [6, 43, 19, 2, 44, 20], [6, 43, 15, 2, 44, 16], [4, 101, 81], [1, 80, 50, 4, 81, 51], [4, 50, 22, 4, 51, 23], [3, 36, 12, 8, 37, 13], [2, 116, 92, 2, 117, 93], [6, 58, 36, 2, 59, 37], [4, 46, 20, 6, 47, 21], [7, 42, 14, 4, 43, 15], [4, 133, 107], [8, 59, 37, 1, 60, 38], [8, 44, 20, 4, 45, 21], [12, 33, 11, 4, 34, 12], [3, 145, 115, 1, 146, 116], [4, 64, 40, 5, 65, 41], [11, 36, 16, 5, 37, 17], [11, 36, 12, 5, 37, 13], [5, 109, 87, 1, 110, 88], [5, 65, 41, 5, 66, 42], [5, 54, 24, 7, 55, 25], [11, 36, 12, 7, 37, 13], [5, 122, 98, 1, 123, 99], [7, 73, 45, 3, 74, 46], [15, 43, 19, 2, 44, 20], [3, 45, 15, 13, 46, 16], [1, 135, 107, 5, 136, 108], [10, 74, 46, 1, 75, 47], [1, 50, 22, 15, 51, 23], [2, 42, 14, 17, 43, 15], [5, 150, 120, 1, 151, 121], [9, 69, 43, 4, 70, 44], [17, 50, 22, 1, 51, 23], [2, 42, 14, 19, 43, 15], [3, 141, 113, 4, 142, 114], [3, 70, 44, 11, 71, 45], [17, 47, 21, 4, 48, 22], [9, 39, 13, 16, 40, 14], [3, 135, 107, 5, 136, 108], [3, 67, 41, 13, 68, 42], [15, 54, 24, 5, 55, 25], [15, 43, 15, 10, 44, 16], [4, 144, 116, 4, 145, 117], [17, 68, 42], [17, 50, 22, 6, 51, 23], [19, 46, 16, 6, 47, 17], [2, 139, 111, 7, 140, 112], [17, 74, 46], [7, 54, 24, 16, 55, 25], [34, 37, 13], [4, 151, 121, 5, 152, 122], [4, 75, 47, 14, 76, 48], [11, 54, 24, 14, 55, 25], [16, 45, 15, 14, 46, 16], [6, 147, 117, 4, 148, 118], [6, 73, 45, 14, 74, 46], [11, 54, 24, 16, 55, 25], [30, 46, 16, 2, 47, 17], [8, 132, 106, 4, 133, 107], [8, 75, 47, 13, 76, 48], [7, 54, 24, 22, 55, 25], [22, 45, 15, 13, 46, 16], [10, 142, 114, 2, 143, 115], [19, 74, 46, 4, 75, 47], [28, 50, 22, 6, 51, 23], [33, 46, 16, 4, 47, 17], [8, 152, 122, 4, 153, 123], [22, 73, 45, 3, 74, 46], [8, 53, 23, 26, 54, 24], [12, 45, 15, 28, 46, 16], [3, 147, 117, 10, 148, 118], [3, 73, 45, 23, 74, 46], [4, 54, 24, 31, 55, 25], [11, 45, 15, 31, 46, 16], [7, 146, 116, 7, 147, 117], [21, 73, 45, 7, 74, 46], [1, 53, 23, 37, 54, 24], [19, 45, 15, 26, 46, 16], [5, 145, 115, 10, 146, 116], [19, 75, 47, 10, 76, 48], [15, 54, 24, 25, 55, 25], [23, 45, 15, 25, 46, 16], [13, 145, 115, 3, 146, 116], [2, 74, 46, 29, 75, 47], [42, 54, 24, 1, 55, 25], [23, 45, 15, 28, 46, 16], [17, 145, 115], [10, 74, 46, 23, 75, 47], [10, 54, 24, 35, 55, 25], [19, 45, 15, 35, 46, 16], [17, 145, 115, 1, 146, 116], [14, 74, 46, 21, 75, 47], [29, 54, 24, 19, 55, 25], [11, 45, 15, 46, 46, 16], [13, 145, 115, 6, 146, 116], [14, 74, 46, 23, 75, 47], [44, 54, 24, 7, 55, 25], [59, 46, 16, 1, 47, 17], [12, 151, 121, 7, 152, 122], [12, 75, 47, 26, 76, 48], [39, 54, 24, 14, 55, 25], [22, 45, 15, 41, 46, 16], [6, 151, 121, 14, 152, 122], [6, 75, 47, 34, 76, 48], [46, 54, 24, 10, 55, 25], [2, 45, 15, 64, 46, 16], [17, 152, 122, 4, 153, 123], [29, 74, 46, 14, 75, 47], [49, 54, 24, 10, 55, 25], [24, 45, 15, 46, 46, 16], [4, 152, 122, 18, 153, 123], [13, 74, 46, 32, 75, 47], [48, 54, 24, 14, 55, 25], [42, 45, 15, 32, 46, 16], [20, 147, 117, 4, 148, 118], [40, 75, 47, 7, 76, 48], [43, 54, 24, 22, 55, 25], [10, 45, 15, 67, 46, 16], [19, 148, 118, 6, 149, 119], [18, 75, 47, 31, 76, 48], [34, 54, 24, 34, 55, 25], [20, 45, 15, 61, 46, 16]], b = function(h, g) {
+              var v = {};
+              return v.totalCount = h, v.dataCount = g, v;
+            }, u = { getRSBlocks: function(h, g) {
+              var v = function(ee, I) {
+                switch (I) {
+                  case C.L:
+                    return l[4 * (ee - 1) + 0];
+                  case C.M:
+                    return l[4 * (ee - 1) + 1];
+                  case C.Q:
+                    return l[4 * (ee - 1) + 2];
+                  case C.H:
+                    return l[4 * (ee - 1) + 3];
+                  default:
+                    return;
+                }
+              }(h, g);
+              if (v === void 0) throw "bad rs block @ typeNumber:" + h + "/errorCorrectionLevel:" + g;
+              for (var x = v.length / 3, k = [], E = 0; E < x; E += 1) for (var P = v[3 * E + 0], D = v[3 * E + 1], O = v[3 * E + 2], $ = 0; $ < P; $ += 1) k.push(b(D, O));
+              return k;
+            } };
+            return u;
+          }(), W = function() {
+            var l = [], b = 0, u = { getBuffer: function() {
+              return l;
+            }, getAt: function(h) {
+              var g = Math.floor(h / 8);
+              return (l[g] >>> 7 - h % 8 & 1) == 1;
+            }, put: function(h, g) {
+              for (var v = 0; v < g; v += 1) u.putBit((h >>> g - v - 1 & 1) == 1);
+            }, getLengthInBits: function() {
+              return b;
+            }, putBit: function(h) {
+              var g = Math.floor(b / 8);
+              l.length <= g && l.push(0), h && (l[g] |= 128 >>> b % 8), b += 1;
+            } };
+            return u;
+          }, J = function(l) {
+            var b = l, u = { getMode: function() {
+              return 1;
+            }, getLength: function(v) {
+              return b.length;
+            }, write: function(v) {
+              for (var x = b, k = 0; k + 2 < x.length; ) v.put(h(x.substring(k, k + 3)), 10), k += 3;
+              k < x.length && (x.length - k == 1 ? v.put(h(x.substring(k, k + 1)), 4) : x.length - k == 2 && v.put(h(x.substring(k, k + 2)), 7));
+            } }, h = function(v) {
+              for (var x = 0, k = 0; k < v.length; k += 1) x = 10 * x + g(v.charAt(k));
+              return x;
+            }, g = function(v) {
+              if ("0" <= v && v <= "9") return v.charCodeAt(0) - 48;
+              throw "illegal char :" + v;
+            };
+            return u;
+          }, K = function(l) {
+            var b = l, u = { getMode: function() {
+              return 2;
+            }, getLength: function(g) {
+              return b.length;
+            }, write: function(g) {
+              for (var v = b, x = 0; x + 1 < v.length; ) g.put(45 * h(v.charAt(x)) + h(v.charAt(x + 1)), 11), x += 2;
+              x < v.length && g.put(h(v.charAt(x)), 6);
+            } }, h = function(g) {
+              if ("0" <= g && g <= "9") return g.charCodeAt(0) - 48;
+              if ("A" <= g && g <= "Z") return g.charCodeAt(0) - 65 + 10;
+              switch (g) {
+                case " ":
+                  return 36;
+                case "$":
+                  return 37;
+                case "%":
+                  return 38;
+                case "*":
+                  return 39;
+                case "+":
+                  return 40;
+                case "-":
+                  return 41;
+                case ".":
+                  return 42;
+                case "/":
+                  return 43;
+                case ":":
+                  return 44;
+                default:
+                  throw "illegal char :" + g;
+              }
+            };
+            return u;
+          }, B = function(l) {
+            var b = f.stringToBytes(l);
+            return { getMode: function() {
+              return 4;
+            }, getLength: function(u) {
+              return b.length;
+            }, write: function(u) {
+              for (var h = 0; h < b.length; h += 1) u.put(b[h], 8);
+            } };
+          }, se = function(l) {
+            var b = f.stringToBytesFuncs.SJIS;
+            if (!b) throw "sjis not supported.";
+            (function() {
+              var g = b("友");
+              if (g.length != 2 || (g[0] << 8 | g[1]) != 38726) throw "sjis not supported.";
+            })();
+            var u = b(l), h = { getMode: function() {
+              return 8;
+            }, getLength: function(g) {
+              return ~~(u.length / 2);
+            }, write: function(g) {
+              for (var v = u, x = 0; x + 1 < v.length; ) {
+                var k = (255 & v[x]) << 8 | 255 & v[x + 1];
+                if (33088 <= k && k <= 40956) k -= 33088;
+                else {
+                  if (!(57408 <= k && k <= 60351)) throw "illegal char at " + (x + 1) + "/" + k;
+                  k -= 49472;
+                }
+                k = 192 * (k >>> 8 & 255) + (255 & k), g.put(k, 13), x += 2;
+              }
+              if (x < v.length) throw "illegal char at " + (x + 1);
+            } };
+            return h;
+          }, ue = function() {
+            var l = [], b = { writeByte: function(u) {
+              l.push(255 & u);
+            }, writeShort: function(u) {
+              b.writeByte(u), b.writeByte(u >>> 8);
+            }, writeBytes: function(u, h, g) {
+              h = h || 0, g = g || u.length;
+              for (var v = 0; v < g; v += 1) b.writeByte(u[v + h]);
+            }, writeString: function(u) {
+              for (var h = 0; h < u.length; h += 1) b.writeByte(u.charCodeAt(h));
+            }, toByteArray: function() {
+              return l;
+            }, toString: function() {
+              var u = "";
+              u += "[";
+              for (var h = 0; h < l.length; h += 1) h > 0 && (u += ","), u += l[h];
+              return u + "]";
+            } };
+            return b;
+          }, N = function(l) {
+            var b = l, u = 0, h = 0, g = 0, v = { read: function() {
+              for (; g < 8; ) {
+                if (u >= b.length) {
+                  if (g == 0) return -1;
+                  throw "unexpected end of file./" + g;
+                }
+                var k = b.charAt(u);
+                if (u += 1, k == "=") return g = 0, -1;
+                k.match(/^\s$/) || (h = h << 6 | x(k.charCodeAt(0)), g += 6);
+              }
+              var E = h >>> g - 8 & 255;
+              return g -= 8, E;
+            } }, x = function(k) {
+              if (65 <= k && k <= 90) return k - 65;
+              if (97 <= k && k <= 122) return k - 97 + 26;
+              if (48 <= k && k <= 57) return k - 48 + 52;
+              if (k == 43) return 62;
+              if (k == 47) return 63;
+              throw "c:" + k;
+            };
+            return v;
+          }, m = function(l, b, u) {
+            for (var h = function(D, O) {
+              var $ = D, ee = O, I = new Array(D * O), ie = { setPixel: function(A, M, S) {
+                I[M * $ + A] = S;
+              }, write: function(A) {
+                A.writeString("GIF87a"), A.writeShort($), A.writeShort(ee), A.writeByte(128), A.writeByte(0), A.writeByte(0), A.writeByte(0), A.writeByte(0), A.writeByte(0), A.writeByte(255), A.writeByte(255), A.writeByte(255), A.writeString(","), A.writeShort(0), A.writeShort(0), A.writeShort($), A.writeShort(ee), A.writeByte(0);
+                var M = Z(2);
+                A.writeByte(2);
+                for (var S = 0; M.length - S > 255; ) A.writeByte(255), A.writeBytes(M, S, 255), S += 255;
+                A.writeByte(M.length - S), A.writeBytes(M, S, M.length - S), A.writeByte(0), A.writeString(";");
+              } }, Z = function(A) {
+                for (var M = 1 << A, S = 1 + (1 << A), L = A + 1, j = U(), G = 0; G < M; G += 1) j.add(String.fromCharCode(G));
+                j.add(String.fromCharCode(M)), j.add(String.fromCharCode(S));
+                var Y, X, ne, te = ue(), Q = (Y = te, X = 0, ne = 0, { write: function(le, V) {
+                  if (le >>> V) throw "length over";
+                  for (; X + V >= 8; ) Y.writeByte(255 & (le << X | ne)), V -= 8 - X, le >>>= 8 - X, ne = 0, X = 0;
+                  ne |= le << X, X += V;
+                }, flush: function() {
+                  X > 0 && Y.writeByte(ne);
+                } });
+                Q.write(M, L);
+                var re = 0, ce = String.fromCharCode(I[re]);
+                for (re += 1; re < I.length; ) {
+                  var he = String.fromCharCode(I[re]);
+                  re += 1, j.contains(ce + he) ? ce += he : (Q.write(j.indexOf(ce), L), j.size() < 4095 && (j.size() == 1 << L && (L += 1), j.add(ce + he)), ce = he);
+                }
+                return Q.write(j.indexOf(ce), L), Q.write(S, L), Q.flush(), te.toByteArray();
+              }, U = function() {
+                var A = {}, M = 0, S = { add: function(L) {
+                  if (S.contains(L)) throw "dup key:" + L;
+                  A[L] = M, M += 1;
+                }, size: function() {
+                  return M;
+                }, indexOf: function(L) {
+                  return A[L];
+                }, contains: function(L) {
+                  return A[L] !== void 0;
+                } };
+                return S;
+              };
+              return ie;
+            }(l, b), g = 0; g < b; g += 1) for (var v = 0; v < l; v += 1) h.setPixel(v, g, u(v, g));
+            var x = ue();
+            h.write(x);
+            for (var k = function() {
+              var D = 0, O = 0, $ = 0, ee = "", I = {}, ie = function(U) {
+                ee += String.fromCharCode(Z(63 & U));
+              }, Z = function(U) {
+                if (!(U < 0)) {
+                  if (U < 26) return 65 + U;
+                  if (U < 52) return U - 26 + 97;
+                  if (U < 62) return U - 52 + 48;
+                  if (U == 62) return 43;
+                  if (U == 63) return 47;
+                }
+                throw "n:" + U;
+              };
+              return I.writeByte = function(U) {
+                for (D = D << 8 | 255 & U, O += 8, $ += 1; O >= 6; ) ie(D >>> O - 6), O -= 6;
+              }, I.flush = function() {
+                if (O > 0 && (ie(D << 6 - O), D = 0, O = 0), $ % 3 != 0) for (var U = 3 - $ % 3, A = 0; A < U; A += 1) ee += "=";
+              }, I.toString = function() {
+                return ee;
+              }, I;
+            }(), E = x.toByteArray(), P = 0; P < E.length; P += 1) k.writeByte(E[P]);
+            return k.flush(), "data:image/gif;base64," + k;
+          };
+          return f;
+        }();
+        p.stringToBytesFuncs["UTF-8"] = function(f) {
+          return function(w) {
+            for (var y = [], _ = 0; _ < w.length; _++) {
+              var T = w.charCodeAt(_);
+              T < 128 ? y.push(T) : T < 2048 ? y.push(192 | T >> 6, 128 | 63 & T) : T < 55296 || T >= 57344 ? y.push(224 | T >> 12, 128 | T >> 6 & 63, 128 | 63 & T) : (_++, T = 65536 + ((1023 & T) << 10 | 1023 & w.charCodeAt(_)), y.push(240 | T >> 18, 128 | T >> 12 & 63, 128 | T >> 6 & 63, 128 | 63 & T));
+            }
+            return y;
+          }(f);
+        }, (d = typeof (c = function() {
+          return p;
+        }) == "function" ? c.apply(r, []) : c) === void 0 || (s.exports = d);
+      } }, a = {};
+      function n(s) {
+        var r = a[s];
+        if (r !== void 0) return r.exports;
+        var c = a[s] = { exports: {} };
+        return t[s](c, c.exports, n), c.exports;
+      }
+      n.n = (s) => {
+        var r = s && s.__esModule ? () => s.default : () => s;
+        return n.d(r, { a: r }), r;
+      }, n.d = (s, r) => {
+        for (var c in r) n.o(r, c) && !n.o(s, c) && Object.defineProperty(s, c, { enumerable: !0, get: r[c] });
+      }, n.o = (s, r) => Object.prototype.hasOwnProperty.call(s, r);
+      var i = {};
+      return (() => {
+        n.d(i, { default: () => ue });
+        const s = (N) => !!N && typeof N == "object" && !Array.isArray(N);
+        function r(N, ...m) {
+          if (!m.length) return N;
+          const l = m.shift();
+          return l !== void 0 && s(N) && s(l) ? (N = Object.assign({}, N), Object.keys(l).forEach((b) => {
+            const u = N[b], h = l[b];
+            Array.isArray(u) && Array.isArray(h) ? N[b] = h : s(u) && s(h) ? N[b] = r(Object.assign({}, u), h) : N[b] = h;
+          }), r(N, ...m)) : N;
+        }
+        function c(N, m) {
+          const l = document.createElement("a");
+          l.download = m, l.href = N, document.body.appendChild(l), l.click(), document.body.removeChild(l);
+        }
+        const d = { L: 0.07, M: 0.15, Q: 0.25, H: 0.3 };
+        class p {
+          constructor({ svg: m, type: l, window: b }) {
+            this._svg = m, this._type = l, this._window = b;
+          }
+          draw(m, l, b, u) {
+            let h;
+            switch (this._type) {
+              case "dots":
+                h = this._drawDot;
+                break;
+              case "classy":
+                h = this._drawClassy;
+                break;
+              case "classy-rounded":
+                h = this._drawClassyRounded;
+                break;
+              case "rounded":
+                h = this._drawRounded;
+                break;
+              case "extra-rounded":
+                h = this._drawExtraRounded;
+                break;
+              default:
+                h = this._drawSquare;
+            }
+            h.call(this, { x: m, y: l, size: b, getNeighbor: u });
+          }
+          _rotateFigure({ x: m, y: l, size: b, rotation: u = 0, draw: h }) {
+            var g;
+            const v = m + b / 2, x = l + b / 2;
+            h(), (g = this._element) === null || g === void 0 || g.setAttribute("transform", `rotate(${180 * u / Math.PI},${v},${x})`);
+          }
+          _basicDot(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "circle"), this._element.setAttribute("cx", String(b + l / 2)), this._element.setAttribute("cy", String(u + l / 2)), this._element.setAttribute("r", String(l / 2));
+            } }));
+          }
+          _basicSquare(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "rect"), this._element.setAttribute("x", String(b)), this._element.setAttribute("y", String(u)), this._element.setAttribute("width", String(l)), this._element.setAttribute("height", String(l));
+            } }));
+          }
+          _basicSideRounded(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("d", `M ${b} ${u}v ${l}h ` + l / 2 + `a ${l / 2} ${l / 2}, 0, 0, 0, 0 ${-l}`);
+            } }));
+          }
+          _basicCornerRounded(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("d", `M ${b} ${u}v ${l}h ${l}v ` + -l / 2 + `a ${l / 2} ${l / 2}, 0, 0, 0, ${-l / 2} ${-l / 2}`);
+            } }));
+          }
+          _basicCornerExtraRounded(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("d", `M ${b} ${u}v ${l}h ${l}a ${l} ${l}, 0, 0, 0, ${-l} ${-l}`);
+            } }));
+          }
+          _basicCornersRounded(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("d", `M ${b} ${u}v ` + l / 2 + `a ${l / 2} ${l / 2}, 0, 0, 0, ${l / 2} ${l / 2}h ` + l / 2 + "v " + -l / 2 + `a ${l / 2} ${l / 2}, 0, 0, 0, ${-l / 2} ${-l / 2}`);
+            } }));
+          }
+          _drawDot({ x: m, y: l, size: b }) {
+            this._basicDot({ x: m, y: l, size: b, rotation: 0 });
+          }
+          _drawSquare({ x: m, y: l, size: b }) {
+            this._basicSquare({ x: m, y: l, size: b, rotation: 0 });
+          }
+          _drawRounded({ x: m, y: l, size: b, getNeighbor: u }) {
+            const h = u ? +u(-1, 0) : 0, g = u ? +u(1, 0) : 0, v = u ? +u(0, -1) : 0, x = u ? +u(0, 1) : 0, k = h + g + v + x;
+            if (k !== 0) if (k > 2 || h && g || v && x) this._basicSquare({ x: m, y: l, size: b, rotation: 0 });
+            else {
+              if (k === 2) {
+                let E = 0;
+                return h && v ? E = Math.PI / 2 : v && g ? E = Math.PI : g && x && (E = -Math.PI / 2), void this._basicCornerRounded({ x: m, y: l, size: b, rotation: E });
+              }
+              if (k === 1) {
+                let E = 0;
+                return v ? E = Math.PI / 2 : g ? E = Math.PI : x && (E = -Math.PI / 2), void this._basicSideRounded({ x: m, y: l, size: b, rotation: E });
+              }
+            }
+            else this._basicDot({ x: m, y: l, size: b, rotation: 0 });
+          }
+          _drawExtraRounded({ x: m, y: l, size: b, getNeighbor: u }) {
+            const h = u ? +u(-1, 0) : 0, g = u ? +u(1, 0) : 0, v = u ? +u(0, -1) : 0, x = u ? +u(0, 1) : 0, k = h + g + v + x;
+            if (k !== 0) if (k > 2 || h && g || v && x) this._basicSquare({ x: m, y: l, size: b, rotation: 0 });
+            else {
+              if (k === 2) {
+                let E = 0;
+                return h && v ? E = Math.PI / 2 : v && g ? E = Math.PI : g && x && (E = -Math.PI / 2), void this._basicCornerExtraRounded({ x: m, y: l, size: b, rotation: E });
+              }
+              if (k === 1) {
+                let E = 0;
+                return v ? E = Math.PI / 2 : g ? E = Math.PI : x && (E = -Math.PI / 2), void this._basicSideRounded({ x: m, y: l, size: b, rotation: E });
+              }
+            }
+            else this._basicDot({ x: m, y: l, size: b, rotation: 0 });
+          }
+          _drawClassy({ x: m, y: l, size: b, getNeighbor: u }) {
+            const h = u ? +u(-1, 0) : 0, g = u ? +u(1, 0) : 0, v = u ? +u(0, -1) : 0, x = u ? +u(0, 1) : 0;
+            h + g + v + x !== 0 ? h || v ? g || x ? this._basicSquare({ x: m, y: l, size: b, rotation: 0 }) : this._basicCornerRounded({ x: m, y: l, size: b, rotation: Math.PI / 2 }) : this._basicCornerRounded({ x: m, y: l, size: b, rotation: -Math.PI / 2 }) : this._basicCornersRounded({ x: m, y: l, size: b, rotation: Math.PI / 2 });
+          }
+          _drawClassyRounded({ x: m, y: l, size: b, getNeighbor: u }) {
+            const h = u ? +u(-1, 0) : 0, g = u ? +u(1, 0) : 0, v = u ? +u(0, -1) : 0, x = u ? +u(0, 1) : 0;
+            h + g + v + x !== 0 ? h || v ? g || x ? this._basicSquare({ x: m, y: l, size: b, rotation: 0 }) : this._basicCornerExtraRounded({ x: m, y: l, size: b, rotation: Math.PI / 2 }) : this._basicCornerExtraRounded({ x: m, y: l, size: b, rotation: -Math.PI / 2 }) : this._basicCornersRounded({ x: m, y: l, size: b, rotation: Math.PI / 2 });
+          }
+        }
+        class f {
+          constructor({ svg: m, type: l, window: b }) {
+            this._svg = m, this._type = l, this._window = b;
+          }
+          draw(m, l, b, u) {
+            let h;
+            switch (this._type) {
+              case "square":
+                h = this._drawSquare;
+                break;
+              case "extra-rounded":
+                h = this._drawExtraRounded;
+                break;
+              default:
+                h = this._drawDot;
+            }
+            h.call(this, { x: m, y: l, size: b, rotation: u });
+          }
+          _rotateFigure({ x: m, y: l, size: b, rotation: u = 0, draw: h }) {
+            var g;
+            const v = m + b / 2, x = l + b / 2;
+            h(), (g = this._element) === null || g === void 0 || g.setAttribute("transform", `rotate(${180 * u / Math.PI},${v},${x})`);
+          }
+          _basicDot(m) {
+            const { size: l, x: b, y: u } = m, h = l / 7;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("clip-rule", "evenodd"), this._element.setAttribute("d", `M ${b + l / 2} ${u}a ${l / 2} ${l / 2} 0 1 0 0.1 0zm 0 ${h}a ${l / 2 - h} ${l / 2 - h} 0 1 1 -0.1 0Z`);
+            } }));
+          }
+          _basicSquare(m) {
+            const { size: l, x: b, y: u } = m, h = l / 7;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("clip-rule", "evenodd"), this._element.setAttribute("d", `M ${b} ${u}v ${l}h ${l}v ` + -l + `zM ${b + h} ${u + h}h ` + (l - 2 * h) + "v " + (l - 2 * h) + "h " + (2 * h - l) + "z");
+            } }));
+          }
+          _basicExtraRounded(m) {
+            const { size: l, x: b, y: u } = m, h = l / 7;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "path"), this._element.setAttribute("clip-rule", "evenodd"), this._element.setAttribute("d", `M ${b} ${u + 2.5 * h}v ` + 2 * h + `a ${2.5 * h} ${2.5 * h}, 0, 0, 0, ${2.5 * h} ${2.5 * h}h ` + 2 * h + `a ${2.5 * h} ${2.5 * h}, 0, 0, 0, ${2.5 * h} ${2.5 * -h}v ` + -2 * h + `a ${2.5 * h} ${2.5 * h}, 0, 0, 0, ${2.5 * -h} ${2.5 * -h}h ` + -2 * h + `a ${2.5 * h} ${2.5 * h}, 0, 0, 0, ${2.5 * -h} ${2.5 * h}M ${b + 2.5 * h} ${u + h}h ` + 2 * h + `a ${1.5 * h} ${1.5 * h}, 0, 0, 1, ${1.5 * h} ${1.5 * h}v ` + 2 * h + `a ${1.5 * h} ${1.5 * h}, 0, 0, 1, ${1.5 * -h} ${1.5 * h}h ` + -2 * h + `a ${1.5 * h} ${1.5 * h}, 0, 0, 1, ${1.5 * -h} ${1.5 * -h}v ` + -2 * h + `a ${1.5 * h} ${1.5 * h}, 0, 0, 1, ${1.5 * h} ${1.5 * -h}`);
+            } }));
+          }
+          _drawDot({ x: m, y: l, size: b, rotation: u }) {
+            this._basicDot({ x: m, y: l, size: b, rotation: u });
+          }
+          _drawSquare({ x: m, y: l, size: b, rotation: u }) {
+            this._basicSquare({ x: m, y: l, size: b, rotation: u });
+          }
+          _drawExtraRounded({ x: m, y: l, size: b, rotation: u }) {
+            this._basicExtraRounded({ x: m, y: l, size: b, rotation: u });
+          }
+        }
+        class w {
+          constructor({ svg: m, type: l, window: b }) {
+            this._svg = m, this._type = l, this._window = b;
+          }
+          draw(m, l, b, u) {
+            let h;
+            h = this._type === "square" ? this._drawSquare : this._drawDot, h.call(this, { x: m, y: l, size: b, rotation: u });
+          }
+          _rotateFigure({ x: m, y: l, size: b, rotation: u = 0, draw: h }) {
+            var g;
+            const v = m + b / 2, x = l + b / 2;
+            h(), (g = this._element) === null || g === void 0 || g.setAttribute("transform", `rotate(${180 * u / Math.PI},${v},${x})`);
+          }
+          _basicDot(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "circle"), this._element.setAttribute("cx", String(b + l / 2)), this._element.setAttribute("cy", String(u + l / 2)), this._element.setAttribute("r", String(l / 2));
+            } }));
+          }
+          _basicSquare(m) {
+            const { size: l, x: b, y: u } = m;
+            this._rotateFigure(Object.assign(Object.assign({}, m), { draw: () => {
+              this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "rect"), this._element.setAttribute("x", String(b)), this._element.setAttribute("y", String(u)), this._element.setAttribute("width", String(l)), this._element.setAttribute("height", String(l));
+            } }));
+          }
+          _drawDot({ x: m, y: l, size: b, rotation: u }) {
+            this._basicDot({ x: m, y: l, size: b, rotation: u });
+          }
+          _drawSquare({ x: m, y: l, size: b, rotation: u }) {
+            this._basicSquare({ x: m, y: l, size: b, rotation: u });
+          }
+        }
+        const y = "circle", _ = [[1, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 1]], T = [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0], [0, 0, 1, 1, 1, 0, 0], [0, 0, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]];
+        class F {
+          constructor(m, l) {
+            this._roundSize = (b) => this._options.dotsOptions.roundSize ? Math.floor(b) : b, this._window = l, this._element = this._window.document.createElementNS("http://www.w3.org/2000/svg", "svg"), this._element.setAttribute("width", String(m.width)), this._element.setAttribute("height", String(m.height)), this._element.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink"), m.dotsOptions.roundSize || this._element.setAttribute("shape-rendering", "crispEdges"), this._element.setAttribute("viewBox", `0 0 ${m.width} ${m.height}`), this._defs = this._window.document.createElementNS("http://www.w3.org/2000/svg", "defs"), this._element.appendChild(this._defs), this._imageUri = m.image, this._instanceId = F.instanceCount++, this._options = m;
+          }
+          get width() {
+            return this._options.width;
+          }
+          get height() {
+            return this._options.height;
+          }
+          getElement() {
+            return this._element;
+          }
+          async drawQR(m) {
+            const l = m.getModuleCount(), b = Math.min(this._options.width, this._options.height) - 2 * this._options.margin, u = this._options.shape === y ? b / Math.sqrt(2) : b, h = this._roundSize(u / l);
+            let g = { hideXDots: 0, hideYDots: 0, width: 0, height: 0 };
+            if (this._qr = m, this._options.image) {
+              if (await this.loadImage(), !this._image) return;
+              const { imageOptions: v, qrOptions: x } = this._options, k = v.imageSize * d[x.errorCorrectionLevel], E = Math.floor(k * l * l);
+              g = function({ originalHeight: P, originalWidth: D, maxHiddenDots: O, maxHiddenAxisDots: $, dotSize: ee }) {
+                const I = { x: 0, y: 0 }, ie = { x: 0, y: 0 };
+                if (P <= 0 || D <= 0 || O <= 0 || ee <= 0) return { height: 0, width: 0, hideYDots: 0, hideXDots: 0 };
+                const Z = P / D;
+                return I.x = Math.floor(Math.sqrt(O / Z)), I.x <= 0 && (I.x = 1), $ && $ < I.x && (I.x = $), I.x % 2 == 0 && I.x--, ie.x = I.x * ee, I.y = 1 + 2 * Math.ceil((I.x * Z - 1) / 2), ie.y = Math.round(ie.x * Z), (I.y * I.x > O || $ && $ < I.y) && ($ && $ < I.y ? (I.y = $, I.y % 2 == 0 && I.x--) : I.y -= 2, ie.y = I.y * ee, I.x = 1 + 2 * Math.ceil((I.y / Z - 1) / 2), ie.x = Math.round(ie.y / Z)), { height: ie.y, width: ie.x, hideYDots: I.y, hideXDots: I.x };
+              }({ originalWidth: this._image.width, originalHeight: this._image.height, maxHiddenDots: E, maxHiddenAxisDots: l - 14, dotSize: h });
+            }
+            this.drawBackground(), this.drawDots((v, x) => {
+              var k, E, P, D, O, $;
+              return !(this._options.imageOptions.hideBackgroundDots && v >= (l - g.hideYDots) / 2 && v < (l + g.hideYDots) / 2 && x >= (l - g.hideXDots) / 2 && x < (l + g.hideXDots) / 2 || !((k = _[v]) === null || k === void 0) && k[x] || !((E = _[v - l + 7]) === null || E === void 0) && E[x] || !((P = _[v]) === null || P === void 0) && P[x - l + 7] || !((D = T[v]) === null || D === void 0) && D[x] || !((O = T[v - l + 7]) === null || O === void 0) && O[x] || !(($ = T[v]) === null || $ === void 0) && $[x - l + 7]);
+            }), this.drawCorners(), this._options.image && await this.drawImage({ width: g.width, height: g.height, count: l, dotSize: h });
+          }
+          drawBackground() {
+            var m, l, b;
+            const u = this._element, h = this._options;
+            if (u) {
+              const g = (m = h.backgroundOptions) === null || m === void 0 ? void 0 : m.gradient, v = (l = h.backgroundOptions) === null || l === void 0 ? void 0 : l.color;
+              let x = h.height, k = h.width;
+              if (g || v) {
+                const E = this._window.document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                this._backgroundClipPath = this._window.document.createElementNS("http://www.w3.org/2000/svg", "clipPath"), this._backgroundClipPath.setAttribute("id", `clip-path-background-color-${this._instanceId}`), this._defs.appendChild(this._backgroundClipPath), !((b = h.backgroundOptions) === null || b === void 0) && b.round && (x = k = Math.min(h.width, h.height), E.setAttribute("rx", String(x / 2 * h.backgroundOptions.round))), E.setAttribute("x", String(this._roundSize((h.width - k) / 2))), E.setAttribute("y", String(this._roundSize((h.height - x) / 2))), E.setAttribute("width", String(k)), E.setAttribute("height", String(x)), this._backgroundClipPath.appendChild(E), this._createColor({ options: g, color: v, additionalRotation: 0, x: 0, y: 0, height: h.height, width: h.width, name: `background-color-${this._instanceId}` });
+              }
+            }
+          }
+          drawDots(m) {
+            var l, b;
+            if (!this._qr) throw "QR code is not defined";
+            const u = this._options, h = this._qr.getModuleCount();
+            if (h > u.width || h > u.height) throw "The canvas is too small.";
+            const g = Math.min(u.width, u.height) - 2 * u.margin, v = u.shape === y ? g / Math.sqrt(2) : g, x = this._roundSize(v / h), k = this._roundSize((u.width - h * x) / 2), E = this._roundSize((u.height - h * x) / 2), P = new p({ svg: this._element, type: u.dotsOptions.type, window: this._window });
+            this._dotsClipPath = this._window.document.createElementNS("http://www.w3.org/2000/svg", "clipPath"), this._dotsClipPath.setAttribute("id", `clip-path-dot-color-${this._instanceId}`), this._defs.appendChild(this._dotsClipPath), this._createColor({ options: (l = u.dotsOptions) === null || l === void 0 ? void 0 : l.gradient, color: u.dotsOptions.color, additionalRotation: 0, x: 0, y: 0, height: u.height, width: u.width, name: `dot-color-${this._instanceId}` });
+            for (let D = 0; D < h; D++) for (let O = 0; O < h; O++) m && !m(D, O) || !((b = this._qr) === null || b === void 0) && b.isDark(D, O) && (P.draw(k + O * x, E + D * x, x, ($, ee) => !(O + $ < 0 || D + ee < 0 || O + $ >= h || D + ee >= h) && !(m && !m(D + ee, O + $)) && !!this._qr && this._qr.isDark(D + ee, O + $)), P._element && this._dotsClipPath && this._dotsClipPath.appendChild(P._element));
+            if (u.shape === y) {
+              const D = this._roundSize((g / x - h) / 2), O = h + 2 * D, $ = k - D * x, ee = E - D * x, I = [], ie = this._roundSize(O / 2);
+              for (let Z = 0; Z < O; Z++) {
+                I[Z] = [];
+                for (let U = 0; U < O; U++) Z >= D - 1 && Z <= O - D && U >= D - 1 && U <= O - D || Math.sqrt((Z - ie) * (Z - ie) + (U - ie) * (U - ie)) > ie ? I[Z][U] = 0 : I[Z][U] = this._qr.isDark(U - 2 * D < 0 ? U : U >= h ? U - 2 * D : U - D, Z - 2 * D < 0 ? Z : Z >= h ? Z - 2 * D : Z - D) ? 1 : 0;
+              }
+              for (let Z = 0; Z < O; Z++) for (let U = 0; U < O; U++) I[Z][U] && (P.draw($ + U * x, ee + Z * x, x, (A, M) => {
+                var S;
+                return !!(!((S = I[Z + M]) === null || S === void 0) && S[U + A]);
+              }), P._element && this._dotsClipPath && this._dotsClipPath.appendChild(P._element));
+            }
+          }
+          drawCorners() {
+            if (!this._qr) throw "QR code is not defined";
+            const m = this._element, l = this._options;
+            if (!m) throw "Element code is not defined";
+            const b = this._qr.getModuleCount(), u = Math.min(l.width, l.height) - 2 * l.margin, h = l.shape === y ? u / Math.sqrt(2) : u, g = this._roundSize(h / b), v = 7 * g, x = 3 * g, k = this._roundSize((l.width - b * g) / 2), E = this._roundSize((l.height - b * g) / 2);
+            [[0, 0, 0], [1, 0, Math.PI / 2], [0, 1, -Math.PI / 2]].forEach(([P, D, O]) => {
+              var $, ee, I, ie, Z, U, A, M, S, L, j, G;
+              const Y = k + P * g * (b - 7), X = E + D * g * (b - 7);
+              let ne = this._dotsClipPath, te = this._dotsClipPath;
+              if ((!(($ = l.cornersSquareOptions) === null || $ === void 0) && $.gradient || !((ee = l.cornersSquareOptions) === null || ee === void 0) && ee.color) && (ne = this._window.document.createElementNS("http://www.w3.org/2000/svg", "clipPath"), ne.setAttribute("id", `clip-path-corners-square-color-${P}-${D}-${this._instanceId}`), this._defs.appendChild(ne), this._cornersSquareClipPath = this._cornersDotClipPath = te = ne, this._createColor({ options: (I = l.cornersSquareOptions) === null || I === void 0 ? void 0 : I.gradient, color: (ie = l.cornersSquareOptions) === null || ie === void 0 ? void 0 : ie.color, additionalRotation: O, x: Y, y: X, height: v, width: v, name: `corners-square-color-${P}-${D}-${this._instanceId}` })), (Z = l.cornersSquareOptions) === null || Z === void 0 ? void 0 : Z.type) {
+                const Q = new f({ svg: this._element, type: l.cornersSquareOptions.type, window: this._window });
+                Q.draw(Y, X, v, O), Q._element && ne && ne.appendChild(Q._element);
+              } else {
+                const Q = new p({ svg: this._element, type: l.dotsOptions.type, window: this._window });
+                for (let re = 0; re < _.length; re++) for (let ce = 0; ce < _[re].length; ce++) !((U = _[re]) === null || U === void 0) && U[ce] && (Q.draw(Y + ce * g, X + re * g, g, (he, le) => {
+                  var V;
+                  return !!(!((V = _[re + le]) === null || V === void 0) && V[ce + he]);
+                }), Q._element && ne && ne.appendChild(Q._element));
+              }
+              if ((!((A = l.cornersDotOptions) === null || A === void 0) && A.gradient || !((M = l.cornersDotOptions) === null || M === void 0) && M.color) && (te = this._window.document.createElementNS("http://www.w3.org/2000/svg", "clipPath"), te.setAttribute("id", `clip-path-corners-dot-color-${P}-${D}-${this._instanceId}`), this._defs.appendChild(te), this._cornersDotClipPath = te, this._createColor({ options: (S = l.cornersDotOptions) === null || S === void 0 ? void 0 : S.gradient, color: (L = l.cornersDotOptions) === null || L === void 0 ? void 0 : L.color, additionalRotation: O, x: Y + 2 * g, y: X + 2 * g, height: x, width: x, name: `corners-dot-color-${P}-${D}-${this._instanceId}` })), (j = l.cornersDotOptions) === null || j === void 0 ? void 0 : j.type) {
+                const Q = new w({ svg: this._element, type: l.cornersDotOptions.type, window: this._window });
+                Q.draw(Y + 2 * g, X + 2 * g, x, O), Q._element && te && te.appendChild(Q._element);
+              } else {
+                const Q = new p({ svg: this._element, type: l.dotsOptions.type, window: this._window });
+                for (let re = 0; re < T.length; re++) for (let ce = 0; ce < T[re].length; ce++) !((G = T[re]) === null || G === void 0) && G[ce] && (Q.draw(Y + ce * g, X + re * g, g, (he, le) => {
+                  var V;
+                  return !!(!((V = T[re + le]) === null || V === void 0) && V[ce + he]);
+                }), Q._element && te && te.appendChild(Q._element));
+              }
+            });
+          }
+          loadImage() {
+            return new Promise((m, l) => {
+              var b;
+              const u = this._options;
+              if (!u.image) return l("Image is not defined");
+              if (!((b = u.nodeCanvas) === null || b === void 0) && b.loadImage) u.nodeCanvas.loadImage(u.image).then((h) => {
+                var g, v;
+                if (this._image = h, this._options.imageOptions.saveAsBlob) {
+                  const x = (g = u.nodeCanvas) === null || g === void 0 ? void 0 : g.createCanvas(this._image.width, this._image.height);
+                  (v = x == null ? void 0 : x.getContext("2d")) === null || v === void 0 || v.drawImage(h, 0, 0), this._imageUri = x == null ? void 0 : x.toDataURL();
+                }
+                m();
+              }).catch(l);
+              else {
+                const h = new this._window.Image();
+                typeof u.imageOptions.crossOrigin == "string" && (h.crossOrigin = u.imageOptions.crossOrigin), this._image = h, h.onload = async () => {
+                  this._options.imageOptions.saveAsBlob && (this._imageUri = await async function(g, v) {
+                    return new Promise((x) => {
+                      const k = new v.XMLHttpRequest();
+                      k.onload = function() {
+                        const E = new v.FileReader();
+                        E.onloadend = function() {
+                          x(E.result);
+                        }, E.readAsDataURL(k.response);
+                      }, k.open("GET", g), k.responseType = "blob", k.send();
+                    });
+                  }(u.image || "", this._window)), m();
+                }, h.src = u.image;
+              }
+            });
+          }
+          async drawImage({ width: m, height: l, count: b, dotSize: u }) {
+            const h = this._options, g = this._roundSize((h.width - b * u) / 2), v = this._roundSize((h.height - b * u) / 2), x = g + this._roundSize(h.imageOptions.margin + (b * u - m) / 2), k = v + this._roundSize(h.imageOptions.margin + (b * u - l) / 2), E = m - 2 * h.imageOptions.margin, P = l - 2 * h.imageOptions.margin, D = this._window.document.createElementNS("http://www.w3.org/2000/svg", "image");
+            D.setAttribute("href", this._imageUri || ""), D.setAttribute("x", String(x)), D.setAttribute("y", String(k)), D.setAttribute("width", `${E}px`), D.setAttribute("height", `${P}px`), this._element.appendChild(D);
+          }
+          _createColor({ options: m, color: l, additionalRotation: b, x: u, y: h, height: g, width: v, name: x }) {
+            const k = v > g ? v : g, E = this._window.document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            if (E.setAttribute("x", String(u)), E.setAttribute("y", String(h)), E.setAttribute("height", String(g)), E.setAttribute("width", String(v)), E.setAttribute("clip-path", `url('#clip-path-${x}')`), m) {
+              let P;
+              if (m.type === "radial") P = this._window.document.createElementNS("http://www.w3.org/2000/svg", "radialGradient"), P.setAttribute("id", x), P.setAttribute("gradientUnits", "userSpaceOnUse"), P.setAttribute("fx", String(u + v / 2)), P.setAttribute("fy", String(h + g / 2)), P.setAttribute("cx", String(u + v / 2)), P.setAttribute("cy", String(h + g / 2)), P.setAttribute("r", String(k / 2));
+              else {
+                const D = ((m.rotation || 0) + b) % (2 * Math.PI), O = (D + 2 * Math.PI) % (2 * Math.PI);
+                let $ = u + v / 2, ee = h + g / 2, I = u + v / 2, ie = h + g / 2;
+                O >= 0 && O <= 0.25 * Math.PI || O > 1.75 * Math.PI && O <= 2 * Math.PI ? ($ -= v / 2, ee -= g / 2 * Math.tan(D), I += v / 2, ie += g / 2 * Math.tan(D)) : O > 0.25 * Math.PI && O <= 0.75 * Math.PI ? (ee -= g / 2, $ -= v / 2 / Math.tan(D), ie += g / 2, I += v / 2 / Math.tan(D)) : O > 0.75 * Math.PI && O <= 1.25 * Math.PI ? ($ += v / 2, ee += g / 2 * Math.tan(D), I -= v / 2, ie -= g / 2 * Math.tan(D)) : O > 1.25 * Math.PI && O <= 1.75 * Math.PI && (ee += g / 2, $ += v / 2 / Math.tan(D), ie -= g / 2, I -= v / 2 / Math.tan(D)), P = this._window.document.createElementNS("http://www.w3.org/2000/svg", "linearGradient"), P.setAttribute("id", x), P.setAttribute("gradientUnits", "userSpaceOnUse"), P.setAttribute("x1", String(Math.round($))), P.setAttribute("y1", String(Math.round(ee))), P.setAttribute("x2", String(Math.round(I))), P.setAttribute("y2", String(Math.round(ie)));
+              }
+              m.colorStops.forEach(({ offset: D, color: O }) => {
+                const $ = this._window.document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                $.setAttribute("offset", 100 * D + "%"), $.setAttribute("stop-color", O), P.appendChild($);
+              }), E.setAttribute("fill", `url('#${x}')`), this._defs.appendChild(P);
+            } else l && E.setAttribute("fill", l);
+            this._element.appendChild(E);
+          }
+        }
+        F.instanceCount = 0;
+        const C = F, R = "canvas", z = {};
+        for (let N = 0; N <= 40; N++) z[N] = N;
+        const q = { type: R, shape: "square", width: 300, height: 300, data: "", margin: 0, qrOptions: { typeNumber: z[0], mode: void 0, errorCorrectionLevel: "Q" }, imageOptions: { saveAsBlob: !0, hideBackgroundDots: !0, imageSize: 0.4, crossOrigin: void 0, margin: 0 }, dotsOptions: { type: "square", color: "#000", roundSize: !0 }, backgroundOptions: { round: 0, color: "#fff" } };
+        function H(N) {
+          const m = Object.assign({}, N);
+          if (!m.colorStops || !m.colorStops.length) throw "Field 'colorStops' is required in gradient";
+          return m.rotation ? m.rotation = Number(m.rotation) : m.rotation = 0, m.colorStops = m.colorStops.map((l) => Object.assign(Object.assign({}, l), { offset: Number(l.offset) })), m;
+        }
+        function W(N) {
+          const m = Object.assign({}, N);
+          return m.width = Number(m.width), m.height = Number(m.height), m.margin = Number(m.margin), m.imageOptions = Object.assign(Object.assign({}, m.imageOptions), { hideBackgroundDots: !!m.imageOptions.hideBackgroundDots, imageSize: Number(m.imageOptions.imageSize), margin: Number(m.imageOptions.margin) }), m.margin > Math.min(m.width, m.height) && (m.margin = Math.min(m.width, m.height)), m.dotsOptions = Object.assign({}, m.dotsOptions), m.dotsOptions.gradient && (m.dotsOptions.gradient = H(m.dotsOptions.gradient)), m.cornersSquareOptions && (m.cornersSquareOptions = Object.assign({}, m.cornersSquareOptions), m.cornersSquareOptions.gradient && (m.cornersSquareOptions.gradient = H(m.cornersSquareOptions.gradient))), m.cornersDotOptions && (m.cornersDotOptions = Object.assign({}, m.cornersDotOptions), m.cornersDotOptions.gradient && (m.cornersDotOptions.gradient = H(m.cornersDotOptions.gradient))), m.backgroundOptions && (m.backgroundOptions = Object.assign({}, m.backgroundOptions), m.backgroundOptions.gradient && (m.backgroundOptions.gradient = H(m.backgroundOptions.gradient))), m;
+        }
+        var J = n(873), K = n.n(J);
+        function B(N) {
+          if (!N) throw new Error("Extension must be defined");
+          N[0] === "." && (N = N.substring(1));
+          const m = { bmp: "image/bmp", gif: "image/gif", ico: "image/vnd.microsoft.icon", jpeg: "image/jpeg", jpg: "image/jpeg", png: "image/png", svg: "image/svg+xml", tif: "image/tiff", tiff: "image/tiff", webp: "image/webp", pdf: "application/pdf" }[N.toLowerCase()];
+          if (!m) throw new Error(`Extension "${N}" is not supported`);
+          return m;
+        }
+        class se {
+          constructor(m) {
+            m != null && m.jsdom ? this._window = new m.jsdom("", { resources: "usable" }).window : this._window = window, this._options = m ? W(r(q, m)) : q, this.update();
+          }
+          static _clearContainer(m) {
+            m && (m.innerHTML = "");
+          }
+          _setupSvg() {
+            if (!this._qr) return;
+            const m = new C(this._options, this._window);
+            this._svg = m.getElement(), this._svgDrawingPromise = m.drawQR(this._qr).then(() => {
+              var l;
+              this._svg && ((l = this._extension) === null || l === void 0 || l.call(this, m.getElement(), this._options));
+            });
+          }
+          _setupCanvas() {
+            var m, l;
+            this._qr && (!((m = this._options.nodeCanvas) === null || m === void 0) && m.createCanvas ? (this._nodeCanvas = this._options.nodeCanvas.createCanvas(this._options.width, this._options.height), this._nodeCanvas.width = this._options.width, this._nodeCanvas.height = this._options.height) : (this._domCanvas = document.createElement("canvas"), this._domCanvas.width = this._options.width, this._domCanvas.height = this._options.height), this._setupSvg(), this._canvasDrawingPromise = (l = this._svgDrawingPromise) === null || l === void 0 ? void 0 : l.then(() => {
+              var b;
+              if (!this._svg) return;
+              const u = this._svg, h = new this._window.XMLSerializer().serializeToString(u), g = btoa(h), v = `data:${B("svg")};base64,${g}`;
+              if (!((b = this._options.nodeCanvas) === null || b === void 0) && b.loadImage) return this._options.nodeCanvas.loadImage(v).then((x) => {
+                var k, E;
+                x.width = this._options.width, x.height = this._options.height, (E = (k = this._nodeCanvas) === null || k === void 0 ? void 0 : k.getContext("2d")) === null || E === void 0 || E.drawImage(x, 0, 0);
+              });
+              {
+                const x = new this._window.Image();
+                return new Promise((k) => {
+                  x.onload = () => {
+                    var E, P;
+                    (P = (E = this._domCanvas) === null || E === void 0 ? void 0 : E.getContext("2d")) === null || P === void 0 || P.drawImage(x, 0, 0), k();
+                  }, x.src = v;
+                });
+              }
+            }));
+          }
+          async _getElement(m = "png") {
+            if (!this._qr) throw "QR code is empty";
+            return m.toLowerCase() === "svg" ? (this._svg && this._svgDrawingPromise || this._setupSvg(), await this._svgDrawingPromise, this._svg) : ((this._domCanvas || this._nodeCanvas) && this._canvasDrawingPromise || this._setupCanvas(), await this._canvasDrawingPromise, this._domCanvas || this._nodeCanvas);
+          }
+          update(m) {
+            se._clearContainer(this._container), this._options = m ? W(r(this._options, m)) : this._options, this._options.data && (this._qr = K()(this._options.qrOptions.typeNumber, this._options.qrOptions.errorCorrectionLevel), this._qr.addData(this._options.data, this._options.qrOptions.mode || function(l) {
+              switch (!0) {
+                case /^[0-9]*$/.test(l):
+                  return "Numeric";
+                case /^[0-9A-Z $%*+\-./:]*$/.test(l):
+                  return "Alphanumeric";
+                default:
+                  return "Byte";
+              }
+            }(this._options.data)), this._qr.make(), this._options.type === R ? this._setupCanvas() : this._setupSvg(), this.append(this._container));
+          }
+          append(m) {
+            if (m) {
+              if (typeof m.appendChild != "function") throw "Container should be a single DOM node";
+              this._options.type === R ? this._domCanvas && m.appendChild(this._domCanvas) : this._svg && m.appendChild(this._svg), this._container = m;
+            }
+          }
+          applyExtension(m) {
+            if (!m) throw "Extension function should be defined.";
+            this._extension = m, this.update();
+          }
+          deleteExtension() {
+            this._extension = void 0, this.update();
+          }
+          async getRawData(m = "png") {
+            if (!this._qr) throw "QR code is empty";
+            const l = await this._getElement(m), b = B(m);
+            if (!l) return null;
+            if (m.toLowerCase() === "svg") {
+              const u = `<?xml version="1.0" standalone="no"?>\r
+${new this._window.XMLSerializer().serializeToString(l)}`;
+              return typeof Blob > "u" || this._options.jsdom ? Buffer.from(u) : new Blob([u], { type: b });
+            }
+            return new Promise((u) => {
+              const h = l;
+              if ("toBuffer" in h) if (b === "image/png") u(h.toBuffer(b));
+              else if (b === "image/jpeg") u(h.toBuffer(b));
+              else {
+                if (b !== "application/pdf") throw Error("Unsupported extension");
+                u(h.toBuffer(b));
+              }
+              else "toBlob" in h && h.toBlob(u, b, 1);
+            });
+          }
+          async download(m) {
+            if (!this._qr) throw "QR code is empty";
+            if (typeof Blob > "u") throw "Cannot download in Node.js, call getRawData instead.";
+            let l = "png", b = "qr";
+            typeof m == "string" ? (l = m, console.warn("Extension is deprecated as argument for 'download' method, please pass object { name: '...', extension: '...' } as argument")) : typeof m == "object" && m !== null && (m.name && (b = m.name), m.extension && (l = m.extension));
+            const u = await this._getElement(l);
+            if (u) if (l.toLowerCase() === "svg") {
+              let h = new XMLSerializer().serializeToString(u);
+              h = `<?xml version="1.0" standalone="no"?>\r
+` + h, c(`data:${B(l)};charset=utf-8,${encodeURIComponent(h)}`, `${b}.svg`);
+            } else c(u.toDataURL(B(l)), `${b}.${l}`);
+          }
+        }
+        const ue = se;
+      })(), i.default;
+    })());
+  }(nt)), nt.exports;
+}
+var vn = wn();
+const yn = /* @__PURE__ */ gn(vn), Mt = () => `
+        <!-- Template for hotspots -->
+        <button data-hotspot slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
+        <button data-hotspot slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
+        <button data-hotspot slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
+        <button data-hotspot slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
+        <button data-hotspot slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
+        <button data-hotspot slot="hotspot-dim+Y-Z" class="dim" data-position="0 -1 -1" data-normal="0 1 0"></button>
+        <button data-hotspot slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
+        <button data-hotspot slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
+        <button data-hotspot slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+        <button data-hotspot slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
+        <button data-hotspot slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
+        <svg id="dimLines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
+            <line class="dimensionLine"></line>
+            <line class="dimensionLine"></line>
+            <line class="dimensionLine"></line>
+            <line class="dimensionLine"></line>
+            <line class="dimensionLine"></line>
+        </svg>
+    `;
+function Lt(o) {
+  let e = "";
+  function t(i) {
+    return i.trim().startsWith("@media");
+  }
+  function a(i) {
+    return i.replace(/([A-Z])/g, "-$1").toLowerCase();
+  }
+  function n(i, s) {
+    let r = "";
+    const c = "  ".repeat(s);
+    for (const d in i)
+      if (Object.prototype.hasOwnProperty.call(i, d)) {
+        const p = i[d];
+        if (typeof p == "object" && !Array.isArray(p))
+          r += `
+${c}${d} {`, r += n(p, s + 1), r += `
+${c}}`;
+        else {
+          const f = a(d);
+          r += `
+${c}${f}: ${p};`;
+        }
+      }
+    return r;
+  }
+  for (const i in o)
+    if (Object.prototype.hasOwnProperty.call(o, i)) {
+      const s = o[i];
+      typeof s == "object" ? (e += `${i} {`, t(i), e += n(s, 1), e += `
+}
+`) : typeof s == "string" && (e += `${i} {
+  ${s}
+}
+`);
+    }
+  return e;
+}
+const Be = "https://cdn.statically.io/gh/ardisplaycorp/bridge/v2.0.2/build", Qe = "https://ardisplaybridge.vercel.app", xn = {
+  ".normal-view-container": {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    fontFamily: "sans-serif",
+    position: "relative"
+  },
+  ".ardisplay-qr-code-button": {
+    all: "unset",
+    position: "absolute",
+    top: "10px",
+    right: "50%",
+    transform: "translateX(50%)",
+    background: "white",
+    cursor: "pointer",
+    padding: "10px",
+    zIndex: "1000",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    boxSizing: "border-box"
+  }
+}, An = (o, e, t, a, n, i, s) => {
+  const r = Lt(xn), c = Mt();
+  return `
+        <!-- Template for modal view -->
+        <style>${r}</style>
+        <div class="normal-view-container" style="direction: ltr;">
+            <model-viewer
+                ar
+                shadow-intensity="${i.shadow}"
+                ar-placement="${i.options && i.options.length > 0 && i.options[0].placement || i.placement}"
+                ar-modes="webxr scene-viewer quick-look"
+                ar-scale="fixed"
+                camera-controls="true"
+                disable-pan="true"
+                disable-tap="true"
+                interaction-prompt="none"
+                interpolation-decay="40"
+                touch-action="none"
+                max-field-of-view="auto"
+                field-of-view="auto"
+                camera-orbit="0deg 75deg 105%"
+                ar-status="not-presenting"
+            >
+                ${c}
+                <button class="ardisplay-qr-code-button" style="background-color: ${i.arBtn.btnBgColor};color: ${i.arBtn.btnTextColor};border-radius: ${i.arBtn.cornerRadius}px;font-size: ${i.arBtn.btnSize - 6}px;text-wrap: nowrap;box-sizing: border-box;">
+                    ${i.arBtn.btnIcon ? `<i data-lucide="${i.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>` : ""}
+                    ${i.arBtn.btnText}
+                </button>
+            </model-viewer>
+        </div>
+    `;
+}, kn = {
+  ".ardisplay-custom-model-viewer-container": {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    display: "block",
+    fontFamily: "sans-serif"
+  },
+  ".ardisplay-preview-image": {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block"
+  },
+  ".ardisplay-view-3d-button": {
+    bottom: "10px",
+    right: "10px",
+    padding: "10px 20px",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    color: "white",
+    border: "none",
+    borderRadius: "50px",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px"
+  },
+  ".ardisplay-view-3d-button svg": {
+    fill: "white"
+  }
+}, Sn = (o, e, t, a, n, i, s) => `
+        <!-- Template for modal view -->
+        <style>${Lt(kn)}</style>
+        <div class="ardisplay-custom-model-viewer-container" style="direction: ltr;">
+            <button class="ardisplay-view-3d-button" style="background-color: ${i.arBtn.btnBgColor};color: ${i.arBtn.btnTextColor};border-radius: ${i.arBtn.cornerRadius}px;font-size: ${i.arBtn.btnSize - 6}px;box-sizing: border-box;width: ${s ? "100%" : "fit-content"};">
+                <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="pip-svg-icon pip-btn__icon"><path d="M11 16.9766c.3294.0154.663.0233 1 .0233 2.2351 0 4.3234-.3458 6-.9495 1.7881-.6438 4-1.8975 4-4.0505 0-1.9568-1.8939-3.1985-3.5147-3.864l-1.5605 1.5606C17.8623 9.9943 20 10.7292 20 11.9999c0 .9329-1.2789 1.5728-2 1.8958-1.8614.8335-3.9768 1.1042-6 1.1042-.3392 0-.6729-.0088-1-.0257v-1.9743l-3 3 3 3v2.0233zm2-9.9532A21.3903 21.3903 0 0 0 12.0001 7c-2.235 0-4.3234.3457-6 .9494-1.7881.6438-4 1.8976-4 4.0506 0 1.9568 1.894 3.1984 3.5146 3.8639l1.5606-1.5605C6.1378 14.0057 4 13.2707 4 12.0001c0-.9329 1.2789-1.5729 2-1.8958 1.8614-.8336 3.9767-1.1042 6-1.1042.3392 0 .6729.0087.9999.0257V11l3-3-3-3v2.0234z"></path></svg>
+                <span>View in 3D</span>
+            </button>
+        </div>
+    `, En = {
+  "model-viewer": {
+    top: 0,
+    left: 0,
+    opacity: 0,
+    zIndex: -100,
+    position: "absolute"
+  },
+  ".ardisplay-qr-code-button": {
+    all: "unset",
+    background: "white",
+    cursor: "pointer",
+    padding: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    boxSizing: "border-box"
+  }
+}, _n = (o, e, t, a, n, i, s) => {
+  const r = Lt(En), c = Mt();
+  return `
+        <!-- Template for modal view -->
+        <style>${r}</style>
+        <button class="ardisplay-qr-code-button" style="background-color: ${i.arBtn.btnBgColor};color: ${i.arBtn.btnTextColor};border-radius: ${i.arBtn.cornerRadius}px;font-size: ${i.arBtn.btnSize - 6}px;text-wrap: nowrap;direction: ltr;box-sizing: border-box;">
+            ${i.arBtn.btnIcon ? `<i data-lucide="${i.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>` : ""}
+            ${i.arBtn.btnText}
+        </button>
+        <model-viewer
+            ar
+            shadow-intensity="${i.shadow}"
+            ar-placement="${i.options && i.options.length > 0 && i.options[0].placement || i.placement}"
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="fixed"
+            camera-controls="true"
+            disable-pan="true"
+            disable-tap="true"
+            ar-status="not-presenting"
+        >
+            ${c}
+        </model-viewer>
+    `;
+};
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Pe = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": 2,
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round"
+};
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Rn = [
+  "svg",
+  Pe,
+  [
+    ["rect", { width: "7", height: "7", x: "14", y: "3", rx: "1" }],
+    [
+      "path",
+      {
+        d: "M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"
+      }
+    ]
+  ]
+];
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Tn = [
+  "svg",
+  Pe,
+  [
+    [
+      "path",
+      {
+        d: "M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+      }
+    ],
+    ["path", { d: "m3.3 7 8.7 5 8.7-5" }],
+    ["path", { d: "M12 22V12" }]
+  ]
+];
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Mn = [
+  "svg",
+  Pe,
+  [
+    [
+      "path",
+      {
+        d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+      }
+    ],
+    ["circle", { cx: "12", cy: "12", r: "3" }]
+  ]
+];
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Ln = [
+  "svg",
+  Pe,
+  [
+    ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" }],
+    ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4" }],
+    ["path", { d: "m8 18 4-4" }],
+    ["path", { d: "M8 10v8h8" }]
+  ]
+];
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Cn = [
+  "svg",
+  Pe,
+  [
+    [
+      "path",
+      {
+        d: "M16.466 7.5C15.643 4.237 13.952 2 12 2 9.239 2 7 6.477 7 12s2.239 10 5 10c.342 0 .677-.069 1-.2"
+      }
+    ],
+    ["path", { d: "m15.194 13.707 3.814 1.86-1.86 3.814" }],
+    [
+      "path",
+      {
+        d: "M19 15.57c-1.804.885-4.274 1.43-7 1.43-5.523 0-10-2.239-10-5s4.477-5 10-5c4.838 0 8.873 1.718 9.8 4"
+      }
+    ]
+  ]
+];
+/**
+ * @license lucide v0.469.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const jn = [
+  "svg",
+  Pe,
+  [
+    ["path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }],
+    ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }],
+    ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }],
+    ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" }]
+  ]
+];
+async function Ge() {
+  if (!window.customElements.get("model-viewer"))
+    try {
+      return await import("@google/model-viewer"), !0;
+    } catch (o) {
+      return console.error("Failed to load model-viewer:", o), !1;
+    }
+  return !0;
+}
+function It(o, e) {
+  if (e === Ta)
+    return console.warn("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Geometry already defined as triangles."), o;
+  if (e === vt || e === ta) {
+    let t = o.getIndex();
+    if (t === null) {
+      const s = [], r = o.getAttribute("position");
+      if (r !== void 0) {
+        for (let c = 0; c < r.count; c++)
+          s.push(c);
+        o.setIndex(s), t = o.getIndex();
+      } else
+        return console.error("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Undefined position attribute. Processing not possible."), o;
+    }
+    const a = t.count - 2, n = [];
+    if (e === vt)
+      for (let s = 1; s <= a; s++)
+        n.push(t.getX(0)), n.push(t.getX(s)), n.push(t.getX(s + 1));
+    else
+      for (let s = 0; s < a; s++)
+        s % 2 === 0 ? (n.push(t.getX(s)), n.push(t.getX(s + 1)), n.push(t.getX(s + 2))) : (n.push(t.getX(s + 2)), n.push(t.getX(s + 1)), n.push(t.getX(s)));
+    n.length / 3 !== a && console.error("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Unable to generate correct amount of triangles.");
+    const i = o.clone();
+    return i.setIndex(n), i.clearGroups(), i;
+  } else
+    return console.error("THREE.BufferGeometryUtils.toTrianglesDrawMode(): Unknown draw mode:", e), o;
+}
+class Fn extends aa {
+  constructor(e) {
+    super(e), this.dracoLoader = null, this.ktx2Loader = null, this.meshoptDecoder = null, this.pluginCallbacks = [], this.register(function(t) {
+      return new Pn(t);
+    }), this.register(function(t) {
+      return new Hn(t);
+    }), this.register(function(t) {
+      return new Xn(t);
+    }), this.register(function(t) {
+      return new Wn(t);
+    }), this.register(function(t) {
+      return new Jn(t);
+    }), this.register(function(t) {
+      return new Bn(t);
+    }), this.register(function(t) {
+      return new Gn(t);
+    }), this.register(function(t) {
+      return new Nn(t);
+    }), this.register(function(t) {
+      return new $n(t);
+    }), this.register(function(t) {
+      return new On(t);
+    }), this.register(function(t) {
+      return new Un(t);
+    }), this.register(function(t) {
+      return new In(t);
+    }), this.register(function(t) {
+      return new Vn(t);
+    }), this.register(function(t) {
+      return new Kn(t);
+    }), this.register(function(t) {
+      return new Dn(t);
+    }), this.register(function(t) {
+      return new Yn(t);
+    }), this.register(function(t) {
+      return new Zn(t);
+    });
+  }
+  load(e, t, a, n) {
+    const i = this;
+    let s;
+    if (this.resourcePath !== "")
+      s = this.resourcePath;
+    else if (this.path !== "") {
+      const d = We.extractUrlBase(e);
+      s = We.resolveURL(d, this.path);
+    } else
+      s = We.extractUrlBase(e);
+    this.manager.itemStart(e);
+    const r = function(d) {
+      n ? n(d) : console.error(d), i.manager.itemError(e), i.manager.itemEnd(e);
+    }, c = new it(this.manager);
+    c.setPath(this.path), c.setResponseType("arraybuffer"), c.setRequestHeader(this.requestHeader), c.setWithCredentials(this.withCredentials), c.load(e, function(d) {
+      try {
+        i.parse(d, s, function(p) {
+          t(p), i.manager.itemEnd(e);
+        }, r);
+      } catch (p) {
+        r(p);
+      }
+    }, a, r);
+  }
+  setDRACOLoader(e) {
+    return this.dracoLoader = e, this;
+  }
+  setKTX2Loader(e) {
+    return this.ktx2Loader = e, this;
+  }
+  setMeshoptDecoder(e) {
+    return this.meshoptDecoder = e, this;
+  }
+  register(e) {
+    return this.pluginCallbacks.indexOf(e) === -1 && this.pluginCallbacks.push(e), this;
+  }
+  unregister(e) {
+    return this.pluginCallbacks.indexOf(e) !== -1 && this.pluginCallbacks.splice(this.pluginCallbacks.indexOf(e), 1), this;
+  }
+  parse(e, t, a, n) {
+    let i;
+    const s = {}, r = {}, c = new TextDecoder();
+    if (typeof e == "string")
+      i = JSON.parse(e);
+    else if (e instanceof ArrayBuffer)
+      if (c.decode(new Uint8Array(e, 0, 4)) === ba) {
+        try {
+          s[ae.KHR_BINARY_GLTF] = new Qn(e);
+        } catch (f) {
+          n && n(f);
+          return;
+        }
+        i = JSON.parse(s[ae.KHR_BINARY_GLTF].content);
+      } else
+        i = JSON.parse(c.decode(e));
+    else
+      i = e;
+    if (i.asset === void 0 || i.asset.version[0] < 2) {
+      n && n(new Error("THREE.GLTFLoader: Unsupported asset. glTF versions >=2.0 are supported."));
+      return;
+    }
+    const d = new pi(i, {
+      path: t || this.resourcePath || "",
+      crossOrigin: this.crossOrigin,
+      requestHeader: this.requestHeader,
+      manager: this.manager,
+      ktx2Loader: this.ktx2Loader,
+      meshoptDecoder: this.meshoptDecoder
+    });
+    d.fileLoader.setRequestHeader(this.requestHeader);
+    for (let p = 0; p < this.pluginCallbacks.length; p++) {
+      const f = this.pluginCallbacks[p](d);
+      f.name || console.error("THREE.GLTFLoader: Invalid plugin found: missing name"), r[f.name] = f, s[f.name] = !0;
+    }
+    if (i.extensionsUsed)
+      for (let p = 0; p < i.extensionsUsed.length; ++p) {
+        const f = i.extensionsUsed[p], w = i.extensionsRequired || [];
+        switch (f) {
+          case ae.KHR_MATERIALS_UNLIT:
+            s[f] = new zn();
+            break;
+          case ae.KHR_DRACO_MESH_COMPRESSION:
+            s[f] = new ei(i, this.dracoLoader);
+            break;
+          case ae.KHR_TEXTURE_TRANSFORM:
+            s[f] = new ti();
+            break;
+          case ae.KHR_MESH_QUANTIZATION:
+            s[f] = new ai();
+            break;
+          default:
+            w.indexOf(f) >= 0 && r[f] === void 0 && console.warn('THREE.GLTFLoader: Unknown extension "' + f + '".');
+        }
+      }
+    d.setExtensions(s), d.setPlugins(r), d.parse(a, n);
+  }
+  parseAsync(e, t) {
+    const a = this;
+    return new Promise(function(n, i) {
+      a.parse(e, t, n, i);
+    });
+  }
+}
+function qn() {
+  let o = {};
+  return {
+    get: function(e) {
+      return o[e];
+    },
+    add: function(e, t) {
+      o[e] = t;
+    },
+    remove: function(e) {
+      delete o[e];
+    },
+    removeAll: function() {
+      o = {};
+    }
+  };
+}
+const ae = {
+  KHR_BINARY_GLTF: "KHR_binary_glTF",
+  KHR_DRACO_MESH_COMPRESSION: "KHR_draco_mesh_compression",
+  KHR_LIGHTS_PUNCTUAL: "KHR_lights_punctual",
+  KHR_MATERIALS_CLEARCOAT: "KHR_materials_clearcoat",
+  KHR_MATERIALS_DISPERSION: "KHR_materials_dispersion",
+  KHR_MATERIALS_IOR: "KHR_materials_ior",
+  KHR_MATERIALS_SHEEN: "KHR_materials_sheen",
+  KHR_MATERIALS_SPECULAR: "KHR_materials_specular",
+  KHR_MATERIALS_TRANSMISSION: "KHR_materials_transmission",
+  KHR_MATERIALS_IRIDESCENCE: "KHR_materials_iridescence",
+  KHR_MATERIALS_ANISOTROPY: "KHR_materials_anisotropy",
+  KHR_MATERIALS_UNLIT: "KHR_materials_unlit",
+  KHR_MATERIALS_VOLUME: "KHR_materials_volume",
+  KHR_TEXTURE_BASISU: "KHR_texture_basisu",
+  KHR_TEXTURE_TRANSFORM: "KHR_texture_transform",
+  KHR_MESH_QUANTIZATION: "KHR_mesh_quantization",
+  KHR_MATERIALS_EMISSIVE_STRENGTH: "KHR_materials_emissive_strength",
+  EXT_MATERIALS_BUMP: "EXT_materials_bump",
+  EXT_TEXTURE_WEBP: "EXT_texture_webp",
+  EXT_TEXTURE_AVIF: "EXT_texture_avif",
+  EXT_MESHOPT_COMPRESSION: "EXT_meshopt_compression",
+  EXT_MESH_GPU_INSTANCING: "EXT_mesh_gpu_instancing"
+};
+class Dn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_LIGHTS_PUNCTUAL, this.cache = { refs: {}, uses: {} };
+  }
+  _markDefs() {
+    const e = this.parser, t = this.parser.json.nodes || [];
+    for (let a = 0, n = t.length; a < n; a++) {
+      const i = t[a];
+      i.extensions && i.extensions[this.name] && i.extensions[this.name].light !== void 0 && e._addNodeRef(this.cache, i.extensions[this.name].light);
+    }
+  }
+  _loadLight(e) {
+    const t = this.parser, a = "light:" + e;
+    let n = t.cache.get(a);
+    if (n) return n;
+    const i = t.json, c = ((i.extensions && i.extensions[this.name] || {}).lights || [])[e];
+    let d;
+    const p = new me(16777215);
+    c.color !== void 0 && p.setRGB(c.color[0], c.color[1], c.color[2], ke);
+    const f = c.range !== void 0 ? c.range : 0;
+    switch (c.type) {
+      case "directional":
+        d = new Ca(p), d.target.position.set(0, 0, -1), d.add(d.target);
+        break;
+      case "point":
+        d = new La(p), d.distance = f;
+        break;
+      case "spot":
+        d = new Ma(p), d.distance = f, c.spot = c.spot || {}, c.spot.innerConeAngle = c.spot.innerConeAngle !== void 0 ? c.spot.innerConeAngle : 0, c.spot.outerConeAngle = c.spot.outerConeAngle !== void 0 ? c.spot.outerConeAngle : Math.PI / 4, d.angle = c.spot.outerConeAngle, d.penumbra = 1 - c.spot.innerConeAngle / c.spot.outerConeAngle, d.target.position.set(0, 0, -1), d.add(d.target);
+        break;
+      default:
+        throw new Error("THREE.GLTFLoader: Unexpected light type: " + c.type);
+    }
+    return d.position.set(0, 0, 0), d.decay = 2, _e(d, c), c.intensity !== void 0 && (d.intensity = c.intensity), d.name = t.createUniqueName(c.name || "light_" + e), n = Promise.resolve(d), t.cache.add(a, n), n;
+  }
+  getDependency(e, t) {
+    if (e === "light")
+      return this._loadLight(t);
+  }
+  createNodeAttachment(e) {
+    const t = this, a = this.parser, i = a.json.nodes[e], r = (i.extensions && i.extensions[this.name] || {}).light;
+    return r === void 0 ? null : this._loadLight(r).then(function(c) {
+      return a._getNodeRef(t.cache, r, c);
+    });
+  }
+}
+class zn {
+  constructor() {
+    this.name = ae.KHR_MATERIALS_UNLIT;
+  }
+  getMaterialType() {
+    return Xe;
+  }
+  extendParams(e, t, a) {
+    const n = [];
+    e.color = new me(1, 1, 1), e.opacity = 1;
+    const i = t.pbrMetallicRoughness;
+    if (i) {
+      if (Array.isArray(i.baseColorFactor)) {
+        const s = i.baseColorFactor;
+        e.color.setRGB(s[0], s[1], s[2], ke), e.opacity = s[3];
+      }
+      i.baseColorTexture !== void 0 && n.push(a.assignTexture(e, "map", i.baseColorTexture, Re));
+    }
+    return Promise.all(n);
+  }
+}
+class On {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_EMISSIVE_STRENGTH;
+  }
+  extendMaterialParams(e, t) {
+    const n = this.parser.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = n.extensions[this.name].emissiveStrength;
+    return i !== void 0 && (t.emissiveIntensity = i), Promise.resolve();
+  }
+}
+class Pn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_CLEARCOAT;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    if (s.clearcoatFactor !== void 0 && (t.clearcoat = s.clearcoatFactor), s.clearcoatTexture !== void 0 && i.push(a.assignTexture(t, "clearcoatMap", s.clearcoatTexture)), s.clearcoatRoughnessFactor !== void 0 && (t.clearcoatRoughness = s.clearcoatRoughnessFactor), s.clearcoatRoughnessTexture !== void 0 && i.push(a.assignTexture(t, "clearcoatRoughnessMap", s.clearcoatRoughnessTexture)), s.clearcoatNormalTexture !== void 0 && (i.push(a.assignTexture(t, "clearcoatNormalMap", s.clearcoatNormalTexture)), s.clearcoatNormalTexture.scale !== void 0)) {
+      const r = s.clearcoatNormalTexture.scale;
+      t.clearcoatNormalScale = new na(r, r);
+    }
+    return Promise.all(i);
+  }
+}
+class Hn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_DISPERSION;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const n = this.parser.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = n.extensions[this.name];
+    return t.dispersion = i.dispersion !== void 0 ? i.dispersion : 0, Promise.resolve();
+  }
+}
+class In {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_IRIDESCENCE;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    return s.iridescenceFactor !== void 0 && (t.iridescence = s.iridescenceFactor), s.iridescenceTexture !== void 0 && i.push(a.assignTexture(t, "iridescenceMap", s.iridescenceTexture)), s.iridescenceIor !== void 0 && (t.iridescenceIOR = s.iridescenceIor), t.iridescenceThicknessRange === void 0 && (t.iridescenceThicknessRange = [100, 400]), s.iridescenceThicknessMinimum !== void 0 && (t.iridescenceThicknessRange[0] = s.iridescenceThicknessMinimum), s.iridescenceThicknessMaximum !== void 0 && (t.iridescenceThicknessRange[1] = s.iridescenceThicknessMaximum), s.iridescenceThicknessTexture !== void 0 && i.push(a.assignTexture(t, "iridescenceThicknessMap", s.iridescenceThicknessTexture)), Promise.all(i);
+  }
+}
+class Bn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_SHEEN;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [];
+    t.sheenColor = new me(0, 0, 0), t.sheenRoughness = 0, t.sheen = 1;
+    const s = n.extensions[this.name];
+    if (s.sheenColorFactor !== void 0) {
+      const r = s.sheenColorFactor;
+      t.sheenColor.setRGB(r[0], r[1], r[2], ke);
+    }
+    return s.sheenRoughnessFactor !== void 0 && (t.sheenRoughness = s.sheenRoughnessFactor), s.sheenColorTexture !== void 0 && i.push(a.assignTexture(t, "sheenColorMap", s.sheenColorTexture, Re)), s.sheenRoughnessTexture !== void 0 && i.push(a.assignTexture(t, "sheenRoughnessMap", s.sheenRoughnessTexture)), Promise.all(i);
+  }
+}
+class Gn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_TRANSMISSION;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    return s.transmissionFactor !== void 0 && (t.transmission = s.transmissionFactor), s.transmissionTexture !== void 0 && i.push(a.assignTexture(t, "transmissionMap", s.transmissionTexture)), Promise.all(i);
+  }
+}
+class Nn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_VOLUME;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    t.thickness = s.thicknessFactor !== void 0 ? s.thicknessFactor : 0, s.thicknessTexture !== void 0 && i.push(a.assignTexture(t, "thicknessMap", s.thicknessTexture)), t.attenuationDistance = s.attenuationDistance || 1 / 0;
+    const r = s.attenuationColor || [1, 1, 1];
+    return t.attenuationColor = new me().setRGB(r[0], r[1], r[2], ke), Promise.all(i);
+  }
+}
+class $n {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_IOR;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const n = this.parser.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = n.extensions[this.name];
+    return t.ior = i.ior !== void 0 ? i.ior : 1.5, Promise.resolve();
+  }
+}
+class Un {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_SPECULAR;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    t.specularIntensity = s.specularFactor !== void 0 ? s.specularFactor : 1, s.specularTexture !== void 0 && i.push(a.assignTexture(t, "specularIntensityMap", s.specularTexture));
+    const r = s.specularColorFactor || [1, 1, 1];
+    return t.specularColor = new me().setRGB(r[0], r[1], r[2], ke), s.specularColorTexture !== void 0 && i.push(a.assignTexture(t, "specularColorMap", s.specularColorTexture, Re)), Promise.all(i);
+  }
+}
+class Kn {
+  constructor(e) {
+    this.parser = e, this.name = ae.EXT_MATERIALS_BUMP;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    return t.bumpScale = s.bumpFactor !== void 0 ? s.bumpFactor : 1, s.bumpTexture !== void 0 && i.push(a.assignTexture(t, "bumpMap", s.bumpTexture)), Promise.all(i);
+  }
+}
+class Vn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_MATERIALS_ANISOTROPY;
+  }
+  getMaterialType(e) {
+    const a = this.parser.json.materials[e];
+    return !a.extensions || !a.extensions[this.name] ? null : Se;
+  }
+  extendMaterialParams(e, t) {
+    const a = this.parser, n = a.json.materials[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return Promise.resolve();
+    const i = [], s = n.extensions[this.name];
+    return s.anisotropyStrength !== void 0 && (t.anisotropy = s.anisotropyStrength), s.anisotropyRotation !== void 0 && (t.anisotropyRotation = s.anisotropyRotation), s.anisotropyTexture !== void 0 && i.push(a.assignTexture(t, "anisotropyMap", s.anisotropyTexture)), Promise.all(i);
+  }
+}
+class Xn {
+  constructor(e) {
+    this.parser = e, this.name = ae.KHR_TEXTURE_BASISU;
+  }
+  loadTexture(e) {
+    const t = this.parser, a = t.json, n = a.textures[e];
+    if (!n.extensions || !n.extensions[this.name])
+      return null;
+    const i = n.extensions[this.name], s = t.options.ktx2Loader;
+    if (!s) {
+      if (a.extensionsRequired && a.extensionsRequired.indexOf(this.name) >= 0)
+        throw new Error("THREE.GLTFLoader: setKTX2Loader must be called before loading KTX2 textures");
+      return null;
+    }
+    return t.loadTextureImage(e, i.source, s);
+  }
+}
+class Wn {
+  constructor(e) {
+    this.parser = e, this.name = ae.EXT_TEXTURE_WEBP, this.isSupported = null;
+  }
+  loadTexture(e) {
+    const t = this.name, a = this.parser, n = a.json, i = n.textures[e];
+    if (!i.extensions || !i.extensions[t])
+      return null;
+    const s = i.extensions[t], r = n.images[s.source];
+    let c = a.textureLoader;
+    if (r.uri) {
+      const d = a.options.manager.getHandler(r.uri);
+      d !== null && (c = d);
+    }
+    return this.detectSupport().then(function(d) {
+      if (d) return a.loadTextureImage(e, s.source, c);
+      if (n.extensionsRequired && n.extensionsRequired.indexOf(t) >= 0)
+        throw new Error("THREE.GLTFLoader: WebP required by asset but unsupported.");
+      return a.loadTexture(e);
+    });
+  }
+  detectSupport() {
+    return this.isSupported || (this.isSupported = new Promise(function(e) {
+      const t = new Image();
+      t.src = "data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA", t.onload = t.onerror = function() {
+        e(t.height === 1);
+      };
+    })), this.isSupported;
+  }
+}
+class Jn {
+  constructor(e) {
+    this.parser = e, this.name = ae.EXT_TEXTURE_AVIF, this.isSupported = null;
+  }
+  loadTexture(e) {
+    const t = this.name, a = this.parser, n = a.json, i = n.textures[e];
+    if (!i.extensions || !i.extensions[t])
+      return null;
+    const s = i.extensions[t], r = n.images[s.source];
+    let c = a.textureLoader;
+    if (r.uri) {
+      const d = a.options.manager.getHandler(r.uri);
+      d !== null && (c = d);
+    }
+    return this.detectSupport().then(function(d) {
+      if (d) return a.loadTextureImage(e, s.source, c);
+      if (n.extensionsRequired && n.extensionsRequired.indexOf(t) >= 0)
+        throw new Error("THREE.GLTFLoader: AVIF required by asset but unsupported.");
+      return a.loadTexture(e);
+    });
+  }
+  detectSupport() {
+    return this.isSupported || (this.isSupported = new Promise(function(e) {
+      const t = new Image();
+      t.src = "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAABcAAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAEAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAMAAAAABNjb2xybmNseAACAAIABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAAB9tZGF0EgAKCBgABogQEDQgMgkQAAAAB8dSLfI=", t.onload = t.onerror = function() {
+        e(t.height === 1);
+      };
+    })), this.isSupported;
+  }
+}
+class Yn {
+  constructor(e) {
+    this.name = ae.EXT_MESHOPT_COMPRESSION, this.parser = e;
+  }
+  loadBufferView(e) {
+    const t = this.parser.json, a = t.bufferViews[e];
+    if (a.extensions && a.extensions[this.name]) {
+      const n = a.extensions[this.name], i = this.parser.getDependency("buffer", n.buffer), s = this.parser.options.meshoptDecoder;
+      if (!s || !s.supported) {
+        if (t.extensionsRequired && t.extensionsRequired.indexOf(this.name) >= 0)
+          throw new Error("THREE.GLTFLoader: setMeshoptDecoder must be called before loading compressed files");
+        return null;
+      }
+      return i.then(function(r) {
+        const c = n.byteOffset || 0, d = n.byteLength || 0, p = n.count, f = n.byteStride, w = new Uint8Array(r, c, d);
+        return s.decodeGltfBufferAsync ? s.decodeGltfBufferAsync(p, f, w, n.mode, n.filter).then(function(y) {
+          return y.buffer;
+        }) : s.ready.then(function() {
+          const y = new ArrayBuffer(p * f);
+          return s.decodeGltfBuffer(new Uint8Array(y), p, f, w, n.mode, n.filter), y;
+        });
+      });
+    } else
+      return null;
+  }
+}
+class Zn {
+  constructor(e) {
+    this.name = ae.EXT_MESH_GPU_INSTANCING, this.parser = e;
+  }
+  createNodeMesh(e) {
+    const t = this.parser.json, a = t.nodes[e];
+    if (!a.extensions || !a.extensions[this.name] || a.mesh === void 0)
+      return null;
+    const n = t.meshes[a.mesh];
+    for (const d of n.primitives)
+      if (d.mode !== ve.TRIANGLES && d.mode !== ve.TRIANGLE_STRIP && d.mode !== ve.TRIANGLE_FAN && d.mode !== void 0)
+        return null;
+    const s = a.extensions[this.name].attributes, r = [], c = {};
+    for (const d in s)
+      r.push(this.parser.getDependency("accessor", s[d]).then((p) => (c[d] = p, c[d])));
+    return r.length < 1 ? null : (r.push(this.parser.createNodeMesh(e)), Promise.all(r).then((d) => {
+      const p = d.pop(), f = p.isGroup ? p.children : [p], w = d[0].count, y = [];
+      for (const _ of f) {
+        const T = new st(), F = new ze(), C = new ia(), R = new ze(1, 1, 1), z = new ja(_.geometry, _.material, w);
+        for (let q = 0; q < w; q++)
+          c.TRANSLATION && F.fromBufferAttribute(c.TRANSLATION, q), c.ROTATION && C.fromBufferAttribute(c.ROTATION, q), c.SCALE && R.fromBufferAttribute(c.SCALE, q), z.setMatrixAt(q, T.compose(F, C, R));
+        for (const q in c)
+          if (q === "_COLOR_0") {
+            const H = c[q];
+            z.instanceColor = new Fa(H.array, H.itemSize, H.normalized);
+          } else q !== "TRANSLATION" && q !== "ROTATION" && q !== "SCALE" && _.geometry.setAttribute(q, c[q]);
+        sa.prototype.copy.call(z, _), this.parser.assignFinalMaterial(z), y.push(z);
+      }
+      return p.isGroup ? (p.clear(), p.add(...y), p) : y[0];
+    }));
+  }
+}
+const ba = "glTF", Ne = 12, Bt = { JSON: 1313821514, BIN: 5130562 };
+class Qn {
+  constructor(e) {
+    this.name = ae.KHR_BINARY_GLTF, this.content = null, this.body = null;
+    const t = new DataView(e, 0, Ne), a = new TextDecoder();
+    if (this.header = {
+      magic: a.decode(new Uint8Array(e.slice(0, 4))),
+      version: t.getUint32(4, !0),
+      length: t.getUint32(8, !0)
+    }, this.header.magic !== ba)
+      throw new Error("THREE.GLTFLoader: Unsupported glTF-Binary header.");
+    if (this.header.version < 2)
+      throw new Error("THREE.GLTFLoader: Legacy binary file detected.");
+    const n = this.header.length - Ne, i = new DataView(e, Ne);
+    let s = 0;
+    for (; s < n; ) {
+      const r = i.getUint32(s, !0);
+      s += 4;
+      const c = i.getUint32(s, !0);
+      if (s += 4, c === Bt.JSON) {
+        const d = new Uint8Array(e, Ne + s, r);
+        this.content = a.decode(d);
+      } else if (c === Bt.BIN) {
+        const d = Ne + s;
+        this.body = e.slice(d, d + r);
+      }
+      s += r;
+    }
+    if (this.content === null)
+      throw new Error("THREE.GLTFLoader: JSON content not found.");
+  }
+}
+class ei {
+  constructor(e, t) {
+    if (!t)
+      throw new Error("THREE.GLTFLoader: No DRACOLoader instance provided.");
+    this.name = ae.KHR_DRACO_MESH_COMPRESSION, this.json = e, this.dracoLoader = t, this.dracoLoader.preload();
+  }
+  decodePrimitive(e, t) {
+    const a = this.json, n = this.dracoLoader, i = e.extensions[this.name].bufferView, s = e.extensions[this.name].attributes, r = {}, c = {}, d = {};
+    for (const p in s) {
+      const f = At[p] || p.toLowerCase();
+      r[f] = s[p];
+    }
+    for (const p in e.attributes) {
+      const f = At[p] || p.toLowerCase();
+      if (s[p] !== void 0) {
+        const w = a.accessors[e.attributes[p]], y = Oe[w.componentType];
+        d[f] = y.name, c[f] = w.normalized === !0;
+      }
+    }
+    return t.getDependency("bufferView", i).then(function(p) {
+      return new Promise(function(f, w) {
+        n.decodeDracoFile(p, function(y) {
+          for (const _ in y.attributes) {
+            const T = y.attributes[_], F = c[_];
+            F !== void 0 && (T.normalized = F);
+          }
+          f(y);
+        }, r, d, ke, w);
+      });
+    });
+  }
+}
+class ti {
+  constructor() {
+    this.name = ae.KHR_TEXTURE_TRANSFORM;
+  }
+  extendTexture(e, t) {
+    return (t.texCoord === void 0 || t.texCoord === e.channel) && t.offset === void 0 && t.rotation === void 0 && t.scale === void 0 || (e = e.clone(), t.texCoord !== void 0 && (e.channel = t.texCoord), t.offset !== void 0 && e.offset.fromArray(t.offset), t.rotation !== void 0 && (e.rotation = t.rotation), t.scale !== void 0 && e.repeat.fromArray(t.scale), e.needsUpdate = !0), e;
+  }
+}
+class ai {
+  constructor() {
+    this.name = ae.KHR_MESH_QUANTIZATION;
+  }
+}
+class fa extends cn {
+  constructor(e, t, a, n) {
+    super(e, t, a, n);
+  }
+  copySampleValue_(e) {
+    const t = this.resultBuffer, a = this.sampleValues, n = this.valueSize, i = e * n * 3 + n;
+    for (let s = 0; s !== n; s++)
+      t[s] = a[i + s];
+    return t;
+  }
+  interpolate_(e, t, a, n) {
+    const i = this.resultBuffer, s = this.sampleValues, r = this.valueSize, c = r * 2, d = r * 3, p = n - t, f = (a - t) / p, w = f * f, y = w * f, _ = e * d, T = _ - d, F = -2 * y + 3 * w, C = y - w, R = 1 - F, z = C - w + f;
+    for (let q = 0; q !== r; q++) {
+      const H = s[T + q + r], W = s[T + q + c] * p, J = s[_ + q + r], K = s[_ + q] * p;
+      i[q] = R * H + z * W + F * J + C * K;
+    }
+    return i;
+  }
+}
+const ni = new ia();
+class ii extends fa {
+  interpolate_(e, t, a, n) {
+    const i = super.interpolate_(e, t, a, n);
+    return ni.fromArray(i).normalize().toArray(i), i;
+  }
+}
+const ve = {
+  FLOAT: 5126,
+  //FLOAT_MAT2: 35674,
+  FLOAT_MAT3: 35675,
+  FLOAT_MAT4: 35676,
+  FLOAT_VEC2: 35664,
+  FLOAT_VEC3: 35665,
+  FLOAT_VEC4: 35666,
+  LINEAR: 9729,
+  REPEAT: 10497,
+  SAMPLER_2D: 35678,
+  POINTS: 0,
+  LINES: 1,
+  LINE_LOOP: 2,
+  LINE_STRIP: 3,
+  TRIANGLES: 4,
+  TRIANGLE_STRIP: 5,
+  TRIANGLE_FAN: 6,
+  UNSIGNED_BYTE: 5121,
+  UNSIGNED_SHORT: 5123
+}, Oe = {
+  5120: Int8Array,
+  5121: Uint8Array,
+  5122: Int16Array,
+  5123: Uint16Array,
+  5125: Uint32Array,
+  5126: Float32Array
+}, Gt = {
+  9728: Ya,
+  9729: oa,
+  9984: Za,
+  9985: Qa,
+  9986: en,
+  9987: ra
+}, Nt = {
+  33071: tn,
+  33648: an,
+  10497: yt
+}, ht = {
+  SCALAR: 1,
+  VEC2: 2,
+  VEC3: 3,
+  VEC4: 4,
+  MAT2: 4,
+  MAT3: 9,
+  MAT4: 16
+}, At = {
+  POSITION: "position",
+  NORMAL: "normal",
+  TANGENT: "tangent",
+  TEXCOORD_0: "uv",
+  TEXCOORD_1: "uv1",
+  TEXCOORD_2: "uv2",
+  TEXCOORD_3: "uv3",
+  COLOR_0: "color",
+  WEIGHTS_0: "skinWeight",
+  JOINTS_0: "skinIndex"
+}, Me = {
+  scale: "scale",
+  translation: "position",
+  rotation: "quaternion",
+  weights: "morphTargetInfluences"
+}, si = {
+  CUBICSPLINE: void 0,
+  // We use a custom interpolant (GLTFCubicSplineInterpolation) for CUBICSPLINE tracks. Each
+  // keyframe track will be initialized with a default interpolation type, then modified.
+  LINEAR: ua,
+  STEP: nn
+}, pt = {
+  OPAQUE: "OPAQUE",
+  MASK: "MASK",
+  BLEND: "BLEND"
+};
+function oi(o) {
+  return o.DefaultMaterial === void 0 && (o.DefaultMaterial = new ca({
+    color: 16777215,
+    emissive: 0,
+    metalness: 1,
+    roughness: 1,
+    transparent: !1,
+    depthTest: !0,
+    side: sn
+  })), o.DefaultMaterial;
+}
+function je(o, e, t) {
+  for (const a in t.extensions)
+    o[a] === void 0 && (e.userData.gltfExtensions = e.userData.gltfExtensions || {}, e.userData.gltfExtensions[a] = t.extensions[a]);
+}
+function _e(o, e) {
+  e.extras !== void 0 && (typeof e.extras == "object" ? Object.assign(o.userData, e.extras) : console.warn("THREE.GLTFLoader: Ignoring primitive type .extras, " + e.extras));
+}
+function ri(o, e, t) {
+  let a = !1, n = !1, i = !1;
+  for (let d = 0, p = e.length; d < p; d++) {
+    const f = e[d];
+    if (f.POSITION !== void 0 && (a = !0), f.NORMAL !== void 0 && (n = !0), f.COLOR_0 !== void 0 && (i = !0), a && n && i) break;
+  }
+  if (!a && !n && !i) return Promise.resolve(o);
+  const s = [], r = [], c = [];
+  for (let d = 0, p = e.length; d < p; d++) {
+    const f = e[d];
+    if (a) {
+      const w = f.POSITION !== void 0 ? t.getDependency("accessor", f.POSITION) : o.attributes.position;
+      s.push(w);
+    }
+    if (n) {
+      const w = f.NORMAL !== void 0 ? t.getDependency("accessor", f.NORMAL) : o.attributes.normal;
+      r.push(w);
+    }
+    if (i) {
+      const w = f.COLOR_0 !== void 0 ? t.getDependency("accessor", f.COLOR_0) : o.attributes.color;
+      c.push(w);
+    }
+  }
+  return Promise.all([
+    Promise.all(s),
+    Promise.all(r),
+    Promise.all(c)
+  ]).then(function(d) {
+    const p = d[0], f = d[1], w = d[2];
+    return a && (o.morphAttributes.position = p), n && (o.morphAttributes.normal = f), i && (o.morphAttributes.color = w), o.morphTargetsRelative = !0, o;
+  });
+}
+function ci(o, e) {
+  if (o.updateMorphTargets(), e.weights !== void 0)
+    for (let t = 0, a = e.weights.length; t < a; t++)
+      o.morphTargetInfluences[t] = e.weights[t];
+  if (e.extras && Array.isArray(e.extras.targetNames)) {
+    const t = e.extras.targetNames;
+    if (o.morphTargetInfluences.length === t.length) {
+      o.morphTargetDictionary = {};
+      for (let a = 0, n = t.length; a < n; a++)
+        o.morphTargetDictionary[t[a]] = a;
+    } else
+      console.warn("THREE.GLTFLoader: Invalid extras.targetNames length. Ignoring names.");
+  }
+}
+function li(o) {
+  let e;
+  const t = o.extensions && o.extensions[ae.KHR_DRACO_MESH_COMPRESSION];
+  if (t ? e = "draco:" + t.bufferView + ":" + t.indices + ":" + ut(t.attributes) : e = o.indices + ":" + ut(o.attributes) + ":" + o.mode, o.targets !== void 0)
+    for (let a = 0, n = o.targets.length; a < n; a++)
+      e += ":" + ut(o.targets[a]);
+  return e;
+}
+function ut(o) {
+  let e = "";
+  const t = Object.keys(o).sort();
+  for (let a = 0, n = t.length; a < n; a++)
+    e += t[a] + ":" + o[t[a]] + ";";
+  return e;
+}
+function kt(o) {
+  switch (o) {
+    case Int8Array:
+      return 1 / 127;
+    case Uint8Array:
+      return 1 / 255;
+    case Int16Array:
+      return 1 / 32767;
+    case Uint16Array:
+      return 1 / 65535;
+    default:
+      throw new Error("THREE.GLTFLoader: Unsupported normalized accessor component type.");
+  }
+}
+function di(o) {
+  return o.search(/\.jpe?g($|\?)/i) > 0 || o.search(/^data\:image\/jpeg/) === 0 ? "image/jpeg" : o.search(/\.webp($|\?)/i) > 0 || o.search(/^data\:image\/webp/) === 0 ? "image/webp" : "image/png";
+}
+const hi = new st();
+class pi {
+  constructor(e = {}, t = {}) {
+    this.json = e, this.extensions = {}, this.plugins = {}, this.options = t, this.cache = new qn(), this.associations = /* @__PURE__ */ new Map(), this.primitiveCache = {}, this.nodeCache = {}, this.meshCache = { refs: {}, uses: {} }, this.cameraCache = { refs: {}, uses: {} }, this.lightCache = { refs: {}, uses: {} }, this.sourceCache = {}, this.textureCache = {}, this.nodeNamesUsed = {};
+    let a = !1, n = -1, i = !1, s = -1;
+    if (typeof navigator < "u") {
+      const r = navigator.userAgent;
+      a = /^((?!chrome|android).)*safari/i.test(r) === !0;
+      const c = r.match(/Version\/(\d+)/);
+      n = a && c ? parseInt(c[1], 10) : -1, i = r.indexOf("Firefox") > -1, s = i ? r.match(/Firefox\/([0-9]+)\./)[1] : -1;
+    }
+    typeof createImageBitmap > "u" || a && n < 17 || i && s < 98 ? this.textureLoader = new qa(this.options.manager) : this.textureLoader = new Da(this.options.manager), this.textureLoader.setCrossOrigin(this.options.crossOrigin), this.textureLoader.setRequestHeader(this.options.requestHeader), this.fileLoader = new it(this.options.manager), this.fileLoader.setResponseType("arraybuffer"), this.options.crossOrigin === "use-credentials" && this.fileLoader.setWithCredentials(!0);
+  }
+  setExtensions(e) {
+    this.extensions = e;
+  }
+  setPlugins(e) {
+    this.plugins = e;
+  }
+  parse(e, t) {
+    const a = this, n = this.json, i = this.extensions;
+    this.cache.removeAll(), this.nodeCache = {}, this._invokeAll(function(s) {
+      return s._markDefs && s._markDefs();
+    }), Promise.all(this._invokeAll(function(s) {
+      return s.beforeRoot && s.beforeRoot();
+    })).then(function() {
+      return Promise.all([
+        a.getDependencies("scene"),
+        a.getDependencies("animation"),
+        a.getDependencies("camera")
+      ]);
+    }).then(function(s) {
+      const r = {
+        scene: s[0][n.scene || 0],
+        scenes: s[0],
+        animations: s[1],
+        cameras: s[2],
+        asset: n.asset,
+        parser: a,
+        userData: {}
+      };
+      return je(i, r, n), _e(r, n), Promise.all(a._invokeAll(function(c) {
+        return c.afterRoot && c.afterRoot(r);
+      })).then(function() {
+        for (const c of r.scenes)
+          c.updateMatrixWorld();
+        e(r);
+      });
+    }).catch(t);
+  }
+  /**
+   * Marks the special nodes/meshes in json for efficient parse.
+   */
+  _markDefs() {
+    const e = this.json.nodes || [], t = this.json.skins || [], a = this.json.meshes || [];
+    for (let n = 0, i = t.length; n < i; n++) {
+      const s = t[n].joints;
+      for (let r = 0, c = s.length; r < c; r++)
+        e[s[r]].isBone = !0;
+    }
+    for (let n = 0, i = e.length; n < i; n++) {
+      const s = e[n];
+      s.mesh !== void 0 && (this._addNodeRef(this.meshCache, s.mesh), s.skin !== void 0 && (a[s.mesh].isSkinnedMesh = !0)), s.camera !== void 0 && this._addNodeRef(this.cameraCache, s.camera);
+    }
+  }
+  /**
+   * Counts references to shared node / Object3D resources. These resources
+   * can be reused, or "instantiated", at multiple nodes in the scene
+   * hierarchy. Mesh, Camera, and Light instances are instantiated and must
+   * be marked. Non-scenegraph resources (like Materials, Geometries, and
+   * Textures) can be reused directly and are not marked here.
+   *
+   * Example: CesiumMilkTruck sample model reuses "Wheel" meshes.
+   */
+  _addNodeRef(e, t) {
+    t !== void 0 && (e.refs[t] === void 0 && (e.refs[t] = e.uses[t] = 0), e.refs[t]++);
+  }
+  /** Returns a reference to a shared resource, cloning it if necessary. */
+  _getNodeRef(e, t, a) {
+    if (e.refs[t] <= 1) return a;
+    const n = a.clone(), i = (s, r) => {
+      const c = this.associations.get(s);
+      c != null && this.associations.set(r, c);
+      for (const [d, p] of s.children.entries())
+        i(p, r.children[d]);
+    };
+    return i(a, n), n.name += "_instance_" + e.uses[t]++, n;
+  }
+  _invokeOne(e) {
+    const t = Object.values(this.plugins);
+    t.push(this);
+    for (let a = 0; a < t.length; a++) {
+      const n = e(t[a]);
+      if (n) return n;
+    }
+    return null;
+  }
+  _invokeAll(e) {
+    const t = Object.values(this.plugins);
+    t.unshift(this);
+    const a = [];
+    for (let n = 0; n < t.length; n++) {
+      const i = e(t[n]);
+      i && a.push(i);
+    }
+    return a;
+  }
+  /**
+   * Requests the specified dependency asynchronously, with caching.
+   * @param {string} type
+   * @param {number} index
+   * @return {Promise<Object3D|Material|THREE.Texture|AnimationClip|ArrayBuffer|Object>}
+   */
+  getDependency(e, t) {
+    const a = e + ":" + t;
+    let n = this.cache.get(a);
+    if (!n) {
+      switch (e) {
+        case "scene":
+          n = this.loadScene(t);
+          break;
+        case "node":
+          n = this._invokeOne(function(i) {
+            return i.loadNode && i.loadNode(t);
+          });
+          break;
+        case "mesh":
+          n = this._invokeOne(function(i) {
+            return i.loadMesh && i.loadMesh(t);
+          });
+          break;
+        case "accessor":
+          n = this.loadAccessor(t);
+          break;
+        case "bufferView":
+          n = this._invokeOne(function(i) {
+            return i.loadBufferView && i.loadBufferView(t);
+          });
+          break;
+        case "buffer":
+          n = this.loadBuffer(t);
+          break;
+        case "material":
+          n = this._invokeOne(function(i) {
+            return i.loadMaterial && i.loadMaterial(t);
+          });
+          break;
+        case "texture":
+          n = this._invokeOne(function(i) {
+            return i.loadTexture && i.loadTexture(t);
+          });
+          break;
+        case "skin":
+          n = this.loadSkin(t);
+          break;
+        case "animation":
+          n = this._invokeOne(function(i) {
+            return i.loadAnimation && i.loadAnimation(t);
+          });
+          break;
+        case "camera":
+          n = this.loadCamera(t);
+          break;
+        default:
+          if (n = this._invokeOne(function(i) {
+            return i != this && i.getDependency && i.getDependency(e, t);
+          }), !n)
+            throw new Error("Unknown type: " + e);
+          break;
+      }
+      this.cache.add(a, n);
+    }
+    return n;
+  }
+  /**
+   * Requests all dependencies of the specified type asynchronously, with caching.
+   * @param {string} type
+   * @return {Promise<Array<Object>>}
+   */
+  getDependencies(e) {
+    let t = this.cache.get(e);
+    if (!t) {
+      const a = this, n = this.json[e + (e === "mesh" ? "es" : "s")] || [];
+      t = Promise.all(n.map(function(i, s) {
+        return a.getDependency(e, s);
+      })), this.cache.add(e, t);
+    }
+    return t;
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#buffers-and-buffer-views
+   * @param {number} bufferIndex
+   * @return {Promise<ArrayBuffer>}
+   */
+  loadBuffer(e) {
+    const t = this.json.buffers[e], a = this.fileLoader;
+    if (t.type && t.type !== "arraybuffer")
+      throw new Error("THREE.GLTFLoader: " + t.type + " buffer type is not supported.");
+    if (t.uri === void 0 && e === 0)
+      return Promise.resolve(this.extensions[ae.KHR_BINARY_GLTF].body);
+    const n = this.options;
+    return new Promise(function(i, s) {
+      a.load(We.resolveURL(t.uri, n.path), i, void 0, function() {
+        s(new Error('THREE.GLTFLoader: Failed to load buffer "' + t.uri + '".'));
+      });
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#buffers-and-buffer-views
+   * @param {number} bufferViewIndex
+   * @return {Promise<ArrayBuffer>}
+   */
+  loadBufferView(e) {
+    const t = this.json.bufferViews[e];
+    return this.getDependency("buffer", t.buffer).then(function(a) {
+      const n = t.byteLength || 0, i = t.byteOffset || 0;
+      return a.slice(i, i + n);
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#accessors
+   * @param {number} accessorIndex
+   * @return {Promise<BufferAttribute|InterleavedBufferAttribute>}
+   */
+  loadAccessor(e) {
+    const t = this, a = this.json, n = this.json.accessors[e];
+    if (n.bufferView === void 0 && n.sparse === void 0) {
+      const s = ht[n.type], r = Oe[n.componentType], c = n.normalized === !0, d = new r(n.count * s);
+      return Promise.resolve(new Je(d, s, c));
+    }
+    const i = [];
+    return n.bufferView !== void 0 ? i.push(this.getDependency("bufferView", n.bufferView)) : i.push(null), n.sparse !== void 0 && (i.push(this.getDependency("bufferView", n.sparse.indices.bufferView)), i.push(this.getDependency("bufferView", n.sparse.values.bufferView))), Promise.all(i).then(function(s) {
+      const r = s[0], c = ht[n.type], d = Oe[n.componentType], p = d.BYTES_PER_ELEMENT, f = p * c, w = n.byteOffset || 0, y = n.bufferView !== void 0 ? a.bufferViews[n.bufferView].byteStride : void 0, _ = n.normalized === !0;
+      let T, F;
+      if (y && y !== f) {
+        const C = Math.floor(w / y), R = "InterleavedBuffer:" + n.bufferView + ":" + n.componentType + ":" + C + ":" + n.count;
+        let z = t.cache.get(R);
+        z || (T = new d(r, C * y, n.count * y / p), z = new za(T, y / p), t.cache.add(R, z)), F = new Oa(z, c, w % y / p, _);
+      } else
+        r === null ? T = new d(n.count * c) : T = new d(r, w, n.count * c), F = new Je(T, c, _);
+      if (n.sparse !== void 0) {
+        const C = ht.SCALAR, R = Oe[n.sparse.indices.componentType], z = n.sparse.indices.byteOffset || 0, q = n.sparse.values.byteOffset || 0, H = new R(s[1], z, n.sparse.count * C), W = new d(s[2], q, n.sparse.count * c);
+        r !== null && (F = new Je(F.array.slice(), F.itemSize, F.normalized)), F.normalized = !1;
+        for (let J = 0, K = H.length; J < K; J++) {
+          const B = H[J];
+          if (F.setX(B, W[J * c]), c >= 2 && F.setY(B, W[J * c + 1]), c >= 3 && F.setZ(B, W[J * c + 2]), c >= 4 && F.setW(B, W[J * c + 3]), c >= 5) throw new Error("THREE.GLTFLoader: Unsupported itemSize in sparse BufferAttribute.");
+        }
+        F.normalized = _;
+      }
+      return F;
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#textures
+   * @param {number} textureIndex
+   * @return {Promise<THREE.Texture|null>}
+   */
+  loadTexture(e) {
+    const t = this.json, a = this.options, i = t.textures[e].source, s = t.images[i];
+    let r = this.textureLoader;
+    if (s.uri) {
+      const c = a.manager.getHandler(s.uri);
+      c !== null && (r = c);
+    }
+    return this.loadTextureImage(e, i, r);
+  }
+  loadTextureImage(e, t, a) {
+    const n = this, i = this.json, s = i.textures[e], r = i.images[t], c = (r.uri || r.bufferView) + ":" + s.sampler;
+    if (this.textureCache[c])
+      return this.textureCache[c];
+    const d = this.loadImageSource(t, a).then(function(p) {
+      p.flipY = !1, p.name = s.name || r.name || "", p.name === "" && typeof r.uri == "string" && r.uri.startsWith("data:image/") === !1 && (p.name = r.uri);
+      const w = (i.samplers || {})[s.sampler] || {};
+      return p.magFilter = Gt[w.magFilter] || oa, p.minFilter = Gt[w.minFilter] || ra, p.wrapS = Nt[w.wrapS] || yt, p.wrapT = Nt[w.wrapT] || yt, n.associations.set(p, { textures: e }), p;
+    }).catch(function() {
+      return null;
+    });
+    return this.textureCache[c] = d, d;
+  }
+  loadImageSource(e, t) {
+    const a = this, n = this.json, i = this.options;
+    if (this.sourceCache[e] !== void 0)
+      return this.sourceCache[e].then((f) => f.clone());
+    const s = n.images[e], r = self.URL || self.webkitURL;
+    let c = s.uri || "", d = !1;
+    if (s.bufferView !== void 0)
+      c = a.getDependency("bufferView", s.bufferView).then(function(f) {
+        d = !0;
+        const w = new Blob([f], { type: s.mimeType });
+        return c = r.createObjectURL(w), c;
+      });
+    else if (s.uri === void 0)
+      throw new Error("THREE.GLTFLoader: Image " + e + " is missing URI and bufferView");
+    const p = Promise.resolve(c).then(function(f) {
+      return new Promise(function(w, y) {
+        let _ = w;
+        t.isImageBitmapLoader === !0 && (_ = function(T) {
+          const F = new Dt(T);
+          F.needsUpdate = !0, w(F);
+        }), t.load(We.resolveURL(f, i.path), _, void 0, y);
+      });
+    }).then(function(f) {
+      return d === !0 && r.revokeObjectURL(c), _e(f, s), f.userData.mimeType = s.mimeType || di(s.uri), f;
+    }).catch(function(f) {
+      throw console.error("THREE.GLTFLoader: Couldn't load texture", c), f;
+    });
+    return this.sourceCache[e] = p, p;
+  }
+  /**
+   * Asynchronously assigns a texture to the given material parameters.
+   * @param {Object} materialParams
+   * @param {string} mapName
+   * @param {Object} mapDef
+   * @return {Promise<Texture>}
+   */
+  assignTexture(e, t, a, n) {
+    const i = this;
+    return this.getDependency("texture", a.index).then(function(s) {
+      if (!s) return null;
+      if (a.texCoord !== void 0 && a.texCoord > 0 && (s = s.clone(), s.channel = a.texCoord), i.extensions[ae.KHR_TEXTURE_TRANSFORM]) {
+        const r = a.extensions !== void 0 ? a.extensions[ae.KHR_TEXTURE_TRANSFORM] : void 0;
+        if (r) {
+          const c = i.associations.get(s);
+          s = i.extensions[ae.KHR_TEXTURE_TRANSFORM].extendTexture(s, r), i.associations.set(s, c);
+        }
+      }
+      return n !== void 0 && (s.colorSpace = n), e[t] = s, s;
+    });
+  }
+  /**
+   * Assigns final material to a Mesh, Line, or Points instance. The instance
+   * already has a material (generated from the glTF material options alone)
+   * but reuse of the same glTF material may require multiple threejs materials
+   * to accommodate different primitive types, defines, etc. New materials will
+   * be created if necessary, and reused from a cache.
+   * @param  {Object3D} mesh Mesh, Line, or Points instance.
+   */
+  assignFinalMaterial(e) {
+    const t = e.geometry;
+    let a = e.material;
+    const n = t.attributes.tangent === void 0, i = t.attributes.color !== void 0, s = t.attributes.normal === void 0;
+    if (e.isPoints) {
+      const r = "PointsMaterial:" + a.uuid;
+      let c = this.cache.get(r);
+      c || (c = new Pa(), lt.prototype.copy.call(c, a), c.color.copy(a.color), c.map = a.map, c.sizeAttenuation = !1, this.cache.add(r, c)), a = c;
+    } else if (e.isLine) {
+      const r = "LineBasicMaterial:" + a.uuid;
+      let c = this.cache.get(r);
+      c || (c = new Ha(), lt.prototype.copy.call(c, a), c.color.copy(a.color), c.map = a.map, this.cache.add(r, c)), a = c;
+    }
+    if (n || i || s) {
+      let r = "ClonedMaterial:" + a.uuid + ":";
+      n && (r += "derivative-tangents:"), i && (r += "vertex-colors:"), s && (r += "flat-shading:");
+      let c = this.cache.get(r);
+      c || (c = a.clone(), i && (c.vertexColors = !0), s && (c.flatShading = !0), n && (c.normalScale && (c.normalScale.y *= -1), c.clearcoatNormalScale && (c.clearcoatNormalScale.y *= -1)), this.cache.add(r, c), this.associations.set(c, this.associations.get(a))), a = c;
+    }
+    e.material = a;
+  }
+  getMaterialType() {
+    return ca;
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#materials
+   * @param {number} materialIndex
+   * @return {Promise<Material>}
+   */
+  loadMaterial(e) {
+    const t = this, a = this.json, n = this.extensions, i = a.materials[e];
+    let s;
+    const r = {}, c = i.extensions || {}, d = [];
+    if (c[ae.KHR_MATERIALS_UNLIT]) {
+      const f = n[ae.KHR_MATERIALS_UNLIT];
+      s = f.getMaterialType(), d.push(f.extendParams(r, i, t));
+    } else {
+      const f = i.pbrMetallicRoughness || {};
+      if (r.color = new me(1, 1, 1), r.opacity = 1, Array.isArray(f.baseColorFactor)) {
+        const w = f.baseColorFactor;
+        r.color.setRGB(w[0], w[1], w[2], ke), r.opacity = w[3];
+      }
+      f.baseColorTexture !== void 0 && d.push(t.assignTexture(r, "map", f.baseColorTexture, Re)), r.metalness = f.metallicFactor !== void 0 ? f.metallicFactor : 1, r.roughness = f.roughnessFactor !== void 0 ? f.roughnessFactor : 1, f.metallicRoughnessTexture !== void 0 && (d.push(t.assignTexture(r, "metalnessMap", f.metallicRoughnessTexture)), d.push(t.assignTexture(r, "roughnessMap", f.metallicRoughnessTexture))), s = this._invokeOne(function(w) {
+        return w.getMaterialType && w.getMaterialType(e);
+      }), d.push(Promise.all(this._invokeAll(function(w) {
+        return w.extendMaterialParams && w.extendMaterialParams(e, r);
+      })));
+    }
+    i.doubleSided === !0 && (r.side = la);
+    const p = i.alphaMode || pt.OPAQUE;
+    if (p === pt.BLEND ? (r.transparent = !0, r.depthWrite = !1) : (r.transparent = !1, p === pt.MASK && (r.alphaTest = i.alphaCutoff !== void 0 ? i.alphaCutoff : 0.5)), i.normalTexture !== void 0 && s !== Xe && (d.push(t.assignTexture(r, "normalMap", i.normalTexture)), r.normalScale = new na(1, 1), i.normalTexture.scale !== void 0)) {
+      const f = i.normalTexture.scale;
+      r.normalScale.set(f, f);
+    }
+    if (i.occlusionTexture !== void 0 && s !== Xe && (d.push(t.assignTexture(r, "aoMap", i.occlusionTexture)), i.occlusionTexture.strength !== void 0 && (r.aoMapIntensity = i.occlusionTexture.strength)), i.emissiveFactor !== void 0 && s !== Xe) {
+      const f = i.emissiveFactor;
+      r.emissive = new me().setRGB(f[0], f[1], f[2], ke);
+    }
+    return i.emissiveTexture !== void 0 && s !== Xe && d.push(t.assignTexture(r, "emissiveMap", i.emissiveTexture, Re)), Promise.all(d).then(function() {
+      const f = new s(r);
+      return i.name && (f.name = i.name), _e(f, i), t.associations.set(f, { materials: e }), i.extensions && je(n, f, i), f;
+    });
+  }
+  /** When Object3D instances are targeted by animation, they need unique names. */
+  createUniqueName(e) {
+    const t = Ia.sanitizeNodeName(e || "");
+    return t in this.nodeNamesUsed ? t + "_" + ++this.nodeNamesUsed[t] : (this.nodeNamesUsed[t] = 0, t);
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#geometry
+   *
+   * Creates BufferGeometries from primitives.
+   *
+   * @param {Array<GLTF.Primitive>} primitives
+   * @return {Promise<Array<BufferGeometry>>}
+   */
+  loadGeometries(e) {
+    const t = this, a = this.extensions, n = this.primitiveCache;
+    function i(r) {
+      return a[ae.KHR_DRACO_MESH_COMPRESSION].decodePrimitive(r, t).then(function(c) {
+        return $t(c, r, t);
+      });
+    }
+    const s = [];
+    for (let r = 0, c = e.length; r < c; r++) {
+      const d = e[r], p = li(d), f = n[p];
+      if (f)
+        s.push(f.promise);
+      else {
+        let w;
+        d.extensions && d.extensions[ae.KHR_DRACO_MESH_COMPRESSION] ? w = i(d) : w = $t(new da(), d, t), n[p] = { primitive: d, promise: w }, s.push(w);
+      }
+    }
+    return Promise.all(s);
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#meshes
+   * @param {number} meshIndex
+   * @return {Promise<Group|Mesh|SkinnedMesh>}
+   */
+  loadMesh(e) {
+    const t = this, a = this.json, n = this.extensions, i = a.meshes[e], s = i.primitives, r = [];
+    for (let c = 0, d = s.length; c < d; c++) {
+      const p = s[c].material === void 0 ? oi(this.cache) : this.getDependency("material", s[c].material);
+      r.push(p);
+    }
+    return r.push(t.loadGeometries(s)), Promise.all(r).then(function(c) {
+      const d = c.slice(0, c.length - 1), p = c[c.length - 1], f = [];
+      for (let y = 0, _ = p.length; y < _; y++) {
+        const T = p[y], F = s[y];
+        let C;
+        const R = d[y];
+        if (F.mode === ve.TRIANGLES || F.mode === ve.TRIANGLE_STRIP || F.mode === ve.TRIANGLE_FAN || F.mode === void 0)
+          C = i.isSkinnedMesh === !0 ? new Ba(T, R) : new ha(T, R), C.isSkinnedMesh === !0 && C.normalizeSkinWeights(), F.mode === ve.TRIANGLE_STRIP ? C.geometry = It(C.geometry, ta) : F.mode === ve.TRIANGLE_FAN && (C.geometry = It(C.geometry, vt));
+        else if (F.mode === ve.LINES)
+          C = new Ga(T, R);
+        else if (F.mode === ve.LINE_STRIP)
+          C = new Na(T, R);
+        else if (F.mode === ve.LINE_LOOP)
+          C = new $a(T, R);
+        else if (F.mode === ve.POINTS)
+          C = new Ua(T, R);
+        else
+          throw new Error("THREE.GLTFLoader: Primitive mode unsupported: " + F.mode);
+        Object.keys(C.geometry.morphAttributes).length > 0 && ci(C, i), C.name = t.createUniqueName(i.name || "mesh_" + e), _e(C, i), F.extensions && je(n, C, F), t.assignFinalMaterial(C), f.push(C);
+      }
+      for (let y = 0, _ = f.length; y < _; y++)
+        t.associations.set(f[y], {
+          meshes: e,
+          primitives: y
+        });
+      if (f.length === 1)
+        return i.extensions && je(n, f[0], i), f[0];
+      const w = new dt();
+      i.extensions && je(n, w, i), t.associations.set(w, { meshes: e });
+      for (let y = 0, _ = f.length; y < _; y++)
+        w.add(f[y]);
+      return w;
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#cameras
+   * @param {number} cameraIndex
+   * @return {Promise<THREE.Camera>}
+   */
+  loadCamera(e) {
+    let t;
+    const a = this.json.cameras[e], n = a[a.type];
+    if (!n) {
+      console.warn("THREE.GLTFLoader: Missing camera parameters.");
+      return;
+    }
+    return a.type === "perspective" ? t = new pa(Ka.radToDeg(n.yfov), n.aspectRatio || 1, n.znear || 1, n.zfar || 2e6) : a.type === "orthographic" && (t = new Va(-n.xmag, n.xmag, n.ymag, -n.ymag, n.znear, n.zfar)), a.name && (t.name = this.createUniqueName(a.name)), _e(t, a), Promise.resolve(t);
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#skins
+   * @param {number} skinIndex
+   * @return {Promise<Skeleton>}
+   */
+  loadSkin(e) {
+    const t = this.json.skins[e], a = [];
+    for (let n = 0, i = t.joints.length; n < i; n++)
+      a.push(this._loadNodeShallow(t.joints[n]));
+    return t.inverseBindMatrices !== void 0 ? a.push(this.getDependency("accessor", t.inverseBindMatrices)) : a.push(null), Promise.all(a).then(function(n) {
+      const i = n.pop(), s = n, r = [], c = [];
+      for (let d = 0, p = s.length; d < p; d++) {
+        const f = s[d];
+        if (f) {
+          r.push(f);
+          const w = new st();
+          i !== null && w.fromArray(i.array, d * 16), c.push(w);
+        } else
+          console.warn('THREE.GLTFLoader: Joint "%s" could not be found.', t.joints[d]);
+      }
+      return new Xa(r, c);
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#animations
+   * @param {number} animationIndex
+   * @return {Promise<AnimationClip>}
+   */
+  loadAnimation(e) {
+    const t = this.json, a = this, n = t.animations[e], i = n.name ? n.name : "animation_" + e, s = [], r = [], c = [], d = [], p = [];
+    for (let f = 0, w = n.channels.length; f < w; f++) {
+      const y = n.channels[f], _ = n.samplers[y.sampler], T = y.target, F = T.node, C = n.parameters !== void 0 ? n.parameters[_.input] : _.input, R = n.parameters !== void 0 ? n.parameters[_.output] : _.output;
+      T.node !== void 0 && (s.push(this.getDependency("node", F)), r.push(this.getDependency("accessor", C)), c.push(this.getDependency("accessor", R)), d.push(_), p.push(T));
+    }
+    return Promise.all([
+      Promise.all(s),
+      Promise.all(r),
+      Promise.all(c),
+      Promise.all(d),
+      Promise.all(p)
+    ]).then(function(f) {
+      const w = f[0], y = f[1], _ = f[2], T = f[3], F = f[4], C = [];
+      for (let R = 0, z = w.length; R < z; R++) {
+        const q = w[R], H = y[R], W = _[R], J = T[R], K = F[R];
+        if (q === void 0) continue;
+        q.updateMatrix && q.updateMatrix();
+        const B = a._createAnimationTracks(q, H, W, J, K);
+        if (B)
+          for (let se = 0; se < B.length; se++)
+            C.push(B[se]);
+      }
+      return new Wa(i, void 0, C);
+    });
+  }
+  createNodeMesh(e) {
+    const t = this.json, a = this, n = t.nodes[e];
+    return n.mesh === void 0 ? null : a.getDependency("mesh", n.mesh).then(function(i) {
+      const s = a._getNodeRef(a.meshCache, n.mesh, i);
+      return n.weights !== void 0 && s.traverse(function(r) {
+        if (r.isMesh)
+          for (let c = 0, d = n.weights.length; c < d; c++)
+            r.morphTargetInfluences[c] = n.weights[c];
+      }), s;
+    });
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#nodes-and-hierarchy
+   * @param {number} nodeIndex
+   * @return {Promise<Object3D>}
+   */
+  loadNode(e) {
+    const t = this.json, a = this, n = t.nodes[e], i = a._loadNodeShallow(e), s = [], r = n.children || [];
+    for (let d = 0, p = r.length; d < p; d++)
+      s.push(a.getDependency("node", r[d]));
+    const c = n.skin === void 0 ? Promise.resolve(null) : a.getDependency("skin", n.skin);
+    return Promise.all([
+      i,
+      Promise.all(s),
+      c
+    ]).then(function(d) {
+      const p = d[0], f = d[1], w = d[2];
+      w !== null && p.traverse(function(y) {
+        y.isSkinnedMesh && y.bind(w, hi);
+      });
+      for (let y = 0, _ = f.length; y < _; y++)
+        p.add(f[y]);
+      return p;
+    });
+  }
+  // ._loadNodeShallow() parses a single node.
+  // skin and child nodes are created and added in .loadNode() (no '_' prefix).
+  _loadNodeShallow(e) {
+    const t = this.json, a = this.extensions, n = this;
+    if (this.nodeCache[e] !== void 0)
+      return this.nodeCache[e];
+    const i = t.nodes[e], s = i.name ? n.createUniqueName(i.name) : "", r = [], c = n._invokeOne(function(d) {
+      return d.createNodeMesh && d.createNodeMesh(e);
+    });
+    return c && r.push(c), i.camera !== void 0 && r.push(n.getDependency("camera", i.camera).then(function(d) {
+      return n._getNodeRef(n.cameraCache, i.camera, d);
+    })), n._invokeAll(function(d) {
+      return d.createNodeAttachment && d.createNodeAttachment(e);
+    }).forEach(function(d) {
+      r.push(d);
+    }), this.nodeCache[e] = Promise.all(r).then(function(d) {
+      let p;
+      if (i.isBone === !0 ? p = new Ja() : d.length > 1 ? p = new dt() : d.length === 1 ? p = d[0] : p = new sa(), p !== d[0])
+        for (let f = 0, w = d.length; f < w; f++)
+          p.add(d[f]);
+      if (i.name && (p.userData.name = i.name, p.name = s), _e(p, i), i.extensions && je(a, p, i), i.matrix !== void 0) {
+        const f = new st();
+        f.fromArray(i.matrix), p.applyMatrix4(f);
+      } else
+        i.translation !== void 0 && p.position.fromArray(i.translation), i.rotation !== void 0 && p.quaternion.fromArray(i.rotation), i.scale !== void 0 && p.scale.fromArray(i.scale);
+      return n.associations.has(p) || n.associations.set(p, {}), n.associations.get(p).nodes = e, p;
+    }), this.nodeCache[e];
+  }
+  /**
+   * Specification: https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#scenes
+   * @param {number} sceneIndex
+   * @return {Promise<Group>}
+   */
+  loadScene(e) {
+    const t = this.extensions, a = this.json.scenes[e], n = this, i = new dt();
+    a.name && (i.name = n.createUniqueName(a.name)), _e(i, a), a.extensions && je(t, i, a);
+    const s = a.nodes || [], r = [];
+    for (let c = 0, d = s.length; c < d; c++)
+      r.push(n.getDependency("node", s[c]));
+    return Promise.all(r).then(function(c) {
+      for (let p = 0, f = c.length; p < f; p++)
+        i.add(c[p]);
+      const d = (p) => {
+        const f = /* @__PURE__ */ new Map();
+        for (const [w, y] of n.associations)
+          (w instanceof lt || w instanceof Dt) && f.set(w, y);
+        return p.traverse((w) => {
+          const y = n.associations.get(w);
+          y != null && f.set(w, y);
+        }), f;
+      };
+      return n.associations = d(i), i;
+    });
+  }
+  _createAnimationTracks(e, t, a, n, i) {
+    const s = [], r = e.name ? e.name : e.uuid, c = [];
+    Me[i.path] === Me.weights ? e.traverse(function(w) {
+      w.morphTargetInfluences && c.push(w.name ? w.name : w.uuid);
+    }) : c.push(r);
+    let d;
+    switch (Me[i.path]) {
+      case Me.weights:
+        d = Ot;
+        break;
+      case Me.rotation:
+        d = Pt;
+        break;
+      case Me.position:
+      case Me.scale:
+        d = zt;
+        break;
+      default:
+        switch (a.itemSize) {
+          case 1:
+            d = Ot;
+            break;
+          case 2:
+          case 3:
+          default:
+            d = zt;
+            break;
+        }
+        break;
+    }
+    const p = n.interpolation !== void 0 ? si[n.interpolation] : ua, f = this._getArrayFromAccessor(a);
+    for (let w = 0, y = c.length; w < y; w++) {
+      const _ = new d(
+        c[w] + "." + Me[i.path],
+        t.array,
+        f,
+        p
+      );
+      n.interpolation === "CUBICSPLINE" && this._createCubicSplineTrackInterpolant(_), s.push(_);
+    }
+    return s;
+  }
+  _getArrayFromAccessor(e) {
+    let t = e.array;
+    if (e.normalized) {
+      const a = kt(t.constructor), n = new Float32Array(t.length);
+      for (let i = 0, s = t.length; i < s; i++)
+        n[i] = t[i] * a;
+      t = n;
+    }
+    return t;
+  }
+  _createCubicSplineTrackInterpolant(e) {
+    e.createInterpolant = function(a) {
+      const n = this instanceof Pt ? ii : fa;
+      return new n(this.times, this.values, this.getValueSize() / 3, a);
+    }, e.createInterpolant.isInterpolantFactoryMethodGLTFCubicSpline = !0;
+  }
+}
+function ui(o, e, t) {
+  const a = e.attributes, n = new on();
+  if (a.POSITION !== void 0) {
+    const r = t.json.accessors[a.POSITION], c = r.min, d = r.max;
+    if (c !== void 0 && d !== void 0) {
+      if (n.set(
+        new ze(c[0], c[1], c[2]),
+        new ze(d[0], d[1], d[2])
+      ), r.normalized) {
+        const p = kt(Oe[r.componentType]);
+        n.min.multiplyScalar(p), n.max.multiplyScalar(p);
+      }
+    } else {
+      console.warn("THREE.GLTFLoader: Missing min/max properties for accessor POSITION.");
+      return;
+    }
+  } else
+    return;
+  const i = e.targets;
+  if (i !== void 0) {
+    const r = new ze(), c = new ze();
+    for (let d = 0, p = i.length; d < p; d++) {
+      const f = i[d];
+      if (f.POSITION !== void 0) {
+        const w = t.json.accessors[f.POSITION], y = w.min, _ = w.max;
+        if (y !== void 0 && _ !== void 0) {
+          if (c.setX(Math.max(Math.abs(y[0]), Math.abs(_[0]))), c.setY(Math.max(Math.abs(y[1]), Math.abs(_[1]))), c.setZ(Math.max(Math.abs(y[2]), Math.abs(_[2]))), w.normalized) {
+            const T = kt(Oe[w.componentType]);
+            c.multiplyScalar(T);
+          }
+          r.max(c);
+        } else
+          console.warn("THREE.GLTFLoader: Missing min/max properties for accessor POSITION.");
+      }
+    }
+    n.expandByVector(r);
+  }
+  o.boundingBox = n;
+  const s = new rn();
+  n.getCenter(s.center), s.radius = n.min.distanceTo(n.max) / 2, o.boundingSphere = s;
+}
+function $t(o, e, t) {
+  const a = e.attributes, n = [];
+  function i(s, r) {
+    return t.getDependency("accessor", s).then(function(c) {
+      o.setAttribute(r, c);
+    });
+  }
+  for (const s in a) {
+    const r = At[s] || s.toLowerCase();
+    r in o.attributes || n.push(i(a[s], r));
+  }
+  if (e.indices !== void 0 && !o.index) {
+    const s = t.getDependency("accessor", e.indices).then(function(r) {
+      o.setIndex(r);
+    });
+    n.push(s);
+  }
+  return xt.workingColorSpace !== ke && "COLOR_0" in a && console.warn(`THREE.GLTFLoader: Converting vertex colors from "srgb-linear" to "${xt.workingColorSpace}" not supported.`), _e(o, e), ui(o, e, t), Promise.all(n).then(function() {
+    return e.targets !== void 0 ? ri(o, e.targets, t) : o;
+  });
+}
+const bt = /* @__PURE__ */ new WeakMap();
+class bi extends aa {
+  constructor(e) {
+    super(e), this.decoderPath = "", this.decoderConfig = {}, this.decoderBinary = null, this.decoderPending = null, this.workerLimit = 4, this.workerPool = [], this.workerNextTaskID = 1, this.workerSourceURL = "", this.defaultAttributeIDs = {
+      position: "POSITION",
+      normal: "NORMAL",
+      color: "COLOR",
+      uv: "TEX_COORD"
+    }, this.defaultAttributeTypes = {
+      position: "Float32Array",
+      normal: "Float32Array",
+      color: "Float32Array",
+      uv: "Float32Array"
+    };
+  }
+  setDecoderPath(e) {
+    return this.decoderPath = e, this;
+  }
+  setDecoderConfig(e) {
+    return this.decoderConfig = e, this;
+  }
+  setWorkerLimit(e) {
+    return this.workerLimit = e, this;
+  }
+  load(e, t, a, n) {
+    const i = new it(this.manager);
+    i.setPath(this.path), i.setResponseType("arraybuffer"), i.setRequestHeader(this.requestHeader), i.setWithCredentials(this.withCredentials), i.load(e, (s) => {
+      this.parse(s, t, n);
+    }, a, n);
+  }
+  parse(e, t, a = () => {
+  }) {
+    this.decodeDracoFile(e, t, null, null, Re, a).catch(a);
+  }
+  decodeDracoFile(e, t, a, n, i = ke, s = () => {
+  }) {
+    const r = {
+      attributeIDs: a || this.defaultAttributeIDs,
+      attributeTypes: n || this.defaultAttributeTypes,
+      useUniqueIDs: !!a,
+      vertexColorSpace: i
+    };
+    return this.decodeGeometry(e, r).then(t).catch(s);
+  }
+  decodeGeometry(e, t) {
+    const a = JSON.stringify(t);
+    if (bt.has(e)) {
+      const c = bt.get(e);
+      if (c.key === a)
+        return c.promise;
+      if (e.byteLength === 0)
+        throw new Error(
+          "THREE.DRACOLoader: Unable to re-decode a buffer with different settings. Buffer has already been transferred."
+        );
+    }
+    let n;
+    const i = this.workerNextTaskID++, s = e.byteLength, r = this._getWorker(i, s).then((c) => (n = c, new Promise((d, p) => {
+      n._callbacks[i] = { resolve: d, reject: p }, n.postMessage({ type: "decode", id: i, taskConfig: t, buffer: e }, [e]);
+    }))).then((c) => this._createGeometry(c.geometry));
+    return r.catch(() => !0).then(() => {
+      n && i && this._releaseTask(n, i);
+    }), bt.set(e, {
+      key: a,
+      promise: r
+    }), r;
+  }
+  _createGeometry(e) {
+    const t = new da();
+    e.index && t.setIndex(new Je(e.index.array, 1));
+    for (let a = 0; a < e.attributes.length; a++) {
+      const n = e.attributes[a], i = n.name, s = n.array, r = n.itemSize, c = new Je(s, r);
+      i === "color" && (this._assignVertexColorSpace(c, n.vertexColorSpace), c.normalized = !(s instanceof Float32Array)), t.setAttribute(i, c);
+    }
+    return t;
+  }
+  _assignVertexColorSpace(e, t) {
+    if (t !== Re) return;
+    const a = new me();
+    for (let n = 0, i = e.count; n < i; n++)
+      a.fromBufferAttribute(e, n), xt.toWorkingColorSpace(a, Re), e.setXYZ(n, a.r, a.g, a.b);
+  }
+  _loadLibrary(e, t) {
+    const a = new it(this.manager);
+    return a.setPath(this.decoderPath), a.setResponseType(t), a.setWithCredentials(this.withCredentials), new Promise((n, i) => {
+      a.load(e, n, void 0, i);
+    });
+  }
+  preload() {
+    return this._initDecoder(), this;
+  }
+  _initDecoder() {
+    if (this.decoderPending) return this.decoderPending;
+    const e = typeof WebAssembly != "object" || this.decoderConfig.type === "js", t = [];
+    return e ? t.push(this._loadLibrary("draco_decoder.js", "text")) : (t.push(this._loadLibrary("draco_wasm_wrapper.js", "text")), t.push(this._loadLibrary("draco_decoder.wasm", "arraybuffer"))), this.decoderPending = Promise.all(t).then((a) => {
+      const n = a[0];
+      e || (this.decoderConfig.wasmBinary = a[1]);
+      const i = fi.toString(), s = [
+        "/* draco decoder */",
+        n,
+        "",
+        "/* worker */",
+        i.substring(i.indexOf("{") + 1, i.lastIndexOf("}"))
+      ].join(`
+`);
+      this.workerSourceURL = URL.createObjectURL(new Blob([s]));
+    }), this.decoderPending;
+  }
+  _getWorker(e, t) {
+    return this._initDecoder().then(() => {
+      if (this.workerPool.length < this.workerLimit) {
+        const n = new Worker(this.workerSourceURL);
+        n._callbacks = {}, n._taskCosts = {}, n._taskLoad = 0, n.postMessage({ type: "init", decoderConfig: this.decoderConfig }), n.onmessage = function(i) {
+          const s = i.data;
+          switch (s.type) {
+            case "decode":
+              n._callbacks[s.id].resolve(s);
+              break;
+            case "error":
+              n._callbacks[s.id].reject(s);
+              break;
+            default:
+              console.error('THREE.DRACOLoader: Unexpected message, "' + s.type + '"');
+          }
+        }, this.workerPool.push(n);
+      } else
+        this.workerPool.sort(function(n, i) {
+          return n._taskLoad > i._taskLoad ? -1 : 1;
+        });
+      const a = this.workerPool[this.workerPool.length - 1];
+      return a._taskCosts[e] = t, a._taskLoad += t, a;
+    });
+  }
+  _releaseTask(e, t) {
+    e._taskLoad -= e._taskCosts[t], delete e._callbacks[t], delete e._taskCosts[t];
+  }
+  debug() {
+    console.log("Task load: ", this.workerPool.map((e) => e._taskLoad));
+  }
+  dispose() {
+    for (let e = 0; e < this.workerPool.length; ++e)
+      this.workerPool[e].terminate();
+    return this.workerPool.length = 0, this.workerSourceURL !== "" && URL.revokeObjectURL(this.workerSourceURL), this;
+  }
+}
+function fi() {
+  let o, e;
+  onmessage = function(s) {
+    const r = s.data;
+    switch (r.type) {
+      case "init":
+        o = r.decoderConfig, e = new Promise(function(p) {
+          o.onModuleLoaded = function(f) {
+            p({ draco: f });
+          }, DracoDecoderModule(o);
+        });
+        break;
+      case "decode":
+        const c = r.buffer, d = r.taskConfig;
+        e.then((p) => {
+          const f = p.draco, w = new f.Decoder();
+          try {
+            const y = t(f, w, new Int8Array(c), d), _ = y.attributes.map((T) => T.array.buffer);
+            y.index && _.push(y.index.array.buffer), self.postMessage({ type: "decode", id: r.id, geometry: y }, _);
+          } catch (y) {
+            console.error(y), self.postMessage({ type: "error", id: r.id, error: y.message });
+          } finally {
+            f.destroy(w);
+          }
+        });
+        break;
+    }
+  };
+  function t(s, r, c, d) {
+    const p = d.attributeIDs, f = d.attributeTypes;
+    let w, y;
+    const _ = r.GetEncodedGeometryType(c);
+    if (_ === s.TRIANGULAR_MESH)
+      w = new s.Mesh(), y = r.DecodeArrayToMesh(c, c.byteLength, w);
+    else if (_ === s.POINT_CLOUD)
+      w = new s.PointCloud(), y = r.DecodeArrayToPointCloud(c, c.byteLength, w);
+    else
+      throw new Error("THREE.DRACOLoader: Unexpected geometry type.");
+    if (!y.ok() || w.ptr === 0)
+      throw new Error("THREE.DRACOLoader: Decoding failed: " + y.error_msg());
+    const T = { index: null, attributes: [] };
+    for (const F in p) {
+      const C = self[f[F]];
+      let R, z;
+      if (d.useUniqueIDs)
+        z = p[F], R = r.GetAttributeByUniqueId(w, z);
+      else {
+        if (z = r.GetAttributeId(w, s[p[F]]), z === -1) continue;
+        R = r.GetAttribute(w, z);
+      }
+      const q = n(s, r, w, F, C, R);
+      F === "color" && (q.vertexColorSpace = d.vertexColorSpace), T.attributes.push(q);
+    }
+    return _ === s.TRIANGULAR_MESH && (T.index = a(s, r, w)), s.destroy(w), T;
+  }
+  function a(s, r, c) {
+    const p = c.num_faces() * 3, f = p * 4, w = s._malloc(f);
+    r.GetTrianglesUInt32Array(c, f, w);
+    const y = new Uint32Array(s.HEAPF32.buffer, w, p).slice();
+    return s._free(w), { array: y, itemSize: 1 };
+  }
+  function n(s, r, c, d, p, f) {
+    const w = f.num_components(), _ = c.num_points() * w, T = _ * p.BYTES_PER_ELEMENT, F = i(s, p), C = s._malloc(T);
+    r.GetAttributeDataArrayForAllPoints(c, f, F, T, C);
+    const R = new p(s.HEAPF32.buffer, C, _).slice();
+    return s._free(C), {
+      name: d,
+      array: R,
+      itemSize: w
+    };
+  }
+  function i(s, r) {
+    switch (r) {
+      case Float32Array:
+        return s.DT_FLOAT32;
+      case Int8Array:
+        return s.DT_INT8;
+      case Int16Array:
+        return s.DT_INT16;
+      case Int32Array:
+        return s.DT_INT32;
+      case Uint8Array:
+        return s.DT_UINT8;
+      case Uint16Array:
+        return s.DT_UINT16;
+      case Uint32Array:
+        return s.DT_UINT32;
+    }
+  }
+}
+/*!
+fflate - fast JavaScript compression/decompression
+<https://101arrowz.github.io/fflate>
+Licensed under MIT. https://github.com/101arrowz/fflate/blob/master/LICENSE
+version 0.8.2
+*/
+var ge = Uint8Array, we = Uint16Array, Ct = Int32Array, jt = new ge([
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1,
+  1,
+  2,
+  2,
+  2,
+  2,
+  3,
+  3,
+  3,
+  3,
+  4,
+  4,
+  4,
+  4,
+  5,
+  5,
+  5,
+  5,
+  0,
+  /* unused */
+  0,
+  0,
+  /* impossible */
+  0
+]), Ft = new ge([
+  0,
+  0,
+  0,
+  0,
+  1,
+  1,
+  2,
+  2,
+  3,
+  3,
+  4,
+  4,
+  5,
+  5,
+  6,
+  6,
+  7,
+  7,
+  8,
+  8,
+  9,
+  9,
+  10,
+  10,
+  11,
+  11,
+  12,
+  12,
+  13,
+  13,
+  /* unused */
+  0,
+  0
+]), Ut = new ge([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]), ga = function(o, e) {
+  for (var t = new we(31), a = 0; a < 31; ++a)
+    t[a] = e += 1 << o[a - 1];
+  for (var n = new Ct(t[30]), a = 1; a < 30; ++a)
+    for (var i = t[a]; i < t[a + 1]; ++i)
+      n[i] = i - t[a] << 5 | a;
+  return { b: t, r: n };
+}, ma = ga(jt, 2), gi = ma.b, St = ma.r;
+gi[28] = 258, St[258] = 28;
+var mi = ga(Ft, 0), Kt = mi.r, Et = new we(32768);
+for (var de = 0; de < 32768; ++de) {
+  var Le = (de & 43690) >> 1 | (de & 21845) << 1;
+  Le = (Le & 52428) >> 2 | (Le & 13107) << 2, Le = (Le & 61680) >> 4 | (Le & 3855) << 4, Et[de] = ((Le & 65280) >> 8 | (Le & 255) << 8) >> 1;
+}
+var Ye = function(o, e, t) {
+  for (var a = o.length, n = 0, i = new we(e); n < a; ++n)
+    o[n] && ++i[o[n] - 1];
+  var s = new we(e);
+  for (n = 1; n < e; ++n)
+    s[n] = s[n - 1] + i[n - 1] << 1;
+  var r;
+  if (t) {
+    r = new we(1 << e);
+    var c = 15 - e;
+    for (n = 0; n < a; ++n)
+      if (o[n])
+        for (var d = n << 4 | o[n], p = e - o[n], f = s[o[n] - 1]++ << p, w = f | (1 << p) - 1; f <= w; ++f)
+          r[Et[f] >> c] = d;
+  } else
+    for (r = new we(a), n = 0; n < a; ++n)
+      o[n] && (r[n] = Et[s[o[n] - 1]++] >> 15 - o[n]);
+  return r;
+}, qe = new ge(288);
+for (var de = 0; de < 144; ++de)
+  qe[de] = 8;
+for (var de = 144; de < 256; ++de)
+  qe[de] = 9;
+for (var de = 256; de < 280; ++de)
+  qe[de] = 7;
+for (var de = 280; de < 288; ++de)
+  qe[de] = 8;
+var ot = new ge(32);
+for (var de = 0; de < 32; ++de)
+  ot[de] = 5;
+var wi = /* @__PURE__ */ Ye(qe, 9, 0), vi = /* @__PURE__ */ Ye(ot, 5, 0), wa = function(o) {
+  return (o + 7) / 8 | 0;
+}, va = function(o, e, t) {
+  return (t == null || t > o.length) && (t = o.length), new ge(o.subarray(e, t));
+}, yi = [
+  "unexpected EOF",
+  "invalid block type",
+  "invalid length/literal",
+  "invalid distance",
+  "stream finished",
+  "no stream handler",
+  ,
+  "no callback",
+  "invalid UTF-8 data",
+  "extra field too long",
+  "date not in range 1980-2099",
+  "filename too long",
+  "stream finishing",
+  "invalid zip data"
+  // determined by unknown compression method
+], ct = function(o, e, t) {
+  var a = new Error(e || yi[o]);
+  if (a.code = o, Error.captureStackTrace && Error.captureStackTrace(a, ct), !t)
+    throw a;
+  return a;
+}, Ee = function(o, e, t) {
+  t <<= e & 7;
+  var a = e / 8 | 0;
+  o[a] |= t, o[a + 1] |= t >> 8;
+}, $e = function(o, e, t) {
+  t <<= e & 7;
+  var a = e / 8 | 0;
+  o[a] |= t, o[a + 1] |= t >> 8, o[a + 2] |= t >> 16;
+}, ft = function(o, e) {
+  for (var t = [], a = 0; a < o.length; ++a)
+    o[a] && t.push({ s: a, f: o[a] });
+  var n = t.length, i = t.slice();
+  if (!n)
+    return { t: xa, l: 0 };
+  if (n == 1) {
+    var s = new ge(t[0].s + 1);
+    return s[t[0].s] = 1, { t: s, l: 1 };
+  }
+  t.sort(function(H, W) {
+    return H.f - W.f;
+  }), t.push({ s: -1, f: 25001 });
+  var r = t[0], c = t[1], d = 0, p = 1, f = 2;
+  for (t[0] = { s: -1, f: r.f + c.f, l: r, r: c }; p != n - 1; )
+    r = t[t[d].f < t[f].f ? d++ : f++], c = t[d != p && t[d].f < t[f].f ? d++ : f++], t[p++] = { s: -1, f: r.f + c.f, l: r, r: c };
+  for (var w = i[0].s, a = 1; a < n; ++a)
+    i[a].s > w && (w = i[a].s);
+  var y = new we(w + 1), _ = _t(t[p - 1], y, 0);
+  if (_ > e) {
+    var a = 0, T = 0, F = _ - e, C = 1 << F;
+    for (i.sort(function(W, J) {
+      return y[J.s] - y[W.s] || W.f - J.f;
+    }); a < n; ++a) {
+      var R = i[a].s;
+      if (y[R] > e)
+        T += C - (1 << _ - y[R]), y[R] = e;
+      else
+        break;
+    }
+    for (T >>= F; T > 0; ) {
+      var z = i[a].s;
+      y[z] < e ? T -= 1 << e - y[z]++ - 1 : ++a;
+    }
+    for (; a >= 0 && T; --a) {
+      var q = i[a].s;
+      y[q] == e && (--y[q], ++T);
+    }
+    _ = e;
+  }
+  return { t: new ge(y), l: _ };
+}, _t = function(o, e, t) {
+  return o.s == -1 ? Math.max(_t(o.l, e, t + 1), _t(o.r, e, t + 1)) : e[o.s] = t;
+}, Vt = function(o) {
+  for (var e = o.length; e && !o[--e]; )
+    ;
+  for (var t = new we(++e), a = 0, n = o[0], i = 1, s = function(c) {
+    t[a++] = c;
+  }, r = 1; r <= e; ++r)
+    if (o[r] == n && r != e)
+      ++i;
+    else {
+      if (!n && i > 2) {
+        for (; i > 138; i -= 138)
+          s(32754);
+        i > 2 && (s(i > 10 ? i - 11 << 5 | 28690 : i - 3 << 5 | 12305), i = 0);
+      } else if (i > 3) {
+        for (s(n), --i; i > 6; i -= 6)
+          s(8304);
+        i > 2 && (s(i - 3 << 5 | 8208), i = 0);
+      }
+      for (; i--; )
+        s(n);
+      i = 1, n = o[r];
+    }
+  return { c: t.subarray(0, a), n: e };
+}, Ue = function(o, e) {
+  for (var t = 0, a = 0; a < e.length; ++a)
+    t += o[a] * e[a];
+  return t;
+}, ya = function(o, e, t) {
+  var a = t.length, n = wa(e + 2);
+  o[n] = a & 255, o[n + 1] = a >> 8, o[n + 2] = o[n] ^ 255, o[n + 3] = o[n + 1] ^ 255;
+  for (var i = 0; i < a; ++i)
+    o[n + i + 4] = t[i];
+  return (n + 4 + a) * 8;
+}, Xt = function(o, e, t, a, n, i, s, r, c, d, p) {
+  Ee(e, p++, t), ++n[256];
+  for (var f = ft(n, 15), w = f.t, y = f.l, _ = ft(i, 15), T = _.t, F = _.l, C = Vt(w), R = C.c, z = C.n, q = Vt(T), H = q.c, W = q.n, J = new we(19), K = 0; K < R.length; ++K)
+    ++J[R[K] & 31];
+  for (var K = 0; K < H.length; ++K)
+    ++J[H[K] & 31];
+  for (var B = ft(J, 7), se = B.t, ue = B.l, N = 19; N > 4 && !se[Ut[N - 1]]; --N)
+    ;
+  var m = d + 5 << 3, l = Ue(n, qe) + Ue(i, ot) + s, b = Ue(n, w) + Ue(i, T) + s + 14 + 3 * N + Ue(J, se) + 2 * J[16] + 3 * J[17] + 7 * J[18];
+  if (c >= 0 && m <= l && m <= b)
+    return ya(e, p, o.subarray(c, c + d));
+  var u, h, g, v;
+  if (Ee(e, p, 1 + (b < l)), p += 2, b < l) {
+    u = Ye(w, y, 0), h = w, g = Ye(T, F, 0), v = T;
+    var x = Ye(se, ue, 0);
+    Ee(e, p, z - 257), Ee(e, p + 5, W - 1), Ee(e, p + 10, N - 4), p += 14;
+    for (var K = 0; K < N; ++K)
+      Ee(e, p + 3 * K, se[Ut[K]]);
+    p += 3 * N;
+    for (var k = [R, H], E = 0; E < 2; ++E)
+      for (var P = k[E], K = 0; K < P.length; ++K) {
+        var D = P[K] & 31;
+        Ee(e, p, x[D]), p += se[D], D > 15 && (Ee(e, p, P[K] >> 5 & 127), p += P[K] >> 12);
+      }
+  } else
+    u = wi, h = qe, g = vi, v = ot;
+  for (var K = 0; K < r; ++K) {
+    var O = a[K];
+    if (O > 255) {
+      var D = O >> 18 & 31;
+      $e(e, p, u[D + 257]), p += h[D + 257], D > 7 && (Ee(e, p, O >> 23 & 31), p += jt[D]);
+      var $ = O & 31;
+      $e(e, p, g[$]), p += v[$], $ > 3 && ($e(e, p, O >> 5 & 8191), p += Ft[$]);
+    } else
+      $e(e, p, u[O]), p += h[O];
+  }
+  return $e(e, p, u[256]), p + h[256];
+}, xi = /* @__PURE__ */ new Ct([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]), xa = /* @__PURE__ */ new ge(0), Ai = function(o, e, t, a, n, i) {
+  var s = i.z || o.length, r = new ge(a + s + 5 * (1 + Math.ceil(s / 7e3)) + n), c = r.subarray(a, r.length - n), d = i.l, p = (i.r || 0) & 7;
+  if (e) {
+    p && (c[0] = i.r >> 3);
+    for (var f = xi[e - 1], w = f >> 13, y = f & 8191, _ = (1 << t) - 1, T = i.p || new we(32768), F = i.h || new we(_ + 1), C = Math.ceil(t / 3), R = 2 * C, z = function(S) {
+      return (o[S] ^ o[S + 1] << C ^ o[S + 2] << R) & _;
+    }, q = new Ct(25e3), H = new we(288), W = new we(32), J = 0, K = 0, B = i.i || 0, se = 0, ue = i.w || 0, N = 0; B + 2 < s; ++B) {
+      var m = z(B), l = B & 32767, b = F[m];
+      if (T[l] = b, F[m] = l, ue <= B) {
+        var u = s - B;
+        if ((J > 7e3 || se > 24576) && (u > 423 || !d)) {
+          p = Xt(o, c, 0, q, H, W, K, se, N, B - N, p), se = J = K = 0, N = B;
+          for (var h = 0; h < 286; ++h)
+            H[h] = 0;
+          for (var h = 0; h < 30; ++h)
+            W[h] = 0;
+        }
+        var g = 2, v = 0, x = y, k = l - b & 32767;
+        if (u > 2 && m == z(B - k))
+          for (var E = Math.min(w, u) - 1, P = Math.min(32767, B), D = Math.min(258, u); k <= P && --x && l != b; ) {
+            if (o[B + g] == o[B + g - k]) {
+              for (var O = 0; O < D && o[B + O] == o[B + O - k]; ++O)
+                ;
+              if (O > g) {
+                if (g = O, v = k, O > E)
+                  break;
+                for (var $ = Math.min(k, O - 2), ee = 0, h = 0; h < $; ++h) {
+                  var I = B - k + h & 32767, ie = T[I], Z = I - ie & 32767;
+                  Z > ee && (ee = Z, b = I);
+                }
+              }
+            }
+            l = b, b = T[l], k += l - b & 32767;
+          }
+        if (v) {
+          q[se++] = 268435456 | St[g] << 18 | Kt[v];
+          var U = St[g] & 31, A = Kt[v] & 31;
+          K += jt[U] + Ft[A], ++H[257 + U], ++W[A], ue = B + g, ++J;
+        } else
+          q[se++] = o[B], ++H[o[B]];
+      }
+    }
+    for (B = Math.max(B, ue); B < s; ++B)
+      q[se++] = o[B], ++H[o[B]];
+    p = Xt(o, c, d, q, H, W, K, se, N, B - N, p), d || (i.r = p & 7 | c[p / 8 | 0] << 3, p -= 7, i.h = F, i.p = T, i.i = B, i.w = ue);
+  } else {
+    for (var B = i.w || 0; B < s + d; B += 65535) {
+      var M = B + 65535;
+      M >= s && (c[p / 8 | 0] = d, M = s), p = ya(c, p + 1, o.subarray(B, M));
+    }
+    i.i = s;
+  }
+  return va(r, 0, a + wa(p) + n);
+}, ki = /* @__PURE__ */ function() {
+  for (var o = new Int32Array(256), e = 0; e < 256; ++e) {
+    for (var t = e, a = 9; --a; )
+      t = (t & 1 && -306674912) ^ t >>> 1;
+    o[e] = t;
+  }
+  return o;
+}(), Si = function() {
+  var o = -1;
+  return {
+    p: function(e) {
+      for (var t = o, a = 0; a < e.length; ++a)
+        t = ki[t & 255 ^ e[a]] ^ t >>> 8;
+      o = t;
+    },
+    d: function() {
+      return ~o;
+    }
+  };
+}, Ei = function(o, e, t, a, n) {
+  if (!n && (n = { l: 1 }, e.dictionary)) {
+    var i = e.dictionary.subarray(-32768), s = new ge(i.length + o.length);
+    s.set(i), s.set(o, i.length), o = s, n.w = i.length;
+  }
+  return Ai(o, e.level == null ? 6 : e.level, e.mem == null ? n.l ? Math.ceil(Math.max(8, Math.min(13, Math.log(o.length))) * 1.5) : 20 : 12 + e.mem, t, a, n);
+}, Aa = function(o, e) {
+  var t = {};
+  for (var a in o)
+    t[a] = o[a];
+  for (var a in e)
+    t[a] = e[a];
+  return t;
+}, be = function(o, e, t) {
+  for (; t; ++e)
+    o[e] = t, t >>>= 8;
+};
+function _i(o, e) {
+  return Ei(o, e || {}, 0, 0);
+}
+var ka = function(o, e, t, a) {
+  for (var n in o) {
+    var i = o[n], s = e + n, r = a;
+    Array.isArray(i) && (r = Aa(a, i[1]), i = i[0]), i instanceof ge ? t[s] = [i, r] : (t[s += "/"] = [new ge(0), r], ka(i, s, t, a));
+  }
+}, Wt = typeof TextEncoder < "u" && /* @__PURE__ */ new TextEncoder(), Ri = typeof TextDecoder < "u" && /* @__PURE__ */ new TextDecoder(), Ti = 0;
+try {
+  Ri.decode(xa, { stream: !0 }), Ti = 1;
+} catch {
+}
+function rt(o, e) {
+  var t;
+  if (Wt)
+    return Wt.encode(o);
+  for (var a = o.length, n = new ge(o.length + (o.length >> 1)), i = 0, s = function(d) {
+    n[i++] = d;
+  }, t = 0; t < a; ++t) {
+    if (i + 5 > n.length) {
+      var r = new ge(i + 8 + (a - t << 1));
+      r.set(n), n = r;
+    }
+    var c = o.charCodeAt(t);
+    c < 128 || e ? s(c) : c < 2048 ? (s(192 | c >> 6), s(128 | c & 63)) : c > 55295 && c < 57344 ? (c = 65536 + (c & 1047552) | o.charCodeAt(++t) & 1023, s(240 | c >> 18), s(128 | c >> 12 & 63), s(128 | c >> 6 & 63), s(128 | c & 63)) : (s(224 | c >> 12), s(128 | c >> 6 & 63), s(128 | c & 63));
+  }
+  return va(n, 0, i);
+}
+var Rt = function(o) {
+  var e = 0;
+  if (o)
+    for (var t in o) {
+      var a = o[t].length;
+      a > 65535 && ct(9), e += a + 4;
+    }
+  return e;
+}, Jt = function(o, e, t, a, n, i, s, r) {
+  var c = a.length, d = t.extra, p = r && r.length, f = Rt(d);
+  be(o, e, s != null ? 33639248 : 67324752), e += 4, s != null && (o[e++] = 20, o[e++] = t.os), o[e] = 20, e += 2, o[e++] = t.flag << 1 | (i < 0 && 8), o[e++] = n && 8, o[e++] = t.compression & 255, o[e++] = t.compression >> 8;
+  var w = new Date(t.mtime == null ? Date.now() : t.mtime), y = w.getFullYear() - 1980;
+  if ((y < 0 || y > 119) && ct(10), be(o, e, y << 25 | w.getMonth() + 1 << 21 | w.getDate() << 16 | w.getHours() << 11 | w.getMinutes() << 5 | w.getSeconds() >> 1), e += 4, i != -1 && (be(o, e, t.crc), be(o, e + 4, i < 0 ? -i - 2 : i), be(o, e + 8, t.size)), be(o, e + 12, c), be(o, e + 14, f), e += 16, s != null && (be(o, e, p), be(o, e + 6, t.attrs), be(o, e + 10, s), e += 14), o.set(a, e), e += c, f)
+    for (var _ in d) {
+      var T = d[_], F = T.length;
+      be(o, e, +_), be(o, e + 2, F), o.set(T, e + 4), e += 4 + F;
+    }
+  return p && (o.set(r, e), e += p), e;
+}, Mi = function(o, e, t, a, n) {
+  be(o, e, 101010256), be(o, e + 8, t), be(o, e + 10, t), be(o, e + 12, a), be(o, e + 16, n);
+};
+function Li(o, e) {
+  e || (e = {});
+  var t = {}, a = [];
+  ka(o, "", t, e);
+  var n = 0, i = 0;
+  for (var s in t) {
+    var r = t[s], c = r[0], d = r[1], p = d.level == 0 ? 0 : 8, f = rt(s), w = f.length, y = d.comment, _ = y && rt(y), T = _ && _.length, F = Rt(d.extra);
+    w > 65535 && ct(11);
+    var C = p ? _i(c, d) : c, R = C.length, z = Si();
+    z.p(c), a.push(Aa(d, {
+      size: c.length,
+      crc: z.d(),
+      c: C,
+      f,
+      m: _,
+      u: w != s.length || _ && y.length != T,
+      o: n,
+      compression: p
+    })), n += 30 + w + F + R, i += 76 + 2 * (w + F) + (T || 0) + R;
+  }
+  for (var q = new ge(i + 22), H = n, W = i - n, J = 0; J < a.length; ++J) {
+    var f = a[J];
+    Jt(q, f.o, f, f.f, f.u, f.c.length);
+    var K = 30 + f.f.length + Rt(f.extra);
+    q.set(f.c, f.o + K), Jt(q, n, f, f.f, f.u, f.c.length, f.o, f.m), n += 16 + K + (f.m ? f.m.length : 0);
+  }
+  return Mi(q, n, a.length, W, H), q;
+}
+let Ke, gt, De, et;
+function Ci(o, e = 1 / 0, t = null) {
+  gt || (gt = new ln(2, 2, 1, 1)), De || (De = new dn({
+    uniforms: { blitTexture: new hn(o) },
+    vertexShader: `
+			varying vec2 vUv;
+			void main(){
+				vUv = uv;
+				gl_Position = vec4(position.xy * 1.0,0.,.999999);
+			}`,
+    fragmentShader: `
+			uniform sampler2D blitTexture; 
+			varying vec2 vUv;
+
+			void main(){ 
+				gl_FragColor = vec4(vUv.xy, 0, 1);
+				
+				#ifdef IS_SRGB
+				gl_FragColor = sRGBTransferOETF( texture2D( blitTexture, vUv) );
+				#else
+				gl_FragColor = texture2D( blitTexture, vUv);
+				#endif
+			}`
+  })), De.uniforms.blitTexture.value = o, De.defines.IS_SRGB = o.colorSpace == Re, De.needsUpdate = !0, et || (et = new ha(gt, De), et.frustumCulled = !1);
+  const a = new pa(), n = new pn();
+  n.add(et), t === null && (t = Ke = new un({ antialias: !1 }));
+  const i = Math.min(o.image.width, e), s = Math.min(o.image.height, e);
+  t.setSize(i, s), t.clear(), t.render(n, a);
+  const r = document.createElement("canvas"), c = r.getContext("2d");
+  r.width = i, r.height = s, c.drawImage(t.domElement, 0, 0, i, s);
+  const d = new bn(r);
+  return d.minFilter = o.minFilter, d.magFilter = o.magFilter, d.wrapS = o.wrapS, d.wrapT = o.wrapT, d.colorSpace = o.colorSpace, d.name = o.name, Ke && (Ke.forceContextLoss(), Ke.dispose(), Ke = null), d;
+}
+class ji {
+  parse(e, t, a, n) {
+    this.parseAsync(e, n).then(t).catch(a);
+  }
+  async parseAsync(e, t = {}) {
+    t = Object.assign({
+      ar: {
+        anchoring: { type: "plane" },
+        planeAnchoring: { alignment: "horizontal" }
+      },
+      includeAnchoringProperties: !0,
+      quickLookCompatible: !1,
+      maxTextureSize: 1024
+    }, t);
+    const a = {}, n = "model.usda";
+    a[n] = null;
+    let i = Sa();
+    i += qi(t);
+    const s = {}, r = {};
+    e.traverseVisible((d) => {
+      if (d.isMesh) {
+        const p = d.geometry, f = d.material;
+        if (f.isMeshStandardMaterial) {
+          const w = "geometries/Geometry_" + p.id + ".usda";
+          if (!(w in a)) {
+            const y = Pi(p);
+            a[w] = zi(y);
+          }
+          f.uuid in s || (s[f.uuid] = f), i += Oi(d, p, f);
+        } else
+          console.warn("THREE.USDZExporter: Unsupported material type (USDZ only supports MeshStandardMaterial)", d);
+      } else d.isCamera && (i += Vi(d));
+    }), i += Di(), i += $i(s, r, t.quickLookCompatible), a[n] = rt(i), i = null;
+    for (const d in r) {
+      let p = r[d];
+      p.isCompressedTexture === !0 && (p = Ci(p));
+      const f = Fi(p.image, p.flipY, t.maxTextureSize), w = await new Promise((y) => f.toBlob(y, "image/png", 1));
+      a[`textures/Texture_${d}.png`] = new Uint8Array(await w.arrayBuffer());
+    }
+    let c = 0;
+    for (const d in a) {
+      const p = a[d], f = 34 + d.length;
+      c += f;
+      const w = c & 63;
+      if (w !== 4) {
+        const y = 64 - w, _ = new Uint8Array(y);
+        a[d] = [p, { extra: { 12345: _ } }];
+      }
+      c = p.length;
+    }
+    return Li(a, { level: 0 });
+  }
+}
+function Fi(o, e, t) {
+  if (typeof HTMLImageElement < "u" && o instanceof HTMLImageElement || typeof HTMLCanvasElement < "u" && o instanceof HTMLCanvasElement || typeof OffscreenCanvas < "u" && o instanceof OffscreenCanvas || typeof ImageBitmap < "u" && o instanceof ImageBitmap) {
+    const a = t / Math.max(o.width, o.height), n = document.createElement("canvas");
+    n.width = o.width * Math.min(1, a), n.height = o.height * Math.min(1, a);
+    const i = n.getContext("2d");
+    return e === !0 && (i.translate(0, n.height), i.scale(1, -1)), i.drawImage(o, 0, 0, n.width, n.height), n;
+  } else
+    throw new Error("THREE.USDZExporter: No valid image data found. Unable to process texture.");
+}
+const fe = 7;
+function Sa() {
+  return `#usda 1.0
+(
+	customLayerData = {
+		string creator = "Three.js USDZExporter"
+	}
+	defaultPrim = "Root"
+	metersPerUnit = 1
+	upAxis = "Y"
+)
+
+`;
+}
+function qi(o) {
+  return `def Xform "Root"
+{
+	def Scope "Scenes" (
+		kind = "sceneLibrary"
+	)
+	{
+		def Xform "Scene" (
+			customData = {
+				bool preliminary_collidesWithEnvironment = 0
+				string sceneName = "Scene"
+			}
+			sceneName = "Scene"
+		)
+		{${o.includeAnchoringProperties === !0 ? `
+		token preliminary:anchoring:type = "${o.ar.anchoring.type}"
+		token preliminary:planeAnchoring:alignment = "${o.ar.planeAnchoring.alignment}"
+	` : ""}
+`;
+}
+function Di() {
+  return `
+		}
+	}
+}
+
+`;
+}
+function zi(o) {
+  let e = Sa();
+  return e += o, rt(e);
+}
+function Oi(o, e, t) {
+  const a = "Object_" + o.id, n = Ea(o.matrixWorld);
+  return o.matrixWorld.determinant() < 0 && console.warn("THREE.USDZExporter: USDZ does not support negative scales", o), `def Xform "${a}" (
+	prepend references = @./geometries/Geometry_${e.id}.usda@</Geometry>
+	prepend apiSchemas = ["MaterialBindingAPI"]
+)
+{
+	matrix4d xformOp:transform = ${n}
+	uniform token[] xformOpOrder = ["xformOp:transform"]
+
+	rel material:binding = </Materials/Material_${t.id}>
+}
+
+`;
+}
+function Ea(o) {
+  const e = o.elements;
+  return `( ${tt(e, 0)}, ${tt(e, 4)}, ${tt(e, 8)}, ${tt(e, 12)} )`;
+}
+function tt(o, e) {
+  return `(${o[e + 0]}, ${o[e + 1]}, ${o[e + 2]}, ${o[e + 3]})`;
+}
+function Pi(o) {
+  return `
+def "Geometry"
+{
+${Hi(o)}
+}
+`;
+}
+function Hi(o) {
+  const e = "Geometry", t = o.attributes, a = t.position.count;
+  return `
+	def Mesh "${e}"
+	{
+		int[] faceVertexCounts = [${Ii(o)}]
+		int[] faceVertexIndices = [${Bi(o)}]
+		normal3f[] normals = [${Tt(t.normal, a)}] (
+			interpolation = "vertex"
+		)
+		point3f[] points = [${Tt(t.position, a)}]
+${Ni(t)}
+		uniform token subdivisionScheme = "none"
+	}
+`;
+}
+function Ii(o) {
+  const e = o.index !== null ? o.index.count : o.attributes.position.count;
+  return Array(e / 3).fill(3).join(", ");
+}
+function Bi(o) {
+  const e = o.index, t = [];
+  if (e !== null)
+    for (let a = 0; a < e.count; a++)
+      t.push(e.getX(a));
+  else {
+    const a = o.attributes.position.count;
+    for (let n = 0; n < a; n++)
+      t.push(n);
+  }
+  return t.join(", ");
+}
+function Tt(o, e) {
+  if (o === void 0)
+    return console.warn("USDZExporter: Normals missing."), Array(e).fill("(0, 0, 0)").join(", ");
+  const t = [];
+  for (let a = 0; a < o.count; a++) {
+    const n = o.getX(a), i = o.getY(a), s = o.getZ(a);
+    t.push(`(${n.toPrecision(fe)}, ${i.toPrecision(fe)}, ${s.toPrecision(fe)})`);
+  }
+  return t.join(", ");
+}
+function Gi(o) {
+  const e = [];
+  for (let t = 0; t < o.count; t++) {
+    const a = o.getX(t), n = o.getY(t);
+    e.push(`(${a.toPrecision(fe)}, ${1 - n.toPrecision(fe)})`);
+  }
+  return e.join(", ");
+}
+function Ni(o) {
+  let e = "";
+  for (let a = 0; a < 4; a++) {
+    const n = a > 0 ? a : "", i = o["uv" + n];
+    i !== void 0 && (e += `
+		texCoord2f[] primvars:st${n} = [${Gi(i)}] (
+			interpolation = "vertex"
+		)`);
+  }
+  const t = o.color;
+  if (t !== void 0) {
+    const a = t.count;
+    e += `
+	color3f[] primvars:displayColor = [${Tt(t, a)}] (
+		interpolation = "vertex"
+		)`;
+  }
+  return e;
+}
+function $i(o, e, t = !1) {
+  const a = [];
+  for (const n in o) {
+    const i = o[n];
+    a.push(Ui(i, e, t));
+  }
+  return `def "Materials"
+{
+${a.join("")}
+}
+
+`;
+}
+function Ui(o, e, t = !1) {
+  const a = "			", n = [], i = [];
+  function s(r, c, d) {
+    const p = r.source.id + "_" + r.flipY;
+    e[p] = r;
+    const f = r.channel > 0 ? "st" + r.channel : "st", w = {
+      1e3: "repeat",
+      // RepeatWrapping
+      1001: "clamp",
+      // ClampToEdgeWrapping
+      1002: "mirror"
+      // MirroredRepeatWrapping
+    }, y = r.repeat.clone(), _ = r.offset.clone(), T = r.rotation, F = Math.sin(T), C = Math.cos(T);
+    return _.y = 1 - _.y - y.y, t ? (_.x = _.x / y.x, _.y = _.y / y.y, _.x += F / y.x, _.y += C - 1) : (_.x += F * y.x, _.y += (1 - C) * y.y), `
+		def Shader "PrimvarReader_${c}"
+		{
+			uniform token info:id = "UsdPrimvarReader_float2"
+			float2 inputs:fallback = (0.0, 0.0)
+			token inputs:varname = "${f}"
+			float2 outputs:result
+		}
+
+		def Shader "Transform2d_${c}"
+		{
+			uniform token info:id = "UsdTransform2d"
+			token inputs:in.connect = </Materials/Material_${o.id}/PrimvarReader_${c}.outputs:result>
+			float inputs:rotation = ${(T * (180 / Math.PI)).toFixed(fe)}
+			float2 inputs:scale = ${Zt(y)}
+			float2 inputs:translation = ${Zt(_)}
+			float2 outputs:result
+		}
+
+		def Shader "Texture_${r.id}_${c}"
+		{
+			uniform token info:id = "UsdUVTexture"
+			asset inputs:file = @textures/Texture_${p}.png@
+			float2 inputs:st.connect = </Materials/Material_${o.id}/Transform2d_${c}.outputs:result>
+			${d !== void 0 ? "float4 inputs:scale = " + Ki(d) : ""}
+			token inputs:sourceColorSpace = "${r.colorSpace === fn ? "raw" : "sRGB"}"
+			token inputs:wrapS = "${w[r.wrapS]}"
+			token inputs:wrapT = "${w[r.wrapT]}"
+			float outputs:r
+			float outputs:g
+			float outputs:b
+			float3 outputs:rgb
+			${o.transparent || o.alphaTest > 0 ? "float outputs:a" : ""}
+		}`;
+  }
+  return o.side === la && console.warn("THREE.USDZExporter: USDZ does not support double sided materials", o), o.map !== null ? (n.push(`${a}color3f inputs:diffuseColor.connect = </Materials/Material_${o.id}/Texture_${o.map.id}_diffuse.outputs:rgb>`), o.transparent ? n.push(`${a}float inputs:opacity.connect = </Materials/Material_${o.id}/Texture_${o.map.id}_diffuse.outputs:a>`) : o.alphaTest > 0 && (n.push(`${a}float inputs:opacity.connect = </Materials/Material_${o.id}/Texture_${o.map.id}_diffuse.outputs:a>`), n.push(`${a}float inputs:opacityThreshold = ${o.alphaTest}`)), i.push(s(o.map, "diffuse", o.color))) : n.push(`${a}color3f inputs:diffuseColor = ${Yt(o.color)}`), o.emissiveMap !== null ? (n.push(`${a}color3f inputs:emissiveColor.connect = </Materials/Material_${o.id}/Texture_${o.emissiveMap.id}_emissive.outputs:rgb>`), i.push(s(o.emissiveMap, "emissive", new me(o.emissive.r * o.emissiveIntensity, o.emissive.g * o.emissiveIntensity, o.emissive.b * o.emissiveIntensity)))) : o.emissive.getHex() > 0 && n.push(`${a}color3f inputs:emissiveColor = ${Yt(o.emissive)}`), o.normalMap !== null && (n.push(`${a}normal3f inputs:normal.connect = </Materials/Material_${o.id}/Texture_${o.normalMap.id}_normal.outputs:rgb>`), i.push(s(o.normalMap, "normal"))), o.aoMap !== null && (n.push(`${a}float inputs:occlusion.connect = </Materials/Material_${o.id}/Texture_${o.aoMap.id}_occlusion.outputs:r>`), i.push(s(o.aoMap, "occlusion", new me(o.aoMapIntensity, o.aoMapIntensity, o.aoMapIntensity)))), o.roughnessMap !== null ? (n.push(`${a}float inputs:roughness.connect = </Materials/Material_${o.id}/Texture_${o.roughnessMap.id}_roughness.outputs:g>`), i.push(s(o.roughnessMap, "roughness", new me(o.roughness, o.roughness, o.roughness)))) : n.push(`${a}float inputs:roughness = ${o.roughness}`), o.metalnessMap !== null ? (n.push(`${a}float inputs:metallic.connect = </Materials/Material_${o.id}/Texture_${o.metalnessMap.id}_metallic.outputs:b>`), i.push(s(o.metalnessMap, "metallic", new me(o.metalness, o.metalness, o.metalness)))) : n.push(`${a}float inputs:metallic = ${o.metalness}`), o.alphaMap !== null ? (n.push(`${a}float inputs:opacity.connect = </Materials/Material_${o.id}/Texture_${o.alphaMap.id}_opacity.outputs:r>`), n.push(`${a}float inputs:opacityThreshold = 0.0001`), i.push(s(o.alphaMap, "opacity"))) : n.push(`${a}float inputs:opacity = ${o.opacity}`), o.isMeshPhysicalMaterial && (o.clearcoatMap !== null ? (n.push(`${a}float inputs:clearcoat.connect = </Materials/Material_${o.id}/Texture_${o.clearcoatMap.id}_clearcoat.outputs:r>`), i.push(s(o.clearcoatMap, "clearcoat", new me(o.clearcoat, o.clearcoat, o.clearcoat)))) : n.push(`${a}float inputs:clearcoat = ${o.clearcoat}`), o.clearcoatRoughnessMap !== null ? (n.push(`${a}float inputs:clearcoatRoughness.connect = </Materials/Material_${o.id}/Texture_${o.clearcoatRoughnessMap.id}_clearcoatRoughness.outputs:g>`), i.push(s(o.clearcoatRoughnessMap, "clearcoatRoughness", new me(o.clearcoatRoughness, o.clearcoatRoughness, o.clearcoatRoughness)))) : n.push(`${a}float inputs:clearcoatRoughness = ${o.clearcoatRoughness}`), n.push(`${a}float inputs:ior = ${o.ior}`)), `
+	def Material "Material_${o.id}"
+	{
+		def Shader "PreviewSurface"
+		{
+			uniform token info:id = "UsdPreviewSurface"
+${n.join(`
+`)}
+			int inputs:useSpecularWorkflow = 0
+			token outputs:surface
+		}
+
+		token outputs:surface.connect = </Materials/Material_${o.id}/PreviewSurface.outputs:surface>
+
+${i.join(`
+`)}
+
+	}
+`;
+}
+function Yt(o) {
+  return `(${o.r}, ${o.g}, ${o.b})`;
+}
+function Ki(o) {
+  return `(${o.r}, ${o.g}, ${o.b}, 1.0)`;
+}
+function Zt(o) {
+  return `(${o.x}, ${o.y})`;
+}
+function Vi(o) {
+  const e = o.name ? o.name : "Camera_" + o.id, t = Ea(o.matrixWorld);
+  return o.matrixWorld.determinant() < 0 && console.warn("THREE.USDZExporter: USDZ does not support negative scales", o), o.isOrthographicCamera ? `def Camera "${e}"
+		{
+			matrix4d xformOp:transform = ${t}
+			uniform token[] xformOpOrder = ["xformOp:transform"]
+
+			float2 clippingRange = (${o.near.toPrecision(fe)}, ${o.far.toPrecision(fe)})
+			float horizontalAperture = ${((Math.abs(o.left) + Math.abs(o.right)) * 10).toPrecision(fe)}
+			float verticalAperture = ${((Math.abs(o.top) + Math.abs(o.bottom)) * 10).toPrecision(fe)}
+			token projection = "orthographic"
+		}
+	
+	` : `def Camera "${e}"
+		{
+			matrix4d xformOp:transform = ${t}
+			uniform token[] xformOpOrder = ["xformOp:transform"]
+
+			float2 clippingRange = (${o.near.toPrecision(fe)}, ${o.far.toPrecision(fe)})
+			float focalLength = ${o.getFocalLength().toPrecision(fe)}
+			float focusDistance = ${o.focus.toPrecision(fe)}
+			float horizontalAperture = ${o.getFilmWidth().toPrecision(fe)}
+			token projection = "perspective"
+			float verticalAperture = ${o.getFilmHeight().toPrecision(fe)}
+		}
+	
+	`;
+}
+var Xi = function() {
+  var o = "b9H79Tebbbe8Fv9Gbb9Gvuuuuueu9Giuuub9Geueu9Giuuueuikqbeeedddillviebeoweuec:W:Odkr;leDo9TW9T9VV95dbH9F9F939H79T9F9J9H229F9Jt9VV7bb8A9TW79O9V9Wt9F9KW9J9V9KW9wWVtW949c919M9MWVbeY9TW79O9V9Wt9F9KW9J9V9KW69U9KW949c919M9MWVbdE9TW79O9V9Wt9F9KW9J9V9KW69U9KW949tWG91W9U9JWbiL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9p9JtblK9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9r919HtbvL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVT949Wbol79IV9Rbrq:986qdbk;jYi5ud9:du8Jjjjjbcj;kb9Rgv8Kjjjjbc9:hodnalTmbcuhoaiRbbgrc;WeGc:Ge9hmbarcsGgwce0mbc9:hoalcufadcd4cbawEgDadfgrcKcaawEgqaraq0Egk6mbaicefhxcj;abad9Uc;WFbGcjdadca0EhmaialfgPar9Rgoadfhsavaoadz1jjjbgzceVhHcbhOdndninaeaO9nmeaPax9RaD6mdamaeaO9RaOamfgoae6EgAcsfglc9WGhCabaOad2fhXaAcethQaxaDfhiaOaeaoaeao6E9RhLalcl4cifcd4hKazcj;cbfaAfhYcbh8AazcjdfhEaHh3incbhodnawTmbaxa8Acd4fRbbhokaocFeGh5cbh8Eazcj;cbfhqinaih8Fdndndndna5a8Ecet4ciGgoc9:fPdebdkaPa8F9RaA6mrazcj;cbfa8EaA2fa8FaAz1jjjb8Aa8FaAfhixdkazcj;cbfa8EaA2fcbaAz:jjjjb8Aa8FhixekaPa8F9RaK6mva8FaKfhidnaCTmbaPai9RcK6mbaocdtc:q1jjbfcj1jjbawEhaczhrcbhlinargoc9Wfghaqfhrdndndndndndnaaa8Fahco4fRbbalcoG4ciGcdtfydbPDbedvivvvlvkar9cb83bbarcwf9cb83bbxlkarcbaiRbdai8Xbb9c:c:qj:bw9:9c:q;c1:I1e:d9c:b:c:e1z9:gg9cjjjjjz:dg8J9qE86bbaqaofgrcGfag9c8F1:NghcKtc8F91aicdfa8J9c8N1:Nfg8KRbbG86bbarcVfcba8KahcjeGcr4fghRbbag9cjjjjjl:dg8J9qE86bbarc7fcbaha8J9c8L1:NfghRbbag9cjjjjjd:dg8J9qE86bbarctfcbaha8J9c8K1:NfghRbbag9cjjjjje:dg8J9qE86bbarc91fcbaha8J9c8J1:NfghRbbag9cjjjj;ab:dg8J9qE86bbarc4fcbaha8J9cg1:NfghRbbag9cjjjja:dg8J9qE86bbarc93fcbaha8J9ch1:NfghRbbag9cjjjjz:dgg9qE86bbarc94fcbahag9ca1:NfghRbbai8Xbe9c:c:qj:bw9:9c:q;c1:I1e:d9c:b:c:e1z9:gg9cjjjjjz:dg8J9qE86bbarc95fag9c8F1:NgicKtc8F91aha8J9c8N1:NfghRbbG86bbarc96fcbahaicjeGcr4fgiRbbag9cjjjjjl:dg8J9qE86bbarc97fcbaia8J9c8L1:NfgiRbbag9cjjjjjd:dg8J9qE86bbarc98fcbaia8J9c8K1:NfgiRbbag9cjjjjje:dg8J9qE86bbarc99fcbaia8J9c8J1:NfgiRbbag9cjjjj;ab:dg8J9qE86bbarc9:fcbaia8J9cg1:NfgiRbbag9cjjjja:dg8J9qE86bbarcufcbaia8J9ch1:NfgiRbbag9cjjjjz:dgg9qE86bbaiag9ca1:NfhixikaraiRblaiRbbghco4g8Ka8KciSg8KE86bbaqaofgrcGfaiclfa8Kfg8KRbbahcl4ciGg8La8LciSg8LE86bbarcVfa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc7fa8Ka8Lfg8KRbbahciGghahciSghE86bbarctfa8Kahfg8KRbbaiRbeghco4g8La8LciSg8LE86bbarc91fa8Ka8Lfg8KRbbahcl4ciGg8La8LciSg8LE86bbarc4fa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc93fa8Ka8Lfg8KRbbahciGghahciSghE86bbarc94fa8Kahfg8KRbbaiRbdghco4g8La8LciSg8LE86bbarc95fa8Ka8Lfg8KRbbahcl4ciGg8La8LciSg8LE86bbarc96fa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc97fa8Ka8Lfg8KRbbahciGghahciSghE86bbarc98fa8KahfghRbbaiRbigico4g8Ka8KciSg8KE86bbarc99faha8KfghRbbaicl4ciGg8Ka8KciSg8KE86bbarc9:faha8KfghRbbaicd4ciGg8Ka8KciSg8KE86bbarcufaha8KfgrRbbaiciGgiaiciSgiE86bbaraifhixdkaraiRbwaiRbbghcl4g8Ka8KcsSg8KE86bbaqaofgrcGfaicwfa8Kfg8KRbbahcsGghahcsSghE86bbarcVfa8KahfghRbbaiRbeg8Kcl4g8La8LcsSg8LE86bbarc7faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarctfaha8KfghRbbaiRbdg8Kcl4g8La8LcsSg8LE86bbarc91faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc4faha8KfghRbbaiRbig8Kcl4g8La8LcsSg8LE86bbarc93faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc94faha8KfghRbbaiRblg8Kcl4g8La8LcsSg8LE86bbarc95faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc96faha8KfghRbbaiRbvg8Kcl4g8La8LcsSg8LE86bbarc97faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc98faha8KfghRbbaiRbog8Kcl4g8La8LcsSg8LE86bbarc99faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc9:faha8KfghRbbaiRbrgicl4g8Ka8KcsSg8KE86bbarcufaha8KfgrRbbaicsGgiaicsSgiE86bbaraifhixekarai8Pbb83bbarcwfaicwf8Pbb83bbaiczfhikdnaoaC9pmbalcdfhlaoczfhraPai9RcL0mekkaoaC6moaimexokaCmva8FTmvkaqaAfhqa8Ecefg8Ecl9hmbkdndndndnawTmbasa8Acd4fRbbgociGPlbedrbkaATmdaza8Afh8Fazcj;cbfhhcbh8EaEhaina8FRbbhraahocbhlinaoahalfRbbgqce4cbaqceG9R7arfgr86bbaoadfhoaAalcefgl9hmbkaacefhaa8Fcefh8FahaAfhha8Ecefg8Ecl9hmbxikkaATmeaza8Afhaazcj;cbfhhcbhoceh8EaYh8FinaEaofhlaa8Vbbhrcbhoinala8FaofRbbcwtahaofRbbgqVc;:FiGce4cbaqceG9R7arfgr87bbaladfhlaLaocefgofmbka8FaQfh8FcdhoaacdfhaahaQfhha8EceGhlcbh8EalmbxdkkaATmbcbaocl49Rh8Eaza8AfRbbhqcwhoa3hlinalRbbaotaqVhqalcefhlaocwfgoca9hmbkcbhhaEh8FaYhainazcj;cbfahfRbbhrcwhoaahlinalRbbaotarVhralaAfhlaocwfgoca9hmbkara8E93aq7hqcbhoa8Fhlinalaqao486bbalcefhlaocwfgoca9hmbka8Fadfh8FaacefhaahcefghaA9hmbkkaEclfhEa3clfh3a8Aclfg8Aad6mbkaXazcjdfaAad2z1jjjb8AazazcjdfaAcufad2fadz1jjjb8AaAaOfhOaihxaimbkc9:hoxdkcbc99aPax9RakSEhoxekc9:hokavcj;kbf8Kjjjjbaok;cseHu8Jjjjjbc;ae9Rgv8Kjjjjbc9:hodnaeci9UgrcHfal0mbcuhoaiRbbgwc;WeGc;Ge9hmbawcsGgwce0mbavc;abfcFecjez:jjjjb8AavcUf9cu83ibavc8Wf9cu83ibavcyf9cu83ibavcaf9cu83ibavcKf9cu83ibavczf9cu83ibav9cu83iwav9cu83ibaialfc9WfhDaicefgqarfhidnaeTmbcmcsawceSEhkcbhxcbhmcbhPcbhwcbhlindnaiaD9nmbc9:hoxikdndnaqRbbgoc;Ve0mbavc;abfalaocu7gscl4fcsGcitfgzydlhrazydbhzdnaocsGgHak9pmbavawasfcsGcdtfydbaxaHEhoaHThsdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkaxasfhxcdhHavawcdtfaoBdbawasfhwcehsalhOxdkdndnaHcsSmbaHc987aHamffcefhoxekaicefhoai8SbbgHcFeGhsdndnaHcu9mmbaohixekaicvfhiascFbGhscrhHdninao8SbbgOcFbGaHtasVhsaOcu9kmeaocefhoaHcrfgHc8J9hmbxdkkaocefhikasce4cbasceG9R7amfhokdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkcdhHavawcdtfaoBdbcehsawcefhwalhOaohmxekdnaocpe0mbaxcefgHavawaDaocsGfRbbgocl49RcsGcdtfydbaocz6gzEhravawao9RcsGcdtfydbaHazfgAaocsGgHEhoaHThCdndnadcd9hmbabaPcetfgHax87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHaxBdbaHcwfaoBdbaHclfarBdbkcdhsavawcdtfaxBdbavawcefgwcsGcdtfarBdbcihHavc;abfalcitfgOaxBdlaOarBdbavawazfgwcsGcdtfaoBdbalcefcsGhOawaCfhwaxhzaAaCfhxxekaxcbaiRbbgOEgzaoc;:eSgHfhraOcsGhCaOcl4hAdndnaOcs0mbarcefhoxekarhoavawaA9RcsGcdtfydbhrkdndnaCmbaocefhxxekaohxavawaO9RcsGcdtfydbhokdndnaHTmbaicefhHxekaicdfhHai8SbegscFeGhzdnascu9kmbaicofhXazcFbGhzcrhidninaH8SbbgscFbGaitazVhzascu9kmeaHcefhHaicrfgic8J9hmbkaXhHxekaHcefhHkazce4cbazceG9R7amfgmhzkdndnaAcsSmbaHhsxekaHcefhsaH8SbbgicFeGhrdnaicu9kmbaHcvfhXarcFbGhrcrhidninas8SbbgHcFbGaitarVhraHcu9kmeascefhsaicrfgic8J9hmbkaXhsxekascefhskarce4cbarceG9R7amfgmhrkdndnaCcsSmbashixekascefhias8SbbgocFeGhHdnaocu9kmbascvfhXaHcFbGhHcrhodninai8SbbgscFbGaotaHVhHascu9kmeaicefhiaocrfgoc8J9hmbkaXhixekaicefhikaHce4cbaHceG9R7amfgmhokdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkcdhsavawcdtfazBdbavawcefgwcsGcdtfarBdbcihHavc;abfalcitfgXazBdlaXarBdbavawaOcz6aAcsSVfgwcsGcdtfaoBdbawaCTaCcsSVfhwalcefcsGhOkaqcefhqavc;abfaOcitfgOarBdlaOaoBdbavc;abfalasfcsGcitfgraoBdlarazBdbawcsGhwalaHfcsGhlaPcifgPae6mbkkcbc99aiaDSEhokavc;aef8Kjjjjbaok:clevu8Jjjjjbcz9Rhvdnaecvfal9nmbc9:skdnaiRbbc;:eGc;qeSmbcuskav9cb83iwaicefhoaialfc98fhrdnaeTmbdnadcdSmbcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcdtfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgiBdbalaiBdbawcefgwae9hmbxdkkcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcetfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgi87ebalaiBdbawcefgwae9hmbkkcbc99aoarSEk:Lvoeue99dud99eud99dndnadcl9hmbaeTmeindndnabcdfgd8Sbb:Yab8Sbbgi:Ygl:l:tabcefgv8Sbbgo:Ygr:l:tgwJbb;:9cawawNJbbbbawawJbbbb9GgDEgq:mgkaqaicb9iEalMgwawNakaqaocb9iEarMgqaqNMM:r:vglNJbbbZJbbb:;aDEMgr:lJbbb9p9DTmbar:Ohixekcjjjj94hikadai86bbdndnaqalNJbbbZJbbb:;aqJbbbb9GEMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkavad86bbdndnawalNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohdxekcjjjj94hdkabad86bbabclfhbaecufgembxdkkaeTmbindndnabclfgd8Ueb:Yab8Uebgi:Ygl:l:tabcdfgv8Uebgo:Ygr:l:tgwJb;:FSawawNJbbbbawawJbbbb9GgDEgq:mgkaqaicb9iEalMgwawNakaqaocb9iEarMgqaqNMM:r:vglNJbbbZJbbb:;aDEMgr:lJbbb9p9DTmbar:Ohixekcjjjj94hikadai87ebdndnaqalNJbbbZJbbb:;aqJbbbb9GEMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkavad87ebdndnawalNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohdxekcjjjj94hdkabad87ebabcwfhbaecufgembkkk;oiliui99iue99dnaeTmbcbhiabhlindndnJ;Zl81Zalcof8UebgvciV:Y:vgoal8Ueb:YNgrJb;:FSNJbbbZJbbb:;arJbbbb9GEMgw:lJbbb9p9DTmbaw:OhDxekcjjjj94hDkalclf8Uebhqalcdf8UebhkabaiavcefciGfcetfaD87ebdndnaoak:YNgwJb;:FSNJbbbZJbbb:;awJbbbb9GEMgx:lJbbb9p9DTmbax:OhDxekcjjjj94hDkabaiavciGfgkcd7cetfaD87ebdndnaoaq:YNgoJb;:FSNJbbbZJbbb:;aoJbbbb9GEMgx:lJbbb9p9DTmbax:OhDxekcjjjj94hDkabaiavcufciGfcetfaD87ebdndnJbbjZararN:tawawN:taoaoN:tgrJbbbbarJbbbb9GE:rJb;:FSNJbbbZMgr:lJbbb9p9DTmbar:Ohvxekcjjjj94hvkabakcetfav87ebalcwfhlaiclfhiaecufgembkkk9mbdnadcd4ae2gdTmbinababydbgecwtcw91:Yaece91cjjj98Gcjjj;8if::NUdbabclfhbadcufgdmbkkk9teiucbcbyd:K1jjbgeabcifc98GfgbBd:K1jjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaik;teeeudndnaeabVciGTmbabhixekdndnadcz9pmbabhixekabhiinaiaeydbBdbaiaeydlBdlaiaeydwBdwaiaeydxBdxaeczfheaiczfhiadc9Wfgdcs0mbkkadcl6mbinaiaeydbBdbaeclfheaiclfhiadc98fgdci0mbkkdnadTmbinaiaeRbb86bbaicefhiaecefheadcufgdmbkkabk:3eedudndnabciGTmbabhixekaecFeGc:b:c:ew2hldndnadcz9pmbabhixekabhiinaialBdxaialBdwaialBdlaialBdbaiczfhiadc9Wfgdcs0mbkkadcl6mbinaialBdbaiclfhiadc98fgdci0mbkkdnadTmbinaiae86bbaicefhiadcufgdmbkkabkk81dbcjwk8Kbbbbdbbblbbbwbbbbbbbebbbdbbblbbbwbbbbc:Kwkl8WNbb", e = "b9H79TebbbeKl9Gbb9Gvuuuuueu9Giuuub9Geueuikqbbebeedddilve9Weeeviebeoweuec:q:6dkr;leDo9TW9T9VV95dbH9F9F939H79T9F9J9H229F9Jt9VV7bb8A9TW79O9V9Wt9F9KW9J9V9KW9wWVtW949c919M9MWVbdY9TW79O9V9Wt9F9KW9J9V9KW69U9KW949c919M9MWVblE9TW79O9V9Wt9F9KW9J9V9KW69U9KW949tWG91W9U9JWbvL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9p9JtboK9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9r919HtbrL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVT949Wbwl79IV9RbDq;X9Mqlbzik9:evu8Jjjjjbcz9Rhbcbheincbhdcbhiinabcwfadfaicjuaead4ceGglE86bbaialfhiadcefgdcw9hmbkaec:q:yjjbfai86bbaecitc:q1jjbfab8Piw83ibaecefgecjd9hmbkk:183lYud97dur978Jjjjjbcj;kb9Rgv8Kjjjjbc9:hodnalTmbcuhoaiRbbgrc;WeGc:Ge9hmbarcsGgwce0mbc9:hoalcufadcd4cbawEgDadfgrcKcaawEgqaraq0Egk6mbaicefhxavaialfgmar9Rgoad;8qbbcj;abad9Uc;WFbGcjdadca0EhPdndndnadTmbaoadfhscbhzinaeaz9nmdamax9RaD6miabazad2fhHaxaDfhOaPaeaz9RazaPfae6EgAcsfgocl4cifcd4hCavcj;cbfaoc9WGgXcetfhQavcj;cbfaXci2fhLavcj;cbfaXfhKcbhYaoc;ab6h8AincbhodnawTmbaxaYcd4fRbbhokaocFeGhEcbh3avcj;cbfh5indndndndnaEa3cet4ciGgoc9:fPdebdkamaO9RaX6mwavcj;cbfa3aX2faOaX;8qbbaOaAfhOxdkavcj;cbfa3aX2fcbaX;8kbxekamaO9RaC6moaoclVcbawEhraOaCfhocbhidna8Ambamao9Rc;Gb6mbcbhlina5alfhidndndndndndnaOalco4fRbbgqciGarfPDbedibledibkaipxbbbbbbbbbbbbbbbbpklbxlkaiaopbblaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLg8Ecdp:mea8EpmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9og8Fpxiiiiiiiiiiiiiiiip8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaoclffahc:q:yjjbfRbbfhoxikaiaopbbwaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLpxssssssssssssssssp9og8Fpxssssssssssssssssp8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaocwffahc:q:yjjbfRbbfhoxdkaiaopbbbpklbaoczfhoxekaiaopbbdaoRbbgacitc:q1jjbfpbibaac:q:yjjbfRbbgapsaoRbeghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPpklbaaaocdffahc:q:yjjbfRbbfhokdndndndndndnaqcd4ciGarfPDbedibledibkaiczfpxbbbbbbbbbbbbbbbbpklbxlkaiczfaopbblaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLg8Ecdp:mea8EpmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9og8Fpxiiiiiiiiiiiiiiiip8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaoclffahc:q:yjjbfRbbfhoxikaiczfaopbbwaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLpxssssssssssssssssp9og8Fpxssssssssssssssssp8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaocwffahc:q:yjjbfRbbfhoxdkaiczfaopbbbpklbaoczfhoxekaiczfaopbbdaoRbbgacitc:q1jjbfpbibaac:q:yjjbfRbbgapsaoRbeghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPpklbaaaocdffahc:q:yjjbfRbbfhokdndndndndndnaqcl4ciGarfPDbedibledibkaicafpxbbbbbbbbbbbbbbbbpklbxlkaicafaopbblaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLg8Ecdp:mea8EpmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9og8Fpxiiiiiiiiiiiiiiiip8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaoclffahc:q:yjjbfRbbfhoxikaicafaopbbwaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLpxssssssssssssssssp9og8Fpxssssssssssssssssp8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaaaocwffahc:q:yjjbfRbbfhoxdkaicafaopbbbpklbaoczfhoxekaicafaopbbdaoRbbgacitc:q1jjbfpbibaac:q:yjjbfRbbgapsaoRbeghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPpklbaaaocdffahc:q:yjjbfRbbfhokdndndndndndnaqco4arfPDbedibledibkaic8Wfpxbbbbbbbbbbbbbbbbpklbxlkaic8Wfaopbblaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLg8Ecdp:mea8EpmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9og8Fpxiiiiiiiiiiiiiiiip8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngicitc:q1jjbfpbibaic:q:yjjbfRbbgipsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Ngqcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaiaoclffaqc:q:yjjbfRbbfhoxikaic8Wfaopbbwaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLpxssssssssssssssssp9og8Fpxssssssssssssssssp8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngicitc:q1jjbfpbibaic:q:yjjbfRbbgipsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Ngqcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spklbaiaocwffaqc:q:yjjbfRbbfhoxdkaic8Wfaopbbbpklbaoczfhoxekaic8WfaopbbdaoRbbgicitc:q1jjbfpbibaic:q:yjjbfRbbgipsaoRbegqcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPpklbaiaocdffaqc:q:yjjbfRbbfhokalc;abfhialcjefaX0meaihlamao9Rc;Fb0mbkkdnaiaX9pmbaici4hlinamao9RcK6mwa5aifhqdndndndndndnaOaico4fRbbalcoG4ciGarfPDbedibledibkaqpxbbbbbbbbbbbbbbbbpkbbxlkaqaopbblaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLg8Ecdp:mea8EpmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9og8Fpxiiiiiiiiiiiiiiiip8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spkbbaaaoclffahc:q:yjjbfRbbfhoxikaqaopbbwaopbbbg8Eclp:mea8EpmbzeHdOiAlCvXoQrLpxssssssssssssssssp9og8Fpxssssssssssssssssp8Jg8Ep5b9cjF;8;4;W;G;ab9:9cU1:Ngacitc:q1jjbfpbibaac:q:yjjbfRbbgapsa8Ep5e9cjF;8;4;W;G;ab9:9cU1:Nghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPa8Fa8Ep9spkbbaaaocwffahc:q:yjjbfRbbfhoxdkaqaopbbbpkbbaoczfhoxekaqaopbbdaoRbbgacitc:q1jjbfpbibaac:q:yjjbfRbbgapsaoRbeghcitc:q1jjbfpbibp9UpmbedilvorzHOACXQLpPpkbbaaaocdffahc:q:yjjbfRbbfhokalcdfhlaiczfgiaX6mbkkaohOaoTmoka5aXfh5a3cefg3cl9hmbkdndndndnawTmbasaYcd4fRbbglciGPlbedwbkaXTmdavcjdfaYfhlavaYfpbdbhgcbhoinalavcj;cbfaofpblbg8JaKaofpblbg8KpmbzeHdOiAlCvXoQrLg8LaQaofpblbg8MaLaofpblbg8NpmbzeHdOiAlCvXoQrLgypmbezHdiOAlvCXorQLg8Ecep9Ta8Epxeeeeeeeeeeeeeeeeg8Fp9op9Hp9rg8Eagp9Uggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp9Uggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp9Uggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp9Uggp9Abbbaladfglaga8LaypmwDKYqk8AExm35Ps8E8Fg8Ecep9Ta8Ea8Fp9op9Hp9rg8Ep9Uggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp9Uggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp9Uggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp9Uggp9Abbbaladfglaga8Ja8KpmwKDYq8AkEx3m5P8Es8Fg8Ja8Ma8NpmwKDYq8AkEx3m5P8Es8Fg8KpmbezHdiOAlvCXorQLg8Ecep9Ta8Ea8Fp9op9Hp9rg8Ep9Uggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp9Uggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp9Uggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp9Uggp9Abbbaladfglaga8Ja8KpmwDKYqk8AExm35Ps8E8Fg8Ecep9Ta8Ea8Fp9op9Hp9rg8Ep9Ug8Fp9Abbbaladfgla8Fa8Ea8Epmlvorlvorlvorlvorp9Ug8Fp9Abbbaladfgla8Fa8Ea8EpmwDqkwDqkwDqkwDqkp9Ug8Fp9Abbbaladfgla8Fa8Ea8EpmxmPsxmPsxmPsxmPsp9Uggp9AbbbaladfhlaoczfgoaX6mbxikkaXTmeavcjdfaYfhlavaYfpbdbhgcbhoinalavcj;cbfaofpblbg8JaKaofpblbg8KpmbzeHdOiAlCvXoQrLg8LaQaofpblbg8MaLaofpblbg8NpmbzeHdOiAlCvXoQrLgypmbezHdiOAlvCXorQLg8Ecep:nea8Epxebebebebebebebebg8Fp9op:bep9rg8Eagp:oeggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp:oeggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp:oeggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp:oeggp9Abbbaladfglaga8LaypmwDKYqk8AExm35Ps8E8Fg8Ecep:nea8Ea8Fp9op:bep9rg8Ep:oeggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp:oeggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp:oeggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp:oeggp9Abbbaladfglaga8Ja8KpmwKDYq8AkEx3m5P8Es8Fg8Ja8Ma8NpmwKDYq8AkEx3m5P8Es8Fg8KpmbezHdiOAlvCXorQLg8Ecep:nea8Ea8Fp9op:bep9rg8Ep:oeggp9Abbbaladfglaga8Ea8Epmlvorlvorlvorlvorp:oeggp9Abbbaladfglaga8Ea8EpmwDqkwDqkwDqkwDqkp:oeggp9Abbbaladfglaga8Ea8EpmxmPsxmPsxmPsxmPsp:oeggp9Abbbaladfglaga8Ja8KpmwDKYqk8AExm35Ps8E8Fg8Ecep:nea8Ea8Fp9op:bep9rg8Ep:oeg8Fp9Abbbaladfgla8Fa8Ea8Epmlvorlvorlvorlvorp:oeg8Fp9Abbbaladfgla8Fa8Ea8EpmwDqkwDqkwDqkwDqkp:oeg8Fp9Abbbaladfgla8Fa8Ea8EpmxmPsxmPsxmPsxmPsp:oeggp9AbbbaladfhlaoczfgoaX6mbxdkkaXTmbcbhocbalcl4gl9Rc8FGhiavcjdfaYfhravaYfpbdbh8Finaravcj;cbfaofpblbggaKaofpblbg8JpmbzeHdOiAlCvXoQrLg8KaQaofpblbg8LaLaofpblbg8MpmbzeHdOiAlCvXoQrLg8NpmbezHdiOAlvCXorQLg8Eaip:Rea8Ealp:Sep9qg8Ea8Fp9rg8Fp9Abbbaradfgra8Fa8Ea8Epmlvorlvorlvorlvorp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmwDqkwDqkwDqkwDqkp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmxmPsxmPsxmPsxmPsp9rg8Fp9Abbbaradfgra8Fa8Ka8NpmwDKYqk8AExm35Ps8E8Fg8Eaip:Rea8Ealp:Sep9qg8Ep9rg8Fp9Abbbaradfgra8Fa8Ea8Epmlvorlvorlvorlvorp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmwDqkwDqkwDqkwDqkp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmxmPsxmPsxmPsxmPsp9rg8Fp9Abbbaradfgra8Faga8JpmwKDYq8AkEx3m5P8Es8Fgga8La8MpmwKDYq8AkEx3m5P8Es8Fg8JpmbezHdiOAlvCXorQLg8Eaip:Rea8Ealp:Sep9qg8Ep9rg8Fp9Abbbaradfgra8Fa8Ea8Epmlvorlvorlvorlvorp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmwDqkwDqkwDqkwDqkp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmxmPsxmPsxmPsxmPsp9rg8Fp9Abbbaradfgra8Faga8JpmwDKYqk8AExm35Ps8E8Fg8Eaip:Rea8Ealp:Sep9qg8Ep9rg8Fp9Abbbaradfgra8Fa8Ea8Epmlvorlvorlvorlvorp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmwDqkwDqkwDqkwDqkp9rg8Fp9Abbbaradfgra8Fa8Ea8EpmxmPsxmPsxmPsxmPsp9rg8Fp9AbbbaradfhraoczfgoaX6mbkkaYclfgYad6mbkaHavcjdfaAad2;8qbbavavcjdfaAcufad2fad;8qbbaAazfhzc9:hoaOhxaOmbxlkkaeTmbaDalfhrcbhocuhlinaralaD9RglfaD6mdaPaeao9RaoaPfae6Eaofgoae6mbkaial9Rhxkcbc99amax9RakSEhoxekc9:hokavcj;kbf8Kjjjjbaokwbz:bjjjbk::seHu8Jjjjjbc;ae9Rgv8Kjjjjbc9:hodnaeci9UgrcHfal0mbcuhoaiRbbgwc;WeGc;Ge9hmbawcsGgwce0mbavc;abfcFecje;8kbavcUf9cu83ibavc8Wf9cu83ibavcyf9cu83ibavcaf9cu83ibavcKf9cu83ibavczf9cu83ibav9cu83iwav9cu83ibaialfc9WfhDaicefgqarfhidnaeTmbcmcsawceSEhkcbhxcbhmcbhPcbhwcbhlindnaiaD9nmbc9:hoxikdndnaqRbbgoc;Ve0mbavc;abfalaocu7gscl4fcsGcitfgzydlhrazydbhzdnaocsGgHak9pmbavawasfcsGcdtfydbaxaHEhoaHThsdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkaxasfhxcdhHavawcdtfaoBdbawasfhwcehsalhOxdkdndnaHcsSmbaHc987aHamffcefhoxekaicefhoai8SbbgHcFeGhsdndnaHcu9mmbaohixekaicvfhiascFbGhscrhHdninao8SbbgOcFbGaHtasVhsaOcu9kmeaocefhoaHcrfgHc8J9hmbxdkkaocefhikasce4cbasceG9R7amfhokdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkcdhHavawcdtfaoBdbcehsawcefhwalhOaohmxekdnaocpe0mbaxcefgHavawaDaocsGfRbbgocl49RcsGcdtfydbaocz6gzEhravawao9RcsGcdtfydbaHazfgAaocsGgHEhoaHThCdndnadcd9hmbabaPcetfgHax87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHaxBdbaHcwfaoBdbaHclfarBdbkcdhsavawcdtfaxBdbavawcefgwcsGcdtfarBdbcihHavc;abfalcitfgOaxBdlaOarBdbavawazfgwcsGcdtfaoBdbalcefcsGhOawaCfhwaxhzaAaCfhxxekaxcbaiRbbgOEgzaoc;:eSgHfhraOcsGhCaOcl4hAdndnaOcs0mbarcefhoxekarhoavawaA9RcsGcdtfydbhrkdndnaCmbaocefhxxekaohxavawaO9RcsGcdtfydbhokdndnaHTmbaicefhHxekaicdfhHai8SbegscFeGhzdnascu9kmbaicofhXazcFbGhzcrhidninaH8SbbgscFbGaitazVhzascu9kmeaHcefhHaicrfgic8J9hmbkaXhHxekaHcefhHkazce4cbazceG9R7amfgmhzkdndnaAcsSmbaHhsxekaHcefhsaH8SbbgicFeGhrdnaicu9kmbaHcvfhXarcFbGhrcrhidninas8SbbgHcFbGaitarVhraHcu9kmeascefhsaicrfgic8J9hmbkaXhsxekascefhskarce4cbarceG9R7amfgmhrkdndnaCcsSmbashixekascefhias8SbbgocFeGhHdnaocu9kmbascvfhXaHcFbGhHcrhodninai8SbbgscFbGaotaHVhHascu9kmeaicefhiaocrfgoc8J9hmbkaXhixekaicefhikaHce4cbaHceG9R7amfgmhokdndnadcd9hmbabaPcetfgHaz87ebaHclfao87ebaHcdfar87ebxekabaPcdtfgHazBdbaHcwfaoBdbaHclfarBdbkcdhsavawcdtfazBdbavawcefgwcsGcdtfarBdbcihHavc;abfalcitfgXazBdlaXarBdbavawaOcz6aAcsSVfgwcsGcdtfaoBdbawaCTaCcsSVfhwalcefcsGhOkaqcefhqavc;abfaOcitfgOarBdlaOaoBdbavc;abfalasfcsGcitfgraoBdlarazBdbawcsGhwalaHfcsGhlaPcifgPae6mbkkcbc99aiaDSEhokavc;aef8Kjjjjbaok:clevu8Jjjjjbcz9Rhvdnaecvfal9nmbc9:skdnaiRbbc;:eGc;qeSmbcuskav9cb83iwaicefhoaialfc98fhrdnaeTmbdnadcdSmbcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcdtfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgiBdbalaiBdbawcefgwae9hmbxdkkcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcetfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgi87ebalaiBdbawcefgwae9hmbkkcbc99aoarSEk:SPliuo97eue978Jjjjjbca9Rhiaec98Ghldndnadcl9hmbdnalTmbcbhvabhdinadadpbbbgocKp:RecKp:Sep;6egraocwp:RecKp:Sep;6earp;Geaoczp:RecKp:Sep;6egwp;Gep;Kep;LegDpxbbbbbbbbbbbbbbbbp:2egqarpxbbbjbbbjbbbjbbbjgkp9op9rp;Kegrpxbb;:9cbb;:9cbb;:9cbb;:9cararp;MeaDaDp;Meawaqawakp9op9rp;Kegrarp;Mep;Kep;Kep;Jep;Negwp;Mepxbbn0bbn0bbn0bbn0gqp;KepxFbbbFbbbFbbbFbbbp9oaopxbbbFbbbFbbbFbbbFp9op9qarawp;Meaqp;Kecwp:RepxbFbbbFbbbFbbbFbbp9op9qaDawp;Meaqp;Keczp:RepxbbFbbbFbbbFbbbFbp9op9qpkbbadczfhdavclfgval6mbkkalaeSmeaipxbbbbbbbbbbbbbbbbgqpklbaiabalcdtfgdaeciGglcdtgv;8qbbdnalTmbaiaipblbgocKp:RecKp:Sep;6egraocwp:RecKp:Sep;6earp;Geaoczp:RecKp:Sep;6egwp;Gep;Kep;LegDaqp:2egqarpxbbbjbbbjbbbjbbbjgkp9op9rp;Kegrpxbb;:9cbb;:9cbb;:9cbb;:9cararp;MeaDaDp;Meawaqawakp9op9rp;Kegrarp;Mep;Kep;Kep;Jep;Negwp;Mepxbbn0bbn0bbn0bbn0gqp;KepxFbbbFbbbFbbbFbbbp9oaopxbbbFbbbFbbbFbbbFp9op9qarawp;Meaqp;Kecwp:RepxbFbbbFbbbFbbbFbbp9op9qaDawp;Meaqp;Keczp:RepxbbFbbbFbbbFbbbFbp9op9qpklbkadaiav;8qbbskdnalTmbcbhvabhdinadczfgxaxpbbbgopxbbbbbbFFbbbbbbFFgkp9oadpbbbgDaopmbediwDqkzHOAKY8AEgwczp:Reczp:Sep;6egraDaopmlvorxmPsCXQL358E8FpxFubbFubbFubbFubbp9op;7eawczp:Sep;6egwp;Gearp;Gep;Kep;Legopxbbbbbbbbbbbbbbbbp:2egqarpxbbbjbbbjbbbjbbbjgmp9op9rp;Kegrpxb;:FSb;:FSb;:FSb;:FSararp;Meaoaop;Meawaqawamp9op9rp;Kegrarp;Mep;Kep;Kep;Jep;Negwp;Mepxbbn0bbn0bbn0bbn0gqp;KepxFFbbFFbbFFbbFFbbp9oaoawp;Meaqp;Keczp:Rep9qgoarawp;Meaqp;KepxFFbbFFbbFFbbFFbbp9ogrpmwDKYqk8AExm35Ps8E8Fp9qpkbbadaDakp9oaoarpmbezHdiOAlvCXorQLp9qpkbbadcafhdavclfgval6mbkkalaeSmbaiczfpxbbbbbbbbbbbbbbbbgopklbaiaopklbaiabalcitfgdaeciGglcitgv;8qbbdnalTmbaiaipblzgopxbbbbbbFFbbbbbbFFgkp9oaipblbgDaopmbediwDqkzHOAKY8AEgwczp:Reczp:Sep;6egraDaopmlvorxmPsCXQL358E8FpxFubbFubbFubbFubbp9op;7eawczp:Sep;6egwp;Gearp;Gep;Kep;Legopxbbbbbbbbbbbbbbbbp:2egqarpxbbbjbbbjbbbjbbbjgmp9op9rp;Kegrpxb;:FSb;:FSb;:FSb;:FSararp;Meaoaop;Meawaqawamp9op9rp;Kegrarp;Mep;Kep;Kep;Jep;Negwp;Mepxbbn0bbn0bbn0bbn0gqp;KepxFFbbFFbbFFbbFFbbp9oaoawp;Meaqp;Keczp:Rep9qgoarawp;Meaqp;KepxFFbbFFbbFFbbFFbbp9ogrpmwDKYqk8AExm35Ps8E8Fp9qpklzaiaDakp9oaoarpmbezHdiOAlvCXorQLp9qpklbkadaiav;8qbbkk:oDllue97euv978Jjjjjbc8W9Rhidnaec98GglTmbcbhvabhoinaiaopbbbgraoczfgwpbbbgDpmlvorxmPsCXQL358E8Fgqczp:Segkclp:RepklbaopxbbjZbbjZbbjZbbjZpx;Zl81Z;Zl81Z;Zl81Z;Zl81Zakpxibbbibbbibbbibbbp9qp;6ep;NegkaraDpmbediwDqkzHOAKY8AEgrczp:Reczp:Sep;6ep;MegDaDp;Meakarczp:Sep;6ep;Megxaxp;Meakaqczp:Reczp:Sep;6ep;Megqaqp;Mep;Kep;Kep;Lepxbbbbbbbbbbbbbbbbp:4ep;Jepxb;:FSb;:FSb;:FSb;:FSgkp;Mepxbbn0bbn0bbn0bbn0grp;KepxFFbbFFbbFFbbFFbbgmp9oaxakp;Mearp;Keczp:Rep9qgxaDakp;Mearp;Keamp9oaqakp;Mearp;Keczp:Rep9qgkpmbezHdiOAlvCXorQLgrp5baipblbpEb:T:j83ibaocwfarp5eaipblbpEe:T:j83ibawaxakpmwDKYqk8AExm35Ps8E8Fgkp5baipblbpEd:T:j83ibaocKfakp5eaipblbpEi:T:j83ibaocafhoavclfgval6mbkkdnalaeSmbaiczfpxbbbbbbbbbbbbbbbbgkpklbaiakpklbaiabalcitfgoaeciGgvcitgw;8qbbdnavTmbaiaipblbgraipblzgDpmlvorxmPsCXQL358E8Fgqczp:Segkclp:RepklaaipxbbjZbbjZbbjZbbjZpx;Zl81Z;Zl81Z;Zl81Z;Zl81Zakpxibbbibbbibbbibbbp9qp;6ep;NegkaraDpmbediwDqkzHOAKY8AEgrczp:Reczp:Sep;6ep;MegDaDp;Meakarczp:Sep;6ep;Megxaxp;Meakaqczp:Reczp:Sep;6ep;Megqaqp;Mep;Kep;Kep;Lepxbbbbbbbbbbbbbbbbp:4ep;Jepxb;:FSb;:FSb;:FSb;:FSgkp;Mepxbbn0bbn0bbn0bbn0grp;KepxFFbbFFbbFFbbFFbbgmp9oaxakp;Mearp;Keczp:Rep9qgxaDakp;Mearp;Keamp9oaqakp;Mearp;Keczp:Rep9qgkpmbezHdiOAlvCXorQLgrp5baipblapEb:T:j83ibaiarp5eaipblapEe:T:j83iwaiaxakpmwDKYqk8AExm35Ps8E8Fgkp5baipblapEd:T:j83izaiakp5eaipblapEi:T:j83iKkaoaiaw;8qbbkk;uddiue978Jjjjjbc;ab9Rhidnadcd4ae2glc98GgvTmbcbheabhdinadadpbbbgocwp:Recwp:Sep;6eaocep:SepxbbjFbbjFbbjFbbjFp9opxbbjZbbjZbbjZbbjZp:Uep;Mepkbbadczfhdaeclfgeav6mbkkdnavalSmbaic8WfpxbbbbbbbbbbbbbbbbgopklbaicafaopklbaiczfaopklbaiaopklbaiabavcdtfgdalciGgecdtgv;8qbbdnaeTmbaiaipblbgocwp:Recwp:Sep;6eaocep:SepxbbjFbbjFbbjFbbjFp9opxbbjZbbjZbbjZbbjZp:Uep;Mepklbkadaiav;8qbbkk9teiucbcbydj1jjbgeabcifc98GfgbBdj1jjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaikkkebcjwklz:Dbb", t = new Uint8Array([
+    0,
+    97,
+    115,
+    109,
+    1,
+    0,
+    0,
+    0,
+    1,
+    4,
+    1,
+    96,
+    0,
+    0,
+    3,
+    3,
+    2,
+    0,
+    0,
+    5,
+    3,
+    1,
+    0,
+    1,
+    12,
+    1,
+    0,
+    10,
+    22,
+    2,
+    12,
+    0,
+    65,
+    0,
+    65,
+    0,
+    65,
+    0,
+    252,
+    10,
+    0,
+    0,
+    11,
+    7,
+    0,
+    65,
+    0,
+    253,
+    15,
+    26,
+    11
+  ]), a = new Uint8Array([
+    32,
+    0,
+    65,
+    2,
+    1,
+    106,
+    34,
+    33,
+    3,
+    128,
+    11,
+    4,
+    13,
+    64,
+    6,
+    253,
+    10,
+    7,
+    15,
+    116,
+    127,
+    5,
+    8,
+    12,
+    40,
+    16,
+    19,
+    54,
+    20,
+    9,
+    27,
+    255,
+    113,
+    17,
+    42,
+    67,
+    24,
+    23,
+    146,
+    148,
+    18,
+    14,
+    22,
+    45,
+    70,
+    69,
+    56,
+    114,
+    101,
+    21,
+    25,
+    63,
+    75,
+    136,
+    108,
+    28,
+    118,
+    29,
+    73,
+    115
+  ]);
+  if (typeof WebAssembly != "object")
+    return {
+      supported: !1
+    };
+  var n = WebAssembly.validate(t) ? r(e) : r(o), i, s = WebAssembly.instantiate(n, {}).then(function(C) {
+    i = C.instance, i.exports.__wasm_call_ctors();
+  });
+  function r(C) {
+    for (var R = new Uint8Array(C.length), z = 0; z < C.length; ++z) {
+      var q = C.charCodeAt(z);
+      R[z] = q > 96 ? q - 97 : q > 64 ? q - 39 : q + 4;
+    }
+    for (var H = 0, z = 0; z < C.length; ++z)
+      R[H++] = R[z] < 60 ? a[R[z]] : (R[z] - 60) * 64 + R[++z];
+    return R.buffer.slice(0, H);
+  }
+  function c(C, R, z, q, H, W, J) {
+    var K = C.exports.sbrk, B = q + 3 & -4, se = K(B * H), ue = K(W.length), N = new Uint8Array(C.exports.memory.buffer);
+    N.set(W, ue);
+    var m = R(se, q, H, ue, W.length);
+    if (m == 0 && J && J(se, B, H), z.set(N.subarray(se, se + q * H)), K(se - K(0)), m != 0)
+      throw new Error("Malformed buffer data: " + m);
+  }
+  var d = {
+    NONE: "",
+    OCTAHEDRAL: "meshopt_decodeFilterOct",
+    QUATERNION: "meshopt_decodeFilterQuat",
+    EXPONENTIAL: "meshopt_decodeFilterExp"
+  }, p = {
+    ATTRIBUTES: "meshopt_decodeVertexBuffer",
+    TRIANGLES: "meshopt_decodeIndexBuffer",
+    INDICES: "meshopt_decodeIndexSequence"
+  }, f = [], w = 0;
+  function y(C) {
+    var R = {
+      object: new Worker(C),
+      pending: 0,
+      requests: {}
+    };
+    return R.object.onmessage = function(z) {
+      var q = z.data;
+      R.pending -= q.count, R.requests[q.id][q.action](q.value), delete R.requests[q.id];
+    }, R;
+  }
+  function _(C) {
+    for (var R = "self.ready = WebAssembly.instantiate(new Uint8Array([" + new Uint8Array(n) + "]), {}).then(function(result) { result.instance.exports.__wasm_call_ctors(); return result.instance; });self.onmessage = " + F.name + ";" + c.toString() + F.toString(), z = new Blob([R], { type: "text/javascript" }), q = URL.createObjectURL(z), H = f.length; H < C; ++H)
+      f[H] = y(q);
+    for (var H = C; H < f.length; ++H)
+      f[H].object.postMessage({});
+    f.length = C, URL.revokeObjectURL(q);
+  }
+  function T(C, R, z, q, H) {
+    for (var W = f[0], J = 1; J < f.length; ++J)
+      f[J].pending < W.pending && (W = f[J]);
+    return new Promise(function(K, B) {
+      var se = new Uint8Array(z), ue = ++w;
+      W.pending += C, W.requests[ue] = { resolve: K, reject: B }, W.object.postMessage({ id: ue, count: C, size: R, source: se, mode: q, filter: H }, [se.buffer]);
+    });
+  }
+  function F(C) {
+    var R = C.data;
+    if (!R.id)
+      return self.close();
+    self.ready.then(function(z) {
+      try {
+        var q = new Uint8Array(R.count * R.size);
+        c(z, z.exports[R.mode], q, R.count, R.size, R.source, z.exports[R.filter]), self.postMessage({ id: R.id, count: R.count, action: "resolve", value: q }, [q.buffer]);
+      } catch (H) {
+        self.postMessage({ id: R.id, count: R.count, action: "reject", value: H });
+      }
+    });
+  }
+  return {
+    ready: s,
+    supported: !0,
+    useWorkers: function(C) {
+      _(C);
+    },
+    decodeVertexBuffer: function(C, R, z, q, H) {
+      c(i, i.exports.meshopt_decodeVertexBuffer, C, R, z, q, i.exports[d[H]]);
+    },
+    decodeIndexBuffer: function(C, R, z, q) {
+      c(i, i.exports.meshopt_decodeIndexBuffer, C, R, z, q);
+    },
+    decodeIndexSequence: function(C, R, z, q) {
+      c(i, i.exports.meshopt_decodeIndexSequence, C, R, z, q);
+    },
+    decodeGltfBuffer: function(C, R, z, q, H, W) {
+      c(i, i.exports[p[H]], C, R, z, q, i.exports[d[W]]);
+    },
+    decodeGltfBufferAsync: function(C, R, z, q, H) {
+      return f.length > 0 ? T(C, R, z, p[q], d[H]) : s.then(function() {
+        var W = new Uint8Array(C * R);
+        return c(i, i.exports[p[q]], W, C, R, z, i.exports[d[H]]), W;
+      });
+    }
+  };
+}();
+function Wi(o, e = "horizontal", t) {
+  return new Promise((a, n) => {
+    const i = new Fn();
+    i.setMeshoptDecoder(Xi);
+    const s = new bi();
+    s.setDecoderPath(
+      "https://www.gstatic.com/draco/versioned/decoders/"
+    ), s.preload(), console.log(s), i.setDRACOLoader(s), i.load(
+      o,
+      (r) => {
+        r.scene.traverse((p) => {
+          p.isMesh && p.material && (Array.isArray(p.material) ? p.material : [p.material]).forEach((w) => {
+            w.side === qt.DoubleSide && (w.side = qt.FrontSide, w.needsUpdate = !0);
+          });
+        }), r.scene.scale.set(t.scaleX, t.scaleY, t.scaleZ), e === "vertical" && (r.scene.rotation.x = -Math.PI / 2), r.scene.updateMatrixWorld(!0);
+        const c = {
+          ar: {
+            anchoring: { type: "plane" },
+            planeAnchoring: { alignment: e }
+          },
+          // includeAnchoringProperties: true, // Generally implied by 'ar' options
+          quickLookCompatible: !1,
+          // Set true for basic iOS AR Quick Look compatibility if needed, might limit features
+          maxTextureSize: 1024
+          // Limit texture size for performance/compatibility
+          // Consider adding `embedImages: true` if textures aren't loading
+        };
+        new ji().parse(
+          r.scene,
+          (p) => {
+            const f = new Blob([p], {
+              type: "model/vnd.usdz+zip"
+              // More specific USDZ MIME type
+            }), w = URL.createObjectURL(f);
+            console.log(w), a(w);
+          },
+          (p) => {
+            console.error("Error during USDZ export:", p), n(new Error(`USDZ export failed: ${String(p)}`));
+          },
+          c
+        );
+      },
+      void 0,
+      // onProgress callback (optional)
+      (r) => {
+        console.error("Error loading GLB:", o, r), n(
+          new Error(`Failed to load GLB from ${o}: ${String(r)}`)
+        );
+      }
+    );
+  });
+}
+const Ji = (o) => btoa(o), Qt = (o) => atob(o), pe = (o, e = {}) => {
+  const t = document.createElement(o);
+  return e.classList && e.classList.forEach((a) => t.classList.add(a)), e.textContent && (t.textContent = e.textContent), e.attributes && Object.entries(e.attributes).forEach(([a, n]) => {
+    t.setAttribute(a, n);
+  }), t;
+};
+function at(o, e = document.body) {
+  return e.appendChild(o), o;
+}
+const Ve = {
+  debug: (...o) => {
+  },
+  error: (...o) => {
+  },
+  warn: (...o) => {
+  }
+};
+async function mt(o, e) {
+  if (e[o])
+    return e[o];
+  try {
+    const t = fetch(o).then((a) => {
+      if (!a.ok) throw new Error("Network response was not ok");
+      return a.blob();
+    }).then((a) => {
+      const n = URL.createObjectURL(a);
+      return e[o] = n, n;
+    });
+    return e[o] = t, await t;
+  } catch (t) {
+    return console.error("Failed to load poster:", t), delete e[o], o;
+  }
+}
+class wt {
+  constructor(e, t) {
+    this.container = e, this.modelData = t, this.qrCode = null;
+  }
+  async loadImage(e) {
+    return new Promise((t, a) => {
+      const n = new Image();
+      n.onload = () => t(), n.onerror = n.onabort = () => a(new Error("Image failed to load")), n.src = e;
+    });
+  }
+  async updateQrCode(e) {
+    var i;
+    this.container.innerHTML = "";
+    const t = (i = this.modelData) == null ? void 0 : i.qrCode;
+    let a = t == null ? void 0 : t.faviconUrl;
+    if (a)
+      try {
+        await this.loadImage(a);
+      } catch {
+        a = null;
+      }
+    const n = {
+      width: parseInt(t.QRsize) || 240,
+      height: parseInt(t.QRsize) || 240,
+      data: e,
+      dotsOptions: {
+        color: t.dotColor || "#000000",
+        type: t.dotStyle || "square"
+      },
+      cornersSquareOptions: {
+        color: t.cornerColor || "#000000",
+        type: t.cornerStyle || "square"
+      },
+      cornersDotOptions: {
+        color: t.cornerDotColor || "#000000",
+        type: t.cornerDotStyle || "square"
+      },
+      backgroundOptions: {
+        color: t.backgroundColor || "#ffffff"
+      }
+    };
+    a && (n.image = a, n.imageOptions = {
+      margin: parseInt(t.faviconMargin) || 0
+    }), this.qrCode = new yn(n), this.qrCode.append(this.container);
+  }
+}
+const _a = document.createElement("template");
+_a.innerHTML = `
+  <div class="ardisplay-progress-modal" id="ardisplayProgressModal" style="display: none;direction: ltr;">
+    <div class="ardisplay-progress-content">
+      <button class="ardisplay-progress-close-button"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg></button>
+      <h3 class="ardisplay-progress-text">Loading...</h3>
+      <div class="ardisplay-progress-bar">
+        <div class="ardisplay-progress-bar-fill" id="ardisplayProgressBarFill"></div>
+      </div>
+    </div>
+  </div>
+  <style>
+    .ardisplay-progress-modal {
+      position: fixed;
+      z-index: 9999;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .ardisplay-progress-content {
+      position: relative;
+      text-align: center;
+      font-family: sans-serif;
+    }
+    .ardisplay-progress-text {
+      color:white;
+    }
+    .ardisplay-progress-bar {
+      width: 200px;
+      background: transparent;
+      border: 2px solid white;
+      border-radius: 4px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .ardisplay-progress-bar-fill {
+      width: 0;
+      height: 8px;
+      background: white;
+      transition: width 0.2s linear;
+    }
+    .ar-button {
+      margin-top: 16px;
+      padding: 8px 16px;
+      background: #0072f5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+    }
+    .ar-button:hover {
+      background: #0058bc;
+    }
+    .ardisplay-progress-close-button {
+      position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        background: transparent;
+    }
+    .ardisplay-progress-close-button:hover {
+      color: #ccc;
+    }
+    .ardisplay-progress-close-button svg{
+      width:30px;
+      height:30px;
+    }
+  </style>
+`;
+const Fe = [
+  {
+    title: "Scanning",
+    description: "Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down."
+  },
+  {
+    title: "Ready to view",
+    description: "Get started with AR view"
+  }
+], Ra = document.createElement("template");
+Ra.innerHTML = `
+  <div class="ardisplay-multi-steps-overlay" style="display: none;direction: ltr;">
+    <div class="ardisplay-overlay-bg" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 9998;
+    ">
+      <div class="ardisplay-steps-close-button" style="
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:30px;height:30px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+    </div>
+    <div class="ardisplay-multi-steps-modal" style="
+      position: fixed;
+      bottom: .5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 1rem);
+      height: auto;
+      max-height: 90vh;
+      background-color: rgba(255, 255, 255, 0.85);
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      z-index: 9999;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 15px;
+    ">
+      <div class="ardisplay-steps-content" style="padding: 1rem; flex: 1;padding-top: 0;">
+        <h3 class="ardisplay-translate-lang instructions-title">Scanning</h3>
+        <img id="instructionGif" src="" class="ardisplay-steps-gif" alt="Computer man">
+        <div class="ardisplay-instructions-body translate-lang" data-id="space-info">Stand several feet back. With camera facing wall, make sweeping motion side to side, up and down.</div>
+      </div>
+      <div class="ardisplay-steps-footer" style="
+        display: flex; 
+        justify-content: flex-end; 
+        flex-direction:column;
+        gap: 0.5rem; 
+        border-top: 1px solid #ccc; 
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.5;
+        padding: 8px;
+        width: 75%;
+        max-width: 100%;
+        margin: 10px auto;
+      ">
+        <button class="ardisplay-next-button ardisplay-multi-button">Next</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    /* You can customize these classes as well */
+    .ardisplay-multi-steps-overlay.show {
+      display: block;
+    }
+
+    .ardisplay-steps-gif{
+      width:100%;
+      height:auto;
+      border-radius: 20px;
+    }
+
+    .ardisplay-view-wall-button{
+      width: 100%;
+    }
+
+    .ardisplay-view-wall-button svg{
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      fill: white;
+      stroke: white;
+    }
+
+    .ardisplay-instructions-body {
+        display:flex;
+        align-items:center;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #272727;
+        margin: 10px 0 10px 0;
+        text-align: justify;
+        font-family:sans-serif;
+    }
+
+    h3 {
+        font-size: 20px;
+        font-weight: bold;
+        font-family:sans-serif;
+        line-height: 1.5;
+        margin: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .ardisplay-steps-header{
+      display:flex;
+      flex-direction:row;
+      width:80%;
+      gap:12px;
+      margin:auto;
+    }
+
+    .ardisplay-steps-content{
+      display:flex;
+      flex-direction:column;
+      justify-content: center;
+      align-items: center;
+      overflow:hidden;
+    }
+
+    .ardisplay-step-indicator{
+      height:6px;
+      background:#bbbbbb;
+      flex:1;
+    }
+
+    .ardisplay-step-indicator.active{
+      background:black;
+    }
+
+    .ardisplay-multi-button{
+      padding-block: .5rem;
+      cursor:pointer;
+      height:45px;
+      border-radius:10px;
+      flex-shrink:0;
+      font-weight:bold;
+    }
+
+    .ardisplay-next-button{
+      background:black!important;
+      color:white;
+    }
+
+    .ardisplay-skip-button{
+      border:none;
+      color:gray;
+      text-decoration:underline;
+    }
+  </style>
+`;
+class Yi extends HTMLElement {
+  constructor() {
+    super(), this.attachShadow({ mode: "open" }), this.selectedIndex = 0, this.calculatedScale = null, this.modelData = null, this.originalSize = null, this.variants = [], this.variantSizes = [], this.scaleEvent = new Event("scale", { bubbles: !0, composed: !0 }), this.isModelLoaded = !1, this.userClickedAR = !1, this.currentStep = 1, this.totalSteps = 2, this.qrCodeManager = null, this.qrModal = null, this.posters = {}, this.modelViewer = null, this.debouncedRenderSVG = this.animationFrameDebounce(this._renderSVG), this.debouncedUpdateDimensionHotspots = this.animationFrameDebounce(
+      this._updateDimensionHotspots
+    ), this.GIF_URLS = [], this.gifCache = {}, this.preloadImage = async (e) => {
+      if (this.gifCache[e])
+        return this.gifCache[e];
+      const t = fetch(e).then((a) => a.blob()).then((a) => {
+        const n = URL.createObjectURL(a);
+        return this.gifCache[e] = n, n;
+      }).catch((a) => (delete this.gifCache[e], e));
+      return this.gifCache[e] = t, t;
+    }, this.setupPreloaderForStep = (e, t) => {
+      if (e + 1 < this.GIF_URLS.length && !this.gifCache[this.GIF_URLS[e + 1]]) {
+        const a = this.GIF_URLS[e + 1], n = t.querySelector(".ardisplay-steps-gif");
+        if (!n) return;
+        const i = n.getBoundingClientRect();
+        if (i.top >= 0 && i.bottom <= window.innerHeight) {
+          this.preloadImage(a);
+          return;
+        }
+        new IntersectionObserver(
+          (c, d) => {
+            c.forEach((p) => {
+              p.isIntersecting && (this.preloadImage(a), d.disconnect());
+            });
+          },
+          {
+            threshold: 0.5
+          }
+        ).observe(n);
+      }
+    };
+  }
+  // Debounce using requestAnimationFrame
+  animationFrameDebounce(e) {
+    let t = !1;
+    return (...a) => {
+      t || (t = !0, requestAnimationFrame(() => {
+        e.apply(this, a), t = !1;
+      }));
+    };
+  }
+  debounce(e, t) {
+    let a;
+    return function(...n) {
+      const i = this;
+      clearTimeout(a), a = setTimeout(() => e.apply(i, n), t);
+    };
+  }
+  _sendShortStatsEvent(e, t = "") {
+    var n;
+    Ve.debug(this.modelData);
+    const a = {
+      dmodelId: ((n = this.modelData) == null ? void 0 : n.modelId) || "no-model-id",
+      action: e,
+      browser: navigator.userAgent,
+      message: t || void 0
+    };
+    fetch("https://ardisplayboilerplate.vercel.app/api/stats", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(a)
+    }).then((i) => {
+      i.ok || Ve.error("Error sending stats:", i.status);
+    }).catch((i) => {
+    });
+  }
+  static get observedAttributes() {
+    return ["ar-btn-config"];
+  }
+  attributeChangedCallback(e, t, a) {
+    e === "ar-btn-config" && t !== a && this._updateArBtnConfig(a);
+  }
+  _updateArBtnConfig(e) {
+    if (!this.modelData) {
+      console.warn(
+        "Deferring AR button config update: modelData not ready yet."
+      );
+      return;
+    }
+    if (e)
+      try {
+        const t = Qt(e), a = JSON.parse(t);
+        let n = {
+          ...this.modelData.arBtn,
+          // the existing/default configuration
+          ...a
+          // any properties provided by the user will override the default ones
+        };
+        const i = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".ardisplay-qr-code-button") : document.querySelector(".ardisplay-qr-code-button"), s = this.shadowRoot.querySelector(
+          ".ardisplay-view-3d-button"
+        );
+        if (s && (s.style.backgroundColor = n.btnBgColor, s.style.color = n.btnTextColor, s.style.borderRadius = n.cornerRadius + "px", s.style.fontSize = n.btnSize + "px", s.style.boxSizing = "border-box", n.modalButtonText && (s.querySelector("span").innerHTML = n.modalButtonText)), i) {
+          i.style.backgroundColor = n.btnBgColor, i.style.color = n.btnTextColor, i.style.borderRadius = n.cornerRadius + "px", i.style.fontSize = n.btnSize + "px", i.style.boxSizing = "border-box";
+          const r = n.btnIcon ? `<i data-lucide="${n.btnIcon}" style="width: 24px; height: 24px; color: inherit;"></i>` : "";
+          i.innerHTML = `${r} ${n.btnText}`, this._processLucideIcons(i);
+        }
+      } catch (t) {
+        console.error(
+          "Invalid AR button configuration provided in ar-btn-config attribute:",
+          t
+        );
+      }
+  }
+  async connectedCallback() {
+    if (this._getAttributes(), await this._getModelData(), this.modelData.enabled === !1 && !this.hasAttribute("enabled"))
+      return;
+    const e = this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement || this.modelData.placement;
+    e === "wall" ? this.GIF_URLS.push(`${Be}/wall.webp`) : this.GIF_URLS.push(`${Be}/floor.gif`), this.styles = this._consolidateStyles(), this.modelData.mode !== "popup" ? this.shadowRoot.appendChild(this.styles) : document.body.appendChild(this.styles);
+    const t = document.createElement("template");
+    t.innerHTML = `
+      <!-- QR Code Modal -->
+      <style>
+        #qrModal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.5);
+          display: none;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+        .qr-modal-content {
+          background: white;
+          border-radius: 8px;
+          position: relative;
+          background-color: #fefefe;
+          border: 1px solid #888;
+          width: 820px;
+          height: 418px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .qr-close-button {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 30px;
+          height: 30px;
+          background-color: rgba(0, 0, 0, 0.5);
+          color: white;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+          border: none;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .qr-modal-content h2 {
+          margin-top: 0;
+          color: #333;
+          text-align: center;
+        }
+        .qr-code-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        #qr-code {
+          margin: 20px auto;
+        }
+      </style>
+      <div id="qrModal" class="qr-modal" style="direction: ltr;">
+          <div class="qr-modal-content" style="display: flex; flex-direction: row;text-align: center;overflow: hidden;">
+          <button class="qr-close-button">×</button>
+          <div style="width: 50%; height:100%;flex-grow: 0; flex-shrink: 0;display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+              <h2 style="padding-block: 10px;">
+                  <p id="btn-text" style="margin: 0">${this.modelData.title}</p>
+              </h2>
+              <p data-id="qrcode-info" class="translate-lang" style="margin:0">${this.modelData.description}</p>
+              <div class="qr-code-container">
+                  <div id="qr-code"></div>
+              </div>
+          </div>
+          <div style="width: 50%; height:100%; flex-grow: 0; flex-shrink: 0;">
+              <img src="${this.modelData.options[0].posterFileUrl}" alt="Artwork" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
+          </div>
+          </div>
+      </div>
+    `;
+    const a = Mt(), n = document.createElement("template");
+    n.innerHTML = `
+      <style>
+      .model-viewer-container{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 96px);
+        height: calc(100% - 96px);
+        display: none;
+        background-color: white;
+        flex-direction: row;
+        z-index: 999;
+      }
+
+      /* Consolidated Styles */
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        --min-hotspot-opacity: 0;
+        position: relative;
+      }
+        
+      .ardisplay-close-button{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+      .ardisplay-close-button svg{
+        width: 24px;
+        height: 24px;
+        fill: black;
+      }
+      .ardisplay-model-viewer-overlay{
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 10;
+        display: none;
+      }
+      .ardisplay-details-panel{
+        width: 400px;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        padding-block: 1rem;
+        padding-top: 50px; // added padding
+      }
+      @media only screen and (max-width: 900px){
+        .model-viewer-container{
+          width: 100%;
+          height: calc(100% - 48px);
+          transform: translate(-50%, 0);
+          top: 48px;
+        }
+        .ardisplay-details-panel{
+          display: none!important;
+        }
+
+        .ardisplay-model-viewer-overlay{
+          top: -48px;
+        }
+
+        .ardisplay-qr-code-button{
+          display:flex!important;
+        }
+      }
+      .ardisplay-details-panel{
+        display:flex;
+      }
+      .ardisplay-qr-code-button{
+        all: unset;
+        position: absolute;
+        display:none;
+        top: 10px;
+        right: 50%;
+        transform: translateX(50%);
+        background: white;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        white-space: nowrap;
+      }
+      .ardisplay-show{
+        display:flex!important;
+      }
+      </style>
+      <div class="model-viewer-container" style="direction: ltr;">
+                <model-viewer  
+                    ar
+                    shadow-intensity="${this.modelData.shadow}"
+                    ar-placement="${this.modelData.options && this.modelData.options.length > 0 && this.modelData.options[0].placement || this.modelData.placement}"
+                    ar-modes="webxr scene-viewer quick-look"
+                    ar-scale="fixed"
+                    camera-controls="true"
+                    disable-pan="true"
+                    disable-tap="true"
+                    ar-status="not-presenting"
+                >
+                    ${a}
+                    <button class="ardisplay-qr-code-button" style="background-color: ${this.modelData.arBtn.btnBgColor};color: ${this.modelData.arBtn.btnTextColor};border-radius: ${this.modelData.arBtn.cornerRadius}px;font-size: ${this.modelData.arBtn.btnSize - 6}px;text-wrap: nowrap;box-sizing: border-box;">
+                        ${this.modelData.arBtn.btnIcon ? `<i data-lucide="${this.modelData.arBtn.btnIcon}" style="width: 24px; height: 24px;color: inherit;"></i>` : ""}
+                        ${this.modelData.arBtn.btnText}
+                    </button>
+                </model-viewer>
+                <button class="ardisplay-close-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+                <div class="ardisplay-details-panel" style="flex-direction:column;">
+                    <div class="ar-display-custom-panel" style="flex:1;display:block;"></div>
+                    <button id="showQRButton" style="margin-top: 16px; margin-right: 16px; padding: 8px 16px; color: black; border: none; border-radius: 4px; cursor: pointer;display:flex;flex-direction:row;align-items:center;gap:16px;font-weight:700;">
+                      <svg viewBox="0 0 24 24" focusable="false" width="24" height="24" aria-hidden="true" class="rotera-svg-icon"><path d="M2 2h7v2H4v5H2V2zm18 2h-5V2h7v7h-2V4zM4 15H2v7h7v-2H4v-5zm18 0h-2v5h-5v2h7v-7z"></path><path d="M11 6h2v5h5v7h-7v-5H6v-2h5V6z"></path><path d="M9 6H6v3h3V6zm6 0h3v3h-3V6zm-6 9H6v3h3v-3z"></path></svg>
+                      Try it in your home
+                    </button>
+                    <div id="inline-qr-container" style="display: none; margin-top: 16px;justify-content:center;align-items:center;"></div>
+                </div>
+            </div>
+            <div class="ardisplay-model-viewer-overlay"></div>
+        </div>
+    `, this.styles = this._consolidateStyles(), this.shadowRoot.appendChild(this.styles), await this._loadTemplate(this.modelData.mode), this._moveSlottedContent(), this._updateArBtnConfig(this.getAttribute("ar-btn-config"));
+    const i = this.getAttribute("ar-btn-config");
+    if (i)
+      try {
+        const R = Qt(i), z = JSON.parse(R);
+        this.modelData.arBtn = z;
+      } catch (R) {
+        console.error(
+          "Invalid AR button configuration provided in ar-btn-config attribute:",
+          R
+        );
+      }
+    at(_a.content.cloneNode(!0)), at(Ra.content.cloneNode(!0));
+    const s = e === "wall" ? "wall.webp" : "floor.gif", r = document.querySelector("#instructionGif");
+    r && (r.src = `${Be}/${s}`), this.modelData.placement;
+    const c = document.querySelector(
+      ".ardisplay-instructions-body"
+    );
+    c && (c.innerHTML = `Stand several feet back. With camera facing ${e === "wall" ? "wall" : "floor"}, make sweeping motion side to side, up and down.`), this.modelData.mode !== "popup" && at(t.content.cloneNode(!0)), this.modelData.mode === "popup" && at(n.content.cloneNode(!0)), this.modelViewer = this.modelData.mode === "popup" ? document.querySelector("model-viewer") : this.shadowRoot.querySelector("model-viewer");
+    const d = document.querySelector("#showQRButton");
+    d && d.addEventListener("click", () => {
+      const R = document.querySelector(
+        "#inline-qr-container"
+      );
+      if (R) {
+        R.classList.toggle("ardisplay-show");
+        const z = `${Qe}/${this.modelData.modelId}`;
+        this.qrCodeManager && this.qrCodeManager.updateQrCode(z);
+      }
+    }), this.modelData.mode === "popup" && this._processLucideIcons(
+      document.querySelector(".ardisplay-qr-code-button")
+    );
+    const p = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".ardisplay-qr-code-button") : document.querySelector(".ardisplay-qr-code-button");
+    this.hasAttribute("fullWidth") && this.modelData.mode === "none" && (p.style.width = "100%"), p.style.boxSizing = "border-box";
+    const f = document.querySelector("#qr-code");
+    if (p && (this.qrCodeManager = new wt(f, this.modelData), this._setupQRCodeListeners()), this.modelData.mode === "popup") {
+      const R = document.querySelector("#inline-qr-container");
+      R && (this.qrCodeManager = new wt(
+        R,
+        this.modelData
+      ));
+    }
+    const w = document.querySelector(".ardisplay-next-button"), y = document.querySelector(
+      ".ardisplay-steps-close-button"
+    );
+    w == null || w.addEventListener("click", this._goToNextStep.bind(this)), y == null || y.addEventListener("click", () => {
+      const R = document.querySelector(
+        ".ardisplay-multi-steps-overlay"
+      );
+      R && (R.style.display = "none");
+    });
+    const _ = document.querySelector("#ardisplayProgressModal"), T = document.querySelector(
+      ".ardisplay-progress-content"
+    ), F = document.querySelector(
+      ".ardisplay-progress-close-button"
+    );
+    _ && F && (F.addEventListener("click", () => {
+      _.style.display = "none";
+    }), _.addEventListener("click", (R) => {
+      T.contains(R.target) || (_.style.display = "none");
+    })), this._setupEventListeners(), this._sendShortStatsEvent("View");
+    const C = pe("div", {
+      classList: ["bottom-container"]
+    });
+    C.style.direction = "ltr", this.modelViewer.appendChild(C), this._setupCartButton(C), this._setupBottomNavBar(C), this._isIOSDevice() && this.modelViewer && this.modelViewer.removeAttribute("ar-scale");
+  }
+  _showStepsModal() {
+    const e = document.querySelector(".ardisplay-multi-steps-overlay");
+    if (e) {
+      e.style.display = "block";
+      const t = this.GIF_URLS[0];
+      this.preloadImage(t), this.setupPreloaderForStep(0, document), this._setupSwipeListeners();
+    }
+  }
+  _skipToLast() {
+    this.currentStep = this.totalSteps;
+    const e = document.querySelector(".ardisplay-steps-content"), t = document.querySelector(".ardisplay-next-button"), a = document.querySelector(".ardisplay-skip-button");
+    document.querySelectorAll(".ardisplay-step-indicator").forEach((i, s) => {
+      i.classList.toggle("active", s < this.currentStep);
+    }), e.innerHTML = `
+      <h3 class="ardisplay-instructions-title">${Fe[this.currentStep - 1].title}</h3>
+      <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
+           class="ardisplay-steps-gif"
+           alt="Product preview"
+           style="width: 100%;">
+      <div class="ardisplay-instructions-body">${Fe[this.currentStep - 1].description}</div>
+      <button class="ardisplay-view-wall-button" style="
+        background: black;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        ">
+        <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+        <g>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M33.002,49H44c2.762,0,5-2.239,5-5V32.626"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M1,33v10.999c0,2.763,2.24,5,5,5h11"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M17,1H6C3.238,1,1,3.238,1,6v11"/>
+          <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M49,16.625V6c0-2.762-2.238-5-5-5H33.002"/>
+          <g>
+            <path d="M39,39c0,1.104-1.116,2-2.22,2L14.89,35C13.785,35,13,34.104,13,33V17c0-1.104,0.676-2,1.78-2l22.11-6
+              C37.994,9,39,9.896,39,11V39z M23.686,29.171c-0.59,0.588-0.59,1.541,0,2.129c0.293,0.295,0.678,0.441,1.064,0.441
+              c0.385,0,0.77-0.146,1.064-0.441l4.377-4.376l4.199,4.198c0.588,0.59,1.541,0.59,2.129,0c0.588-0.588,0.588-1.541,0-2.129
+              l-5.264-5.264c-0.588-0.59-1.541-0.59-2.129,0l-1.697,1.697l-3.76-3.758c-0.586-0.586-1.535-0.586-2.121,0l-6.943,6.943
+              c-0.586,0.586-0.586,1.535,0,2.121c0.293,0.293,0.676,0.439,1.061,0.439c0.383,0,0.768-0.146,1.061-0.439l5.883-5.883l2.699,2.697
+              L23.686,29.171z M29.119,19.571c0-0.998-0.809-1.807-1.807-1.807c-0.996,0-1.805,0.809-1.805,1.807
+              c0,0.996,0.809,1.805,1.805,1.805C28.311,21.376,29.119,20.567,29.119,19.571"/>
+          </g>
+        </g>
+        </svg>
+        View on your wall
+      </button>
+    `, t && requestAnimationFrame(() => {
+      t.parentElement.style.display = "none";
+    }), a && requestAnimationFrame(() => {
+      a.style.display = "none";
+    });
+    const n = e.querySelector(
+      ".ardisplay-view-wall-button"
+    );
+    n && n.addEventListener("click", () => {
+      this.handleActivateAR();
+      const i = document.querySelector(".ardisplay-multi-steps-overlay");
+      i && (i.style.display = "none");
+    });
+  }
+  async _goToNextStep() {
+    if (this.currentStep < this.totalSteps)
+      if (this.currentStep++, document.querySelectorAll(".ardisplay-step-indicator").forEach((e, t) => {
+        e.classList.remove("active"), t <= this.currentStep - 1 && e.classList.add("active");
+      }), this.currentStep === this.totalSteps) {
+        const e = document.querySelector(".ardisplay-steps-content"), t = document.querySelector(".ardisplay-next-button"), a = document.querySelector(".ardisplay-skip-button");
+        e.innerHTML = `
+          <h3 class="ardisplay-instructions-title">${Fe[this.currentStep - 1].title}</h3>
+          <img src="${this.GIF_URLS[this.GIF_URLS.length - 1]}"
+               class="ardisplay-steps-gif"
+               alt="Product preview"
+               style="object-fit: cover;width: 100%;">
+          <div class="ardisplay-instructions-body">${Fe[this.currentStep - 1].description}</div>
+          <button class="ardisplay-view-wall-button" style="
+            background: black;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            ">
+              <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 50 50" enable-background="new 0 0 50 50" xml:space="preserve">
+              <g>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M33.002,49H44c2.762,0,5-2.239,5-5V32.626"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M1,33v10.999c0,2.763,2.24,5,5,5h11"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M17,1H6C3.238,1,1,3.238,1,6v11"/>
+                <path fill="none"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                  M49,16.625V6c0-2.762-2.238-5-5-5H33.002"/>
+                <g>
+                  <path d="M39,39c0,1.104-1.116,2-2.22,2L14.89,35C13.785,35,13,34.104,13,33V17c0-1.104,0.676-2,1.78-2l22.11-6
+                    C37.994,9,39,9.896,39,11V39z M23.686,29.171c-0.59,0.588-0.59,1.541,0,2.129c0.293,0.295,0.678,0.441,1.064,0.441
+                    c0.385,0,0.77-0.146,1.064-0.441l4.377-4.376l4.199,4.198c0.588,0.59,1.541,0.59,2.129,0c0.588-0.588,0.588-1.541,0-2.129
+                    l-5.264-5.264c-0.588-0.59-1.541-0.59-2.129,0l-1.697,1.697l-3.76-3.758c-0.586-0.586-1.535-0.586-2.121,0l-6.943,6.943
+                    c-0.586,0.586-0.586,1.535,0,2.121c0.293,0.293,0.676,0.439,1.061,0.439c0.383,0,0.768-0.146,1.061-0.439l5.883-5.883l2.699,2.697
+                    L23.686,29.171z M29.119,19.571c0-0.998-0.809-1.807-1.807-1.807c-0.996,0-1.805,0.809-1.805,1.807
+                    c0,0.996,0.809,1.805,1.805,1.805C28.311,21.376,29.119,20.567,29.119,19.571"/>
+                </g>
+              </g>
+              </svg>
+              View on your wall
+          </button>
+        `;
+        const n = e.querySelector(".ardisplay-steps-gif"), i = this.GIF_URLS[this.GIF_URLS.length - 1];
+        t && requestAnimationFrame(() => {
+          t.parentElement.style.display = "none";
+        }), a && requestAnimationFrame(() => {
+          a.style.display = "none";
+        });
+        try {
+          const r = await this.preloadImage(i);
+          n.src = r, n.setAttribute("loading", "eager");
+        } catch {
+          n.src = i;
+        }
+        const s = e.querySelector(
+          ".ardisplay-view-wall-button"
+        );
+        s && s.addEventListener("click", () => {
+          this.handleActivateAR();
+          const r = document.querySelector(
+            ".ardisplay-multi-steps-overlay"
+          );
+          r && (r.style.display = "none");
+        });
+      } else {
+        const e = document.querySelector(".ardisplay-steps-gif"), t = this.GIF_URLS[this.currentStep - 1];
+        try {
+          const a = await this.preloadImage(t);
+          e.src = a, e.setAttribute("loading", "eager");
+        } catch {
+          e.src = t;
+        }
+        document.querySelector(".ardisplay-instructions-title").innerHTML = Fe[this.currentStep - 1].title, document.querySelector(".ardisplay-instructions-body").innerHTML = Fe[this.currentStep - 1].description, this.setupPreloaderForStep(this.currentStep - 1, document);
+      }
+  }
+  async _goToPreviousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--, document.querySelectorAll(".ardisplay-step-indicator").forEach((a, n) => {
+        a.classList.remove("active"), n < this.currentStep && a.classList.add("active");
+      });
+      const e = document.querySelector(".ardisplay-steps-content");
+      e.innerHTML = `
+        <h3 class="ardisplay-instructions-title">${Fe[this.currentStep - 1].title}</h3>
+        <img src="${this.GIF_URLS[this.currentStep - 1]}"
+             class="ardisplay-steps-gif"
+             alt="Product preview"
+             style="width: 100%;">
+        <div class="ardisplay-instructions-body">
+          Stand several feet back. With camera facing ${this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement || this.modelData.placement}, make sweeping motion side to side, up and down.
+        </div>
+      `;
+      const t = document.querySelector(".ardisplay-next-button");
+      t && t.parentElement && (t.parentElement.style.display = "flex");
+    }
+  }
+  _setupSwipeListeners() {
+    const e = document.querySelector(".ardisplay-steps-content");
+    if (!e) return;
+    let t = 0, a = 0;
+    const n = 50, i = (r) => {
+      t = r.changedTouches[0].screenX;
+    }, s = (r) => {
+      a = r.changedTouches[0].screenX, this._handleSwipeGesture(t, a, n);
+    };
+    e.addEventListener("touchstart", i), e.addEventListener("touchend", s), this._swipeHandlers = {
+      start: i,
+      end: s,
+      element: e
+    };
+  }
+  _handleSwipeGesture(e, t, a) {
+    const n = t - e;
+    Math.abs(n) > a && (n < 0 ? this._goToNextStep() : this._goToPreviousStep());
+  }
+  disconnectedCallback() {
+    if (document.removeEventListener(
+      "mousedown",
+      this.boundHandleDocumentMouseDown
+    ), document.removeEventListener("scale", this.boundHandleScale), this.modelViewer && (this.modelViewer.removeEventListener(
+      "model-visibility",
+      this.boundHandleModelVisibility
+    ), this.modelViewer.removeEventListener(
+      "ar-status",
+      this.boundHandleArStatus
+    ), this.modelViewer.removeEventListener(
+      "camera-change",
+      this.boundHandleCameraChange
+    ), this.modelViewer.removeEventListener(
+      "scene-graph-ready",
+      this.boundHandleSceneGraphReady
+    ), this.modelViewer.removeEventListener("load", this.boundHandleLoad)), this.cleanupBlobUrls(), this._swipeHandlers) {
+      const { start: e, end: t, element: a } = this._swipeHandlers;
+      a.removeEventListener("touchstart", e), a.removeEventListener("touchend", t), this._swipeHandlers = null;
+    }
+  }
+  async _getModelData() {
+    const e = {
+      title: "demo",
+      modelId: "67e796c8294328fd88bfba83",
+      // Example ID, could be different if needed for fallback
+      logo: "",
+      addToCartUrl: "https://www.demo.com/demo/addToCart",
+      url: "https://ardisplay.io",
+      // Fallback URL
+      description: "View this product in your environment by scanning this code with your phone",
+      displayShareBtn: !1,
+      shadow: 1,
+      qrCode: {
+        faviconId: "",
+        faviconUrl: "",
+        faviconMargin: "0",
+        QRsize: "200",
+        dotStyle: "square",
+        dotColor: "#000000",
+        cornerStyle: "square",
+        cornerColor: "#000000",
+        cornerDotStyle: "square",
+        cornerDotColor: "#000000",
+        backgroundColor: "#ffffff",
+        imgBackground: !1,
+        website: "https://ardisplay.io"
+        // Fallback website for QR
+      },
+      arBtn: {
+        btnText: "View in your space",
+        btnTextColor: "#ffffff",
+        btnBgColor: "#3b37ff",
+        btnIcon: "Eye",
+        cornerRadius: "8",
+        btnSize: "15"
+      },
+      options: [
+        {
+          name: "DemoLives.glb",
+          model: "121",
+          // Example ID
+          url: "https://assetger.ddns.net/storage/documents/d91c18c6-9966-4d25-a443-a68df576f97e-optimized.glb",
+          sizes: [
+            {
+              label: "Default Size",
+              width: "135.6cm",
+              height: "106.0cm",
+              depth: "3.0cm"
+            }
+          ],
+          posterFileUrl: "https://assetger.ddns.net/storage/documents/e995WMUn836jJ5oGVicX5SkYcijE6mhl6opT3Fqg.webp",
+          placement: "wall",
+          // Or 'floor' depending on the demo model
+          iosUrl: "https://assetger.ddns.net/storage/documents/Nq6baT4fkJDk7blTAeZJhZfDzsPdLQQNRVWs3fVI.usdz",
+          androidId: "121",
+          // Example ID
+          iosId: "122",
+          // Example ID
+          posterFileId: "123"
+          // Example ID
+        }
+      ],
+      mode: "popup",
+      // Default mode for fallback, adjust if needed
+      qrcode: "popup",
+      // Default QR mode for fallback, adjust if needed
+      enabled: !0,
+      // Ensure fallback is enabled
+      storeProductId: ""
+      // No specific store product ID for fallback
+    };
+    let t = 0;
+    const a = 3;
+    for (this.modelData = null; t < a && !this.modelData; )
+      try {
+        t++;
+        let n = window.location.href, i;
+        const s = this.hasAttribute("src"), r = this.hasAttribute("shopify-src");
+        if (s ? i = await fetch(
+          `https://ardisplayboilerplate.vercel.app/api/3d-model?id=${this.getAttribute(
+            "src"
+          )}`
+        ) : r ? i = await fetch(
+          `https://ardisplayboilerplate.vercel.app/api/3d-model/store?storeProductId=${this.getAttribute(
+            "shopify-src"
+          )}`
+        ) : (n && n.endsWith("/") && (n = n.slice(0, -1)), i = await fetch(
+          `https://ardisplayboilerplate.vercel.app/api/3d-model?url=${Ji(
+            n
+          )}`
+        )), !i || !i.ok) {
+          const d = i ? i.status : "No response";
+          throw new Error(`Response status: ${d}`);
+        }
+        const c = await i.json();
+        if (typeof c != "object" || c === null || !c.options || c.options.length === 0)
+          throw Ve.warn("Received invalid or empty data structure from API."), new Error("Invalid data structure received.");
+        this.modelData = c, this.hasAttribute("ar-button") && (this.modelData.mode = "none");
+      } catch (n) {
+        Ve.error(`Attempt ${t} failed: ${n.message}`), t >= a || await new Promise((i) => setTimeout(i, 500));
+      }
+    !this.modelData && !this.getAttribute("src") && !this.getAttribute("shopify-src") && (this.modelData = e), this._setupVariantsSizes(), Ve.debug("Final modelData being used:", this.modelData);
+  }
+  _setupVariantsSizes() {
+    var e;
+    this.variants = ((e = this.modelData) == null ? void 0 : e.options) || [], this.variantSizes = [], this.variants.forEach((t) => {
+      const a = {};
+      t.sizes.forEach((n) => {
+        const i = n.label.toLowerCase();
+        a[i] = {
+          width: n.width,
+          height: n.height,
+          depth: n.depth || ""
+        };
+      }), this.variantSizes.push(a);
+    });
+  }
+  _getAttributes() {
+    return {
+      modelSrc: this.getAttribute("src") || "",
+      modelPoster: this.getAttribute("poster") || "",
+      ar: this.hasAttribute("ar"),
+      cameraControls: this.hasAttribute("camera-controls"),
+      touchAction: this.getAttribute("touch-action") || "none",
+      viewMode: this.getAttribute("view-mode") || "normal",
+      arPlacement: this.getAttribute("ar-placement") || "floor"
+    };
+  }
+  _consolidateStyles() {
+    const e = document.createElement("style");
+    return this.modelData.mode !== "none" && this.modelData.mode !== "popup" ? e.textContent = `
+        :host {
+          display: block;
+          width: 100%;
+          height: 600px;
+          transform: scale(1);
+          font-family: 'Roboto', sans-serif;
+        }
+      ` : e.textContent = `
+        :host {
+          display: block;
+          width: 100%;
+          height: fit-content;
+          transform: scale(1);
+          font-family: 'Roboto', sans-serif;
+        }
+      `, e.textContent += ` 
+      *,*::before,*::after{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Consolidated Styles */
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        --min-hotspot-opacity: 0;
+        position: relative;
+        display: block;
+      }
+
+      model-viewer[ar-status="session-started"] .ardisplay-qr-code-button,
+      model-viewer[ar-status="object-placed"] .ardisplay-qr-code-button {
+        display: none;
+      }
+
+
+
+      model-viewer[ar-status="session-started"] .ardisplay-nav-icon-button:last-child,
+      model-viewer[ar-status="object-placed"] .ardisplay-nav-icon-button:last-child {
+        display: flex;
+      }
+
+      model-viewer[ar-status="session-started"] .dim,
+      model-viewer[ar-status="object-placed"] .dim{
+        display: none!important;
+      }
+
+      model-viewer[ar-status="session-started"] #dimLines,
+      model-viewer[ar-status="object-placed"] #dimLines{
+        display: none!important;
+      }
+
+      .ardisplay-nav-icon-button:last-child {
+        display: none;
+      }
+
+      .dimensionLineContainer {
+        pointer-events: none;
+        display: block;
+      }
+
+      .dimensionLine {
+        display: none;
+        stroke: #16a5e6;
+        stroke-width: 2;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .dot {
+        display: none;
+      }
+
+      .dim {
+        display: none;
+        border-radius: 20px;
+        color: #1185bb;
+        padding: 4px 8px;
+        border: 1px solid #1185bb;
+      }
+
+      /* Bottom Nav Bar */
+      .bottom-container{
+        position: absolute;
+        width: 100%;
+        bottom: 0px;
+        height: auto;
+      }
+
+      .ardisplay-bottom-nav-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px;
+        z-index: 10;
+      }
+
+      .cart-button-wrapper{
+        display: none;
+      }
+
+      model-viewer[ar-status="session-started"] .cart-button-wrapper,
+      model-viewer[ar-status="object-placed"] .cart-button-wrapper{
+        display: flex;
+      }
+
+      .nav-btn {
+        background-color: #f0f0f0;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-right: 8px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+        flex: 1;
+      }
+      .nav-btn:hover {
+        background-color: #ddd;
+      }
+
+      /* Sub-panels */
+      .hidden {
+        display: none;
+      }
+
+      /* Color Slider */
+      .slider {
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        margin: 0 auto;
+      }
+      .slides {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        flex-direction: row-reverse;
+        gap: 10px; /* spacing between slides */
+      }
+      .slide {
+        scroll-snap-align: start;
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        cursor: pointer;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        outline: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .slide.selected {
+        border-color: #4285f4;
+        box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
+      }
+
+      .size-panel {
+      /* Similar to 'flex flex-wrap gap-2' in Tailwind */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px; /* ~ Tailwind gap-2 */
+      padding: 16px; /* for some breathing room */
+      padding-top: 0;
+      background-color: transparent;
+      z-index: 100;
+    }
+
+    .size-buttons-wrapper {
+      /* If you need an extra wrapper, adjust accordingly */
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      padding: 0;
+    }
+
+    .size-button {
+      /* Mimicking "border-2 border-gray-300 rounded-lg px-4 py-2" */
+      border: 2px solid #ccc;
+      border-radius: 8px; /* ~ Tailwind rounded-lg */
+      padding: 8px 16px; /* ~ px-4 py-2 in Tailwind */
+      background-color: rgba(255, 255, 255, 0.8); /* ~ bg-white/80 */
+      font-weight: 500;
+      cursor: pointer;
+      color: black;
+
+      /* Tailwind “transition-colors” is basically short for smooth border/color transitions */
+      transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Hover effect: "hover:border-blue-600 hover:text-blue-600" */
+    .size-button:hover:not(:disabled) {
+      border-color: #2563EB;
+      color: #2563EB;
+    }
+
+    /* Active/selected state similar to your existing .selected logic */
+    .size-button.selected {
+      color: #4285f4;
+      border-color: #4285f4;
+      opacity: 1;
+    }
+
+      /* Floating Add to Cart button */
+      .cart-button-wrapper {
+        position: absolute;
+        top: -64px; /* similar to -top-16 from Tailwind */
+        left: 0;
+        right: 0;
+        justify-content: center;
+      }
+      .cart-btn {
+        background-color: #2563EB; /* Tailwind blue-600 */
+        color: #fff;
+        border: none;
+        border-radius: 9999px; /* fully rounded */
+        padding: 12px 32px; /* ~py-3 px-8 */
+        font-weight: 600;
+        font-family: sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .cart-btn:hover {
+        background-color: #1D4ED8; /* Tailwind blue-700 */
+      }
+      .cart-btn svg {
+        height: 20px; /* h-5 in Tailwind ~ 20px */
+        width: 20px;
+      }
+
+      /* Bottom Nav Bar (matching the React code style) */
+      .ardisplay-bottom-nav {
+        height: fit-content; /* h-16 in Tailwind */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        position: relative;
+        z-index: 100;
+        margin-bottom: 16px;
+      }
+      .ardisplay-nav-icon-button {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        padding: 8px 16px;
+        color: black; /* text-gray-600 */
+        background: #ccc;
+        border-radius:40px;
+        gap:10px;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .ardisplay-nav-icon-button svg {
+        height: 24px; /* h-6 */
+        width: 24px;
+      }
+      .ardisplay-nav-icon-button span {
+        font-size: 12px; /* text-xs ~12px */
+        font-weight: bold;
+      }
+      /* ------------------------------------------------------------------ */
+      .sub-panel{
+      position: absolute;
+      bottom: 0; /* ensure it sits over the nav bar */
+      height: auto;
+      width: 100%;
+      z-index: 10000;
+      background: white;
+      padding-top: 50px; // added padding for close button
+    }
+      .sub-panel .sub-panel-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+      model-viewer[ar-status="session-started"] .ardisplay-variant-btn-active,
+      model-viewer[ar-status="object-placed"] .ardisplay-variant-btn-active{
+        display:none!important;
+      }
+    `, e;
+  }
+  async checkWebXRSupport() {
+    try {
+      return "xr" in navigator ? await navigator.xr.isSessionSupported("immersive-ar") : !1;
+    } catch {
+      return !1;
+    }
+  }
+  async _loadTemplate(e) {
+    let t = e === "popup" ? Sn : e === "inpage" ? An : _n;
+    const a = this._getAttributes(), n = t(
+      a.ar,
+      a.cameraControls,
+      a.touchAction,
+      a.modelPoster,
+      a.arPlacement,
+      this.modelData,
+      this.hasAttribute("fullWidth")
+    ), i = document.createRange().createContextualFragment(n);
+    if (this._processLucideIcons(i), this.shadowRoot.appendChild(i), e === "inpage") {
+      const s = document.createElement("img");
+      s.src = await mt(
+        this.modelData.options[0].posterFileUrl,
+        this.posters
+      ), s.style.position = "absolute", s.style.top = "0", s.style.left = "0", s.style.width = "100%", s.style.height = "100%", s.style.objectFit = "contain", s.style.zIndex = "10", this.shadowRoot.querySelector("model-viewer").appendChild(s), this.addEventListener("click", async () => {
+        const r = this.shadowRoot.querySelector("model-viewer img");
+        r && this.shadowRoot.querySelector("model-viewer").removeChild(r), await Ge();
+        const c = document.createElement("style");
+        c.textContent = ".container { direction: ltr; }", this.modelViewer.shadowRoot.appendChild(c);
+      }), this.addEventListener("mouseenter", async () => {
+        const r = this.shadowRoot.querySelector("model-viewer img");
+        r && this.shadowRoot.querySelector("model-viewer").removeChild(r), await Ge();
+        const c = document.createElement("style");
+        c.textContent = ".container { direction: ltr; }", this.modelViewer.shadowRoot.appendChild(c);
+      });
+    }
+  }
+  _updateSizePanel(e) {
+    const t = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".size-panel") : document.querySelector(".size-panel");
+    if (!t) return;
+    t.innerHTML = "";
+    const a = pe("div", {
+      classList: ["size-buttons-wrapper"]
+    }), n = this.variantSizes[e];
+    n && Object.entries(n).forEach(([i, s]) => {
+      const r = pe("button", {
+        classList: ["size-button"],
+        attributes: {
+          "data-size-key": i
+        },
+        disabled: !1
+      });
+      r.innerHTML = `
+          <span class="size-label">${i}</span>
+          <span class="size-description">
+            (${s.width} X ${s.height} X ${s.depth ? s.depth + "" : ""})
+          </span>
+        `, r.addEventListener("click", (c) => {
+        if (!this.modelViewer) return;
+        this.modelData.mode === "popup" ? document.querySelectorAll(".size-button").forEach((p) => p.classList.remove("selected")) : this.shadowRoot.querySelectorAll(".size-button").forEach((p) => p.classList.remove("selected")), c.currentTarget.classList.add("selected");
+        const d = this.variantSizes[e][i];
+        this.calculateAndApplyScale(d);
+      }), a.appendChild(r);
+    }), t.appendChild(a);
+  }
+  _processLucideIcons(e) {
+    const t = {
+      eye: Mn,
+      blocks: Rn,
+      rotate3d: Cn,
+      box: Tn,
+      fileaxis3d: Ln,
+      scan: jn
+    };
+    e.querySelectorAll("[data-lucide]").forEach((n) => {
+      const i = n.getAttribute("data-lucide").toLowerCase(), s = t[i];
+      if (s) {
+        const r = n.getAttribute("width") || 24, c = n.getAttribute("color") || "currentColor", d = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        d.setAttribute("width", r), d.setAttribute("height", r), d.setAttribute("viewBox", "0 0 24 24"), d.setAttribute("fill", "none"), d.setAttribute("stroke", c), d.setAttribute("stroke-width", "2"), d.setAttribute("stroke-linecap", "round"), d.setAttribute("stroke-linejoin", "round"), s[2].forEach((p) => {
+          const [f, w] = p, y = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            f
+          );
+          Object.entries(w).forEach(([_, T]) => {
+            y.setAttribute(_, T);
+          }), d.appendChild(y);
+        }), n.parentNode.replaceChild(d, n);
+      }
+    });
+  }
+  _moveSlottedContent() {
+    const e = this.shadowRoot.querySelector(
+      ".ar-display-custom-panel"
+    ), t = this.querySelector('slot[name="custom-panel"]');
+    e && t && e.appendChild(t);
+  }
+  _setupEventListeners() {
+    this.modelData.mode === "popup" ? this._setupModalEventListeners() : this.modelData.mode === "inpage" && this._setupNormalEventListeners(), this.boundHandleScale = () => this._setupDimensions(this.modelViewer), this.boundHandleModelVisibility = () => this._setupDimensions(this.modelViewer), this.boundHandleArStatus = (e) => this._handleArStatusChange(e), this.boundHandleCameraChange = () => {
+      this.debouncedRenderSVG(), this.debouncedUpdateDimensionHotspots();
+    }, this.boundHandleSceneGraphReady = () => {
+      this.debouncedRenderSVG(), this.debouncedUpdateDimensionHotspots();
+    }, this.boundHandleLoad = () => {
+      this.isModelLoaded = !0, this.qrCodeButton && (this.qrCodeButton.disabled = !1);
+      const e = this.modelViewer.getDimensions(), t = this.modelViewer.scale.toString().split(" ").map(Number);
+      if (this.originalSize = { x: 0, y: 0, z: 0 }, this.originalSize.x = e.x / t[0], this.originalSize.y = e.y / t[1], this.originalSize.z = e.z / t[2], this.variantSizes && this.variantSizes[this.selectedIndex]) {
+        const i = this.variantSizes[this.selectedIndex], s = Object.keys(i)[0];
+        if (s) {
+          const r = i[s];
+          this.calculateAndApplyScale(r), requestAnimationFrame(() => {
+            (this.modelData.mode !== "popup" ? this.shadowRoot.querySelectorAll(".size-button") : document.querySelectorAll(".size-button")).forEach((d, p) => {
+              p === 0 ? d.classList.add("selected") : d.classList.remove("selected");
+            });
+          });
+        }
+      }
+      this.shadowRoot.querySelector(".size-panel button") || this._updateSizePanel(0);
+      const a = this.modelViewer.shadowRoot.querySelector(".slot.ar-button");
+      a && (a.style.display = "none");
+      const n = document.querySelector("#ardisplayProgressModal");
+      n && n.style.display !== "none" && (n.style.display = "none", this._showStepsModal());
+    }, document.addEventListener("scale", this.boundHandleScale), this.modelViewer.addEventListener(
+      "model-visibility",
+      this.boundHandleModelVisibility
+    ), this.modelViewer.addEventListener("ar-status", this.boundHandleArStatus), this.modelViewer.addEventListener(
+      "camera-change",
+      this.boundHandleCameraChange
+    ), this.modelViewer.addEventListener(
+      "scene-graph-ready",
+      this.boundHandleSceneGraphReady
+    ), this.modelViewer.addEventListener("load", this.boundHandleLoad), this.modelViewer.addEventListener("progress", (e) => {
+      const t = Math.round(e.detail.totalProgress * 100), a = document.querySelector("#ardisplayProgressBarFill");
+      a && (a.style.width = `${t}%`, a.style.display = "block");
+    }), this.modelViewer.addEventListener("load", () => {
+      this.isModelLoaded = !0, this.modelData.mode === "popup" ? document.querySelectorAll(".dim").forEach((t) => {
+        t.style.display = "block";
+      }) : this.shadowRoot.querySelectorAll(".dim").forEach((t) => {
+        t.style.display = "block";
+      });
+      const e = document.querySelector("#activateAR");
+      e && (e.addEventListener("click", async (t) => {
+        if (t instanceof MouseEvent)
+          try {
+            console.log("clicked"), await this.modelViewer.activateAR();
+            const a = document.querySelector(
+              "#ardisplayProgressModal"
+            );
+            a && (a.style.display = "none");
+          } catch {
+          }
+      }), e.style.display = "block");
+    });
+  }
+  _isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }
+  _isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
+  async _setupQRCodeListeners() {
+    const e = document.querySelector("#qrModal"), t = document.querySelector("#qr-code"), a = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".ardisplay-qr-code-button") : document.querySelector(".ardisplay-qr-code-button"), n = document.querySelector(".qr-close-button");
+    this.qrCodeManager || (this.qrCodeManager = new wt(t, this.modelData)), a.addEventListener("click", async () => {
+      if (this.GIF_URLS.push(
+        await mt(
+          this.modelData.options[0].posterFileUrl,
+          this.posters
+        )
+      ), this.modelData.mode === "none" && this._isMobileDevice()) {
+        const i = document.querySelector("#ardisplayProgressModal");
+        if (i) {
+          const r = document.querySelector("#ardisplayProgressBarFill");
+          r && (r.style.width = "0%", r.style.display = "block"), i.style.display = "flex", this.userClickedAR = !0;
+        }
+        await Ge();
+        const s = document.createElement("style");
+        if (s.textContent = ".container { direction: ltr; }", this.modelViewer.shadowRoot.appendChild(s), this.modelViewer && this.modelViewer.addEventListener("progress", (r) => {
+          const c = Math.round(r.detail.totalProgress * 100), d = document.querySelector(
+            "#ardisplayProgressBarFill"
+          );
+          d && (d.style.width = `${c}%`, d.style.display = "block");
+        }), this.isModelLoaded) {
+          const r = document.querySelector(
+            "#ardisplayProgressModal"
+          );
+          r && (r.style.display = "none"), this._resetSteps(), this._showStepsModal();
+          return;
+        }
+      } else if (this._isMobileDevice()) {
+        if (await this.checkWebXRSupport(), this.isModelLoaded) {
+          this._resetSteps(), this._showStepsModal();
+          return;
+        }
+        const i = document.querySelector("#ardisplayProgressModal");
+        if (i) {
+          const r = document.querySelector("#ardisplayProgressBarFill");
+          r && (r.style.width = "0%", r.style.display = "block"), i.style.display = "flex", this.userClickedAR = !0;
+        }
+        await Ge();
+        const s = document.createElement("style");
+        s.textContent = ".container { direction: ltr; }", this.modelViewer.shadowRoot.appendChild(s);
+      } else {
+        const i = `${Qe}/${this.modelData.modelId}`;
+        this.qrCodeManager.updateQrCode(i), e.style.display = "flex";
+        return;
+      }
+    }), n.addEventListener("click", () => {
+      e.style.display = "none";
+    }), e.addEventListener("click", (i) => {
+      i.target === e && (e.style.display = "none");
+    });
+  }
+  _resetSteps() {
+    this.currentStep = 1, document.querySelectorAll(".ardisplay-step-indicator").forEach((n, i) => {
+      n.classList.toggle("active", i === 0);
+    });
+    const e = document.querySelector(".ardisplay-steps-content");
+    e && (e.innerHTML = `
+        <h3 class="ardisplay-instructions-title">Scanning</h3>
+        <img src="${this.GIF_URLS[0]}" class="ardisplay-steps-gif" alt="Computer man">
+        <div class="ardisplay-instructions-body">Stand several feet back. With camera facing ${this.variants[this.selectedIndex] && this.variants[this.selectedIndex].placement || this.modelData.placement}, make sweeping motion side to side, up and down.</div>
+      `);
+    const t = document.querySelector(".ardisplay-next-button"), a = document.querySelector(".ardisplay-skip-button");
+    t && (t.parentElement.style.display = "flex"), a && (a.style.display = "block");
+  }
+  async generateUSDZ() {
+    const e = this.modelViewer.getAttribute("src") || this.modelViewer.src;
+    if (!e) {
+      console.error("No GLB file available for USDZ generation.");
+      return;
+    }
+    let t = this.modelViewer.getAttribute("scale") || this.modelViewer.scale;
+    t || (t = "1 1 1");
+    const n = (this.modelData.placement || "floor").toLowerCase() === "wall" ? "vertical" : "horizontal";
+    try {
+      const i = {
+        x: t.split(" ")[0],
+        y: t.split(" ")[1],
+        z: t.split(" ")[2]
+      }, s = await Wi(
+        e,
+        n,
+        i
+      );
+      console.log("USDZFile :", s);
+      const r = this.modelViewer;
+      r && r.setAttribute("ios-src", s);
+    } catch (i) {
+      console.error("Error generating USDZ model:", i);
+    }
+  }
+  async handleActivateAR() {
+    if (this._sendShortStatsEvent("Click"), !this._isMobileDevice()) {
+      const e = `${Qe}/${this.modelData.modelId}`;
+      this.qrCodeManager && this.qrModal && (this.qrCodeManager.updateQrCode(e), this.qrModal.style.display = "flex");
+      return;
+    }
+    if (await this.generateUSDZ(), this.modelViewer.canActivateAR)
+      try {
+        this._sendShortStatsEvent("Try"), this.modelViewer.activateAR();
+      } catch (e) {
+        this._sendShortStatsEvent("Failed", e.message);
+        const t = `${Qe}/${this.modelData.modelId}`;
+        this.qrCodeManager && this.qrModal && (this.qrCodeManager.updateQrCode(t), this.qrModal.style.display = "flex");
+      }
+  }
+  _setupVariantsColors() {
+    if (!this.variants || this.variants.length === 0) return null;
+    const e = pe("div", { classList: ["slider"] }), t = pe("div", { classList: ["slides"] });
+    return this.variants.forEach(async (a, n) => {
+      const i = pe("button", { classList: ["slide"] });
+      if (n === 0 && (i.classList.add("selected"), this.modelViewer && a.url)) {
+        let r = new URL(a.url);
+        new URL(a.iosUrl), this.modelViewer.setAttribute("src", r.href), a.posterFileUrl ? this.modelViewer.poster = await mt(
+          a.posterFileUrl,
+          this.posters
+        ) : this.modelViewer.removeAttribute("poster");
+      }
+      a.posterFileUrl && (i.style.backgroundImage = `url('${a.posterFileUrl}')`);
+      let s = !0;
+      if (this.variants.forEach((r) => {
+        r.placement !== this.variants[0].placement && (s = !1);
+      }), !s) {
+        const r = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(".ardisplay-variant-btn") : document.querySelector(".ardisplay-variant-btn");
+        r && r.classList && !r.classList.contains("ardisplay-variant-btn-active") && r.classList.add("ardisplay-variant-btn-active");
+      }
+      i.onclick = () => {
+        if (!this.modelViewer) return;
+        if (a.url) {
+          let d = new URL(a.url);
+          new URL(a.iosUrl), this.modelViewer.setAttribute("src", d.href);
+        }
+        this._updateSizePanel(n), a.posterFileUrl ? this.modelViewer.poster = a.posterFileUrl : this.modelViewer.removeAttribute("poster"), a.placement ? this.modelViewer.setAttribute("ar-placement", a.placement) : this.modelViewer.setAttribute(
+          "ar-placement",
+          this.modelData.placement
+        ), this.modelData.mode !== "popup" ? (this.shadowRoot.querySelectorAll(".slide").forEach((d) => d.classList.remove("selected")), i.classList.add("selected")) : (document.querySelectorAll(".slide").forEach((d) => d.classList.remove("selected")), i.classList.add("selected")), this.selectedIndex = n, this.selectedIndex = n;
+        const r = this.variants[n] && this.variants[n].placement || this.modelData.placement || "floor", c = document.querySelector(
+          ".ardisplay-instructions-body"
+        );
+        c && (c.innerHTML = `Stand several feet back. With camera facing ${r.toLowerCase() === "wall" ? "wall" : "floor"}, make sweeping motion side to side, up and down.`), this.GIF_URLS[0] = r.toLowerCase() === "wall" ? `${Be}/wall.webp` : `${Be}/floor.gif`, this._updateNavButtonsVisibility();
+      }, t.appendChild(i);
+    }), e.appendChild(t), e;
+  }
+  // ---------- UI updates for bottom nav and floating cart ----------
+  _setupCartButton(e) {
+    const t = pe("div", {
+      classList: ["cart-button-wrapper"]
+    }), a = pe("button", { classList: ["cart-btn"] });
+    a.innerHTML = `
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293
+               2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0
+               100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        Add to Cart
+      `, t.appendChild(a), e.appendChild(t), t.addEventListener("click", async () => {
+      await this._sendShortStatsEvent("Cart"), window.location.href = this.modelData.addToCartUrl;
+    });
+  }
+  _setupBottomNavBar(e) {
+    const t = pe("div", {
+      classList: ["sub-panel", "hidden"]
+    }), a = pe("button", {
+      classList: ["sub-panel-close-button"],
+      textContent: "×"
+      // or use an icon if you prefer
+    });
+    a.style.position = "absolute", a.style.top = "0px", a.style.right = "10px", a.style.background = "transparent", a.style.height = "50px", a.style.border = "none", a.style.fontSize = "32px", a.style.cursor = "pointer", a.addEventListener("click", () => {
+      t.classList.add("hidden");
+    }), t.appendChild(a);
+    const n = pe("div", {
+      classList: ["sub-panel-label"],
+      textContent: "Size"
+    });
+    n.style.fontSize = "16px", n.style.position = "absolute", n.style.top = "0", n.style.left = "50%", n.style.height = "50px", n.style.display = "flex", n.style.alignItems = "center", n.style.justifyContent = "center", n.style.transform = "translateX(-50%)", t.appendChild(n);
+    const i = this._createSizeControls();
+    i && t.appendChild(i);
+    const s = pe("div", {
+      classList: ["sub-panel", "hidden"]
+    }), r = pe("button", {
+      classList: ["sub-panel-close-button"],
+      textContent: "×"
+      // or use an SVG icon here if preferred
+    });
+    r.style.position = "absolute", r.style.top = "0px", r.style.right = "10px", r.style.background = "transparent", r.style.border = "none", r.style.fontSize = "32px", r.style.height = "50px", r.style.cursor = "pointer", r.addEventListener("click", () => {
+      s.classList.add("hidden");
+    }), s.appendChild(r);
+    const c = pe("div", {
+      classList: ["sub-panel-label"],
+      textContent: "Variant"
+    });
+    c.style.fontSize = "16px", c.style.position = "absolute", c.style.top = "0", c.style.left = "50%", c.style.height = "50px", c.style.display = "flex", c.style.alignItems = "center", c.style.justifyContent = "center", c.style.transform = "translateX(-50%)", s.appendChild(c);
+    const d = this._setupVariantsColors();
+    d && s.appendChild(d);
+    const p = pe("div", {
+      classList: ["ardisplay-bottom-nav"]
+    }), f = (T) => {
+      const F = T.classList.contains("hidden");
+      t.classList.add("hidden"), s.classList.add("hidden"), F && T.classList.remove("hidden");
+    }, w = pe("button", {
+      classList: ["ardisplay-nav-icon-button", "ardisplay-size-btn"]
+    });
+    w.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" style="height:28px;width:28px;">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6V4H20V20H12V18H8V16H4V8H8V6H12ZM14 6H18V18H14V6ZM12 8H10V16H12V8ZM8 10V14H6V10H8Z" fill="#000000"/>
+      </svg>
+      <span>Size</span>
+    `, w.addEventListener("click", () => {
+      f(t), w.classList.toggle(
+        "active",
+        !t.classList.contains("hidden")
+      ), y.classList.remove("active");
+    });
+    const y = pe("button", {
+      classList: ["ardisplay-nav-icon-button", "ardisplay-variant-btn"]
+    });
+    if (y.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" style="height:24px;width:24px;">
+        <path d="M1 9.431l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.474-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892s-0.216-0.711-0.547-0.88l-14.848-7.54c-0.283-0.143-0.617-0.144-0.902-0.002l-15.002 7.54c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895zM16.161 2.134l12.692 6.446-12.843 6.921-12.693-6.912zM31.292 15.01l-2.968-1.507-2.142 1.155 2.5 1.27-12.842 6.921-12.694-6.912 2.666-1.34-2.136-1.164-3.135 1.575c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.474-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892s-0.215-0.711-0.546-0.88zM31.292 22.01l-2.811-1.382-2.142 1.155 2.344 1.145-12.843 6.921-12.694-6.912 2.478-1.121-2.136-1.164-2.947 1.357c-0.332 0.167-0.545 0.505-0.551 0.877s0.196 0.717 0.521 0.895l14.847 8.085c0.149 0.081 0.313 0.122 0.479 0.122 0.163 0 0.326-0.04 0.475-0.12l15.003-8.085c0.327-0.176 0.53-0.52 0.525-0.892-0.005-0.373-0.215-0.712-0.546-0.88z"/>
+      </svg>
+      <span>Variant</span>
+    `, y.addEventListener("click", () => {
+      f(s), y.classList.toggle(
+        "active",
+        !s.classList.contains("hidden")
+      ), w.classList.remove("active");
+    }), this.variants.length === 1 && y && (y.style.display = "none"), this.variants.length > 0) {
+      const T = this.variants[0].sizes;
+      T && T.length === 1 && w && (w.style.display = "none");
+    }
+    const _ = pe("button", {
+      classList: ["ardisplay-nav-icon-button"]
+    });
+    _.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+      </svg>
+      <span>Share</span>
+    `, _.addEventListener("click", async () => {
+      this._sendShortStatsEvent("Share");
+      const T = {
+        title: document.title,
+        text: "Check out this AR model!",
+        url: window.location.href
+      };
+      try {
+        await navigator.share(T);
+      } catch (F) {
+        console.warn("Share failed:", F);
+      }
+    }), p.appendChild(w), p.appendChild(y), p.appendChild(_), this.boundHandleDocumentMouseDown = (T) => {
+      const F = T.composedPath();
+      !F.includes(p) && !F.includes(t) && !F.includes(s) && (t.classList.add("hidden"), s.classList.add("hidden"), w.classList.remove("active"), y.classList.remove("active"));
+    }, document.addEventListener("mousedown", this.boundHandleDocumentMouseDown), e.appendChild(p), e.appendChild(t), e.appendChild(s);
+  }
+  _updateNavButtonsVisibility() {
+    var i;
+    const e = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(
+      ".ardisplay-bottom-nav .ardisplay-size-btn"
+    ) : document.querySelector(".ardisplay-bottom-nav .ardisplay-size-btn"), t = this.modelData.mode !== "popup" ? this.shadowRoot.querySelector(
+      ".ardisplay-bottom-nav .ardisplay-variant-btn"
+    ) : document.querySelector(
+      ".ardisplay-bottom-nav .ardisplay-variant-btn"
+    );
+    this.variants.length === 1 && t ? t.style.display = "none" : t && (t.style.display = "flex");
+    const a = typeof this.selectedIndex == "number" ? this.selectedIndex : 0, n = (i = this.variants[a]) == null ? void 0 : i.sizes;
+    n && n.length === 1 && e ? e.style.display = "none" : e && (e.style.display = "flex");
+  }
+  // ------------------------------------------------------------------
+  async _setupModalEventListeners() {
+    const e = this.shadowRoot.querySelector(
+      ".ardisplay-view-3d-button"
+    );
+    this.shadowRoot.querySelector(
+      ".ardisplay-preview-image"
+    );
+    const t = document.querySelector(
+      ".model-viewer-container"
+    ), a = document.querySelector(".ardisplay-close-button"), n = document.querySelector(".ardisplay-model-viewer-overlay");
+    e && t && e.addEventListener("click", async () => {
+      await Ge();
+      const i = document.createElement("style");
+      i.textContent = ".container { direction: ltr; }", this.modelViewer.shadowRoot.appendChild(i), t.style.display = "flex", n.style.display = "block";
+    }), a && n && (a.addEventListener("click", () => {
+      t.style.display = "none", n.style.display = "none";
+    }), n.addEventListener("click", () => {
+      t.style.display = "none", n.style.display = "none";
+    }));
+  }
+  _setupNormalEventListeners() {
+  }
+  _handleArStatusChange(e) {
+    const t = e.detail.status === "session-started";
+    if (!t) {
+      const i = document.querySelector("#ardisplayProgressModal");
+      i && (i.style.display = "none");
+    }
+    const a = [
+      ...this.modelViewer.querySelectorAll("[data-hotspot]"),
+      this.modelViewer.querySelector("#dimLines")
+    ].filter(Boolean);
+    ((i) => {
+      a.forEach((s) => {
+        s.classList.toggle("hide", !i);
+      });
+    })(!t);
+  }
+  _drawLine(e, t, a, n) {
+    !e || !t || !a || (e.setAttribute("x1", t.canvasPosition.x), e.setAttribute("y1", t.canvasPosition.y), e.setAttribute("x2", a.canvasPosition.x), e.setAttribute("y2", a.canvasPosition.y), n && e.classList.toggle("hide", !n.facingCamera));
+  }
+  _renderSVG() {
+    const e = this.modelViewer.querySelectorAll("line");
+    if (e.length === 0) return;
+    [
+      {
+        line: e[0],
+        start: "hotspot-dot+X-Y+Z",
+        end: "hotspot-dot+X-Y+Z",
+        dimension: "hotspot-dim+X-Y"
+      },
+      {
+        line: e[1],
+        start: "hotspot-dot+X-Y-Z",
+        end: "hotspot-dot+X+Y-Z",
+        dimension: "hotspot-dim+X-Z"
+      },
+      {
+        line: e[2],
+        start: "hotspot-dot+X+Y-Z",
+        end: "hotspot-dot-X+Y-Z"
+      },
+      {
+        line: e[3],
+        start: "hotspot-dot-X+Y-Z",
+        end: "hotspot-dot-X-Y-Z",
+        dimension: "hotspot-dim-X-Z"
+      },
+      {
+        line: e[4],
+        start: "hotspot-dot-X-Y-Z",
+        end: "hotspot-dot-X-Y+Z",
+        dimension: "hotspot-dim-X-Y"
+      }
+    ].forEach(({ line: a, start: n, end: i, dimension: s }) => {
+      this._drawLine(
+        a,
+        this.modelViewer.queryHotspot(n),
+        this.modelViewer.queryHotspot(i),
+        s ? this.modelViewer.queryHotspot(s) : null
+      );
+    });
+  }
+  _updateDimensionHotspots() {
+    const e = this.modelViewer.getBoundingBoxCenter(), t = this.modelViewer.getDimensions(), a = {
+      x: t.x / 2,
+      y: t.y / 2,
+      z: t.z / 2
+    };
+    [
+      {
+        name: "hotspot-dot+X-Y+Z",
+        position: [
+          e.x + a.x,
+          e.y - a.y,
+          e.z + a.z
+        ]
+      },
+      {
+        name: "hotspot-dim+X-Y",
+        position: [
+          e.x + a.x * 1.2,
+          e.y - a.y * 1.1,
+          e.z
+        ],
+        label: `${(t.z * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+X-Y"]'
+      },
+      {
+        name: "hotspot-dot+X-Y-Z",
+        position: [
+          e.x + a.x,
+          e.y - a.y,
+          e.z - a.z
+        ]
+      },
+      {
+        name: "hotspot-dim+X-Z",
+        position: [
+          e.x + a.x * 1.2,
+          e.y,
+          e.z - a.z * 1.2
+        ],
+        label: `${(t.y * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+X-Z"]'
+      },
+      {
+        name: "hotspot-dot+X+Y-Z",
+        position: [
+          e.x + a.x,
+          e.y + a.y,
+          e.z - a.z
+        ]
+      },
+      {
+        name: "hotspot-dim+Y-Z",
+        position: [
+          e.x,
+          e.y + a.y * 1.1,
+          e.z - a.z * 1.1
+        ],
+        label: `${(t.x * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim+Y-Z"]'
+      },
+      {
+        name: "hotspot-dot-X+Y-Z",
+        position: [
+          e.x - a.x,
+          e.y + a.y,
+          e.z - a.z
+        ]
+      },
+      {
+        name: "hotspot-dim-X-Z",
+        position: [
+          e.x - a.x * 1.2,
+          e.y,
+          e.z - a.z * 1.2
+        ],
+        label: `${(t.y * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim-X-Z"]'
+      },
+      {
+        name: "hotspot-dot-X-Y-Z",
+        position: [
+          e.x - a.x,
+          e.y - a.y,
+          e.z - a.z
+        ]
+      },
+      {
+        name: "hotspot-dim-X-Y",
+        position: [
+          e.x - a.x * 1.2,
+          e.y - a.y * 1.1,
+          e.z
+        ],
+        label: `${(t.z * 100).toFixed(0)} cm`,
+        labelSelector: '[slot="hotspot-dim-X-Y"]'
+      },
+      {
+        name: "hotspot-dot-X-Y+Z",
+        position: [
+          e.x - a.x,
+          e.y - a.y,
+          e.z + a.z
+        ]
+      }
+    ].forEach(({ name: i, position: s, label: r, labelSelector: c }) => {
+      if (this.modelViewer.updateHotspot({
+        name: i,
+        position: s.join(" ")
+      }), r && c) {
+        const d = this.modelViewer.querySelector(c);
+        d && (d.textContent = r);
+      }
+    });
+  }
+  _setupDimensions() {
+    this.modelData.mode === "popup" ? document.querySelectorAll(".dimensionLine").forEach((e) => {
+      e.style.display = "block";
+    }) : this.shadowRoot.querySelectorAll(".dimensionLine").forEach((e) => {
+      e.style.display = "block";
+    }), this.debouncedRenderSVG(), this.debouncedUpdateDimensionHotspots();
+  }
+  _createSizeControls() {
+    const e = pe("div", { classList: ["size-panel"] }), t = pe("div", {
+      classList: ["size-buttons-wrapper"]
+    });
+    return e.appendChild(t), e;
+  }
+  _handleSizeChange(e) {
+    if (e.target.classList.contains("size-button")) {
+      const t = e.target.getAttribute("data-size-key");
+      if (this.variantSizes[this.selectedIndex][t]) {
+        this.shadowRoot.querySelectorAll(".size-button").forEach((n) => n.classList.remove("selected")), e.target.classList.add("selected");
+        const a = this.variantSizes[this.selectedIndex][t];
+        this.calculateAndApplyScale(a);
+      }
+    }
+  }
+  applyScale() {
+    this.calculatedScale && this.modelViewer && (this.modelViewer.setAttribute(
+      "scale",
+      `${this.calculatedScale.scaleX} ${this.calculatedScale.scaleY} ${this.calculatedScale.scaleZ}`
+    ), typeof this.modelViewer.updateFraming == "function" && requestAnimationFrame(() => {
+      this.modelViewer.updateFraming(), document.dispatchEvent(this.scaleEvent);
+    }));
+  }
+  async calculateAndApplyScale(e) {
+    if (e)
+      try {
+        const t = await this.calculateModelScale(e);
+        this.calculatedScale = t, this.applyScale();
+      } catch {
+      }
+  }
+  cmToMeters(e) {
+    return parseFloat(e.replace("cm", "")) / 100;
+  }
+  calculateModelScale(e) {
+    const t = this.originalSize || { x: 1, y: 1, z: 1 }, a = t.x, n = t.y, i = t.z, s = this.cmToMeters(e.width), r = this.cmToMeters(e.height), c = e.depth ? this.cmToMeters(e.depth) : 0.05, d = s / a, p = r / n, f = c / i;
+    return { scaleX: d, scaleY: p, scaleZ: f };
+  }
+  cleanupBlobUrls() {
+    Object.values(this.gifCache).forEach((e) => {
+      URL.revokeObjectURL(e);
+    }), this.gifCache = {};
+  }
+}
+customElements.define("ardisplay-viewer", Yi);
+document.addEventListener("DOMContentLoaded", () => {
+  window.customElements.get("ardisplay-viewer") ? ea() : window.customElements.whenDefined("ardisplay-viewer").then(ea);
+});
+function ea() {
+  const t = document.evaluate(
+    "//*[normalize-space(text())='{%AR-DISPLAY-PLAYER%}']",
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  ).singleNodeValue, a = document.createElement("ardisplay-viewer");
+  t.replaceWith(a);
+}
+//# sourceMappingURL=ardisplay.es.js.map

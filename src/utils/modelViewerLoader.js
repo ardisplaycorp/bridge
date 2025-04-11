@@ -3,13 +3,13 @@
  */
 export async function lazyLoadModelViewerIfNeeded() {
   // If the component is already defined, no need to import again
-  if (!window.customElements.get('model-viewer')) {
+  if (!window.customElements.get("model-viewer")) {
     try {
       // Dynamically import model-viewer
-      await import("@google/model-viewer/dist/model-viewer-module.min.js");
+      await import("@google/model-viewer");
       return true;
     } catch (error) {
-      console.error('Failed to load model-viewer:', error);
+      console.error("Failed to load model-viewer:", error);
       return false;
     }
   }
