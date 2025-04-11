@@ -4,52 +4,49 @@ import { visualizer } from "rollup-plugin-visualizer";
 import path from "path";
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      // This alias helps Vite locate Three.js during development.
-      three: path.resolve(__dirname, "node_modules/three"),
-    },
-    dedupe: ["three", "@google/model-viewer"],
-  },
   build: {
     outDir: "./build",
     lib: {
-      entry: path.resolve(__dirname, "src/main.js"), // Clear entry point
-      name: "ARDisplay", // Global variable name for the UMD build
-      fileName: (format) => `ardisplay.${format}.js`, // File naming per format
-      formats: ["es", "umd"], // Generate both ES and UMD formats
+      entry: "src/main.js",
+      name: "ARDisplay", // This name is used for the UMD build
+      // formats: ["umd", "es"], // Removed because we define formats in rollupOptions.output
+      fileName: (format) => `ardisplay.${format}.min.js`,
     },
-    minify: "esbuild", // Minify the output
-    sourcemap: true, // Generate sourcemaps for debugging
+    minify: "esbuild",
+    sourcemap: false,
     rollupOptions: {
-      // Remove "three" from external so that it gets bundled.
-      external: ["@google/model-viewer"],
       output: [
         {
-          // ES Module output configuration:
           format: "es",
-          // No globals needed since ES modules use import/export.
+          // dir: './build', // Optional: You can specify different output directories for each format
+          // entryFileNames: 'ardisplay.es.min.js', // Optional: Be more explicit about file names
+          preserveModules: false, // Optional: Set to true to keep the original module structure.
+          preserveModulesRoot: "src", // Optional: This goes with preserveModules to control the output directory structure.
+          manualChunks(id) {
+            if (
+              id.includes(
+                "@google/model-viewer/dist/model-viewer-module.min.js"
+              )
+            ) {
+              return "model-viewer";
+            }
+          },
         },
         {
-          // UMD output configuration:
           format: "umd",
-          name: "ARDisplay", // Must match library name
+          name: "ARDisplay", // The global variable name for your UMD library
+          // dir: './build',
+          // entryFileNames: 'ardisplay.umd.min.js',
           globals: {
-            // Only model-viewer is considered external here.
-            "@google/model-viewer": "ModelViewerElement",
+            "@google/model-viewer": "ModelViewer",
           },
-          exports: "named",
         },
       ],
+      external: (id, importer, isResolved) => {
+        // Externalize for UMD, but only if it's a top-level import (not resolved)
+        return id === "@google/model-viewer" && !isResolved;
+      },
     },
   },
-  plugins: [
-    compression({
-      // Optional: configure compression (e.g., gzip) as needed.
-    }),
-    visualizer({
-      open: true, // Automatically open the report in the browser after build
-      filename: "build/stats.html", // Output report location
-    }),
-  ],
+  plugins: [compression(), visualizer()],
 });
