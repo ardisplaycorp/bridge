@@ -6,7 +6,6 @@ import hotspotsTemplate from "./templates/hotspots.js";
 import { Eye, Blocks, Rotate3D, Box, FileAxis3D, Scan } from "lucide";
 import { BRIDGE_URL, CDN_URL } from "./config/config.js";
 import { lazyLoadModelViewerIfNeeded } from "./utils/modelViewerLoader.js";
-import { createUSDZModelFromGLB } from "./utils/glbToUsdz.js";
 
 const NODE_ENV = "production";
 
@@ -2333,7 +2332,6 @@ class ARDisplayViewer extends HTMLElement {
           // Ensure we're handling the click event
           if (event instanceof MouseEvent) {
             try {
-              console.log("clicked");
               await this.modelViewer.activateAR();
               // Hide progress modal after AR is activated
               const progressModal = document.querySelector(
@@ -2520,55 +2518,7 @@ class ARDisplayViewer extends HTMLElement {
     if (skipBtn) skipBtn.style.display = "block";
   }
 
-  async generateUSDZ() {
-    // Assume “glbFile” is available (e.g. from an upload or internal source)
-    // And that you’ve already calculated the desired scale (for instance, via your calculateAndApplyScale function):
-    const glbFile =
-      this.modelViewer.getAttribute("src") || this.modelViewer.src;
-
-    if (!glbFile) {
-      console.error("No GLB file available for USDZ generation.");
-      return;
-    }
-
-    // Calculate scale based on desired dimensions. For example:
-    let calculatedScale =
-      this.modelViewer.getAttribute("scale") || this.modelViewer.scale;
-
-    if (!calculatedScale) {
-      calculatedScale = "1 1 1";
-    }
-    // Determine the anchoring alignment based on placement.
-    const placement = this.modelData.placement || "floor";
-    const anchoringAlignment =
-      placement.toLowerCase() === "wall" ? "vertical" : "horizontal";
-
-    try {
-      // Generate the USDZ file with the proper scaling and anchoring.
-      const scaleToUse = {
-        x: calculatedScale.split(" ")[0],
-        y: calculatedScale.split(" ")[1],
-        z: calculatedScale.split(" ")[2],
-      };
-      const usdzFile = await createUSDZModelFromGLB(
-        glbFile,
-        anchoringAlignment,
-        scaleToUse
-      );
-
-      console.log("USDZFile :", usdzFile);
-      // Now update your <model-viewer> with the new USDZ file.
-      // (For iOS / Quick Look, the "ios-src" attribute is used.)
-      const modelViewer = this.modelViewer;
-      if (modelViewer) {
-        modelViewer.setAttribute("ios-src", usdzFile);
-      }
-    } catch (error) {
-      console.error("Error generating USDZ model:", error);
-    }
-  }
-
-  async handleActivateAR() {
+  handleActivateAR() {
     this._sendShortStatsEvent("Click");
 
     // Show QR code directly if not mobile
@@ -2581,7 +2531,6 @@ class ARDisplayViewer extends HTMLElement {
       return;
     }
 
-    await this.generateUSDZ();
     // Mobile device flow
     if (this.modelViewer.canActivateAR) {
       try {
@@ -2614,7 +2563,6 @@ class ARDisplayViewer extends HTMLElement {
         slideButton.classList.add("selected");
         if (this.modelViewer && variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          let IOS_VARIANT_URL = new URL(variant.iosUrl);
           this.modelViewer.setAttribute("src", VARIANT_URL.href);
           if (variant.posterFileUrl) {
             this.modelViewer.poster = await PosterWithCache(
@@ -2659,7 +2607,6 @@ class ARDisplayViewer extends HTMLElement {
 
         if (variant.url) {
           let VARIANT_URL = new URL(variant.url);
-          let IOS_VARIANT_URL = new URL(variant.iosUrl);
           this.modelViewer.setAttribute("src", VARIANT_URL.href);
         }
 

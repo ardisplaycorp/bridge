@@ -23,11 +23,7 @@ export default defineConfig({
           preserveModules: false, // Optional: Set to true to keep the original module structure.
           preserveModulesRoot: "src", // Optional: This goes with preserveModules to control the output directory structure.
           manualChunks(id) {
-            if (
-              id.includes(
-                "@google/model-viewer/dist/model-viewer-module.min.js"
-              )
-            ) {
+            if (id.includes("./model-viewer-module.min.js")) {
               return "model-viewer";
             }
           },
